@@ -1,5 +1,6 @@
 <!-- Detail Layout for Grid -->
-<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/detail_additional_pane"
@@ -13,7 +14,7 @@
     android:paddingRight="@dimen/forecast_detail_horizontal_padding"
     android:paddingStart="@dimen/forecast_detail_horizontal_padding"
     android:paddingTop="@dimen/abc_list_item_padding_horizontal_material"
-    app:columnCount="2">
+    app:columnCount="2" >
 
     <TextView
         android:id="@+id/detail_humidity_label_textview"
@@ -71,5 +72,6 @@
         android:textColor="@android:color/white"
         app:layout_gravity="fill"
         tools:text="4km/h NW" />
+
 </android.support.v7.widget.GridLayout>
 

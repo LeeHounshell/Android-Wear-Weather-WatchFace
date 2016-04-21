@@ -14,34 +14,34 @@
      limitations under the License.
  -->
 <!-- Master layout. -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent" >
 
     <LinearLayout
         android:baselineAligned="false"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:orientation="horizontal" >
 
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            >
+            android:layout_weight="1" >
 
             <include layout="@layout/detail_today_grid"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:elevation="0dp"
-                android:background="@android:color/transparent"/>
+                android:background="@android:color/transparent" />
 
         </FrameLayout>
 
@@ -54,8 +54,7 @@
             android:paddingEnd="@dimen/abc_list_item_padding_horizontal_material"
             android:paddingStart="@dimen/abc_list_item_padding_horizontal_material"
             android:paddingRight="@dimen/abc_list_item_padding_horizontal_material"
-            android:paddingLeft="@dimen/abc_list_item_padding_horizontal_material"
-            >
+            android:paddingLeft="@dimen/abc_list_item_padding_horizontal_material" >
 
             <android.support.v7.widget.Space
                 app:layout_columnSpan="2"
@@ -70,8 +69,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:paddingLeft="@dimen/abc_list_item_padding_horizontal_material"
                 android:paddingRight="@dimen/abc_list_item_padding_horizontal_material"
-                android:paddingBottom="@dimen/abc_list_item_padding_horizontal_material"
-                />
+                android:paddingBottom="@dimen/abc_list_item_padding_horizontal_material" />
 
             <TextView
                 android:id="@+id/detail_humidity_textview"
@@ -79,8 +77,7 @@
                 android:gravity="center_vertical"
                 tools:text="38%"
                 android:textColor="@android:color/white"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                />
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
             <TextView
                 android:id="@+id/detail_pressure_label_textview"
@@ -92,8 +89,7 @@
                 android:paddingTop="@dimen/detail_view_extra_padding"
                 android:paddingLeft="@dimen/abc_list_item_padding_horizontal_material"
                 android:paddingRight="@dimen/abc_list_item_padding_horizontal_material"
-                android:paddingBottom="@dimen/abc_list_item_padding_horizontal_material"
-                />
+                android:paddingBottom="@dimen/abc_list_item_padding_horizontal_material" />
 
 
             <TextView
@@ -102,8 +98,7 @@
                 android:gravity="center_vertical"
                 tools:text="995 hPa"
                 android:textColor="@android:color/white"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                />
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
             <TextView
                 android:id="@+id/detail_wind_label_textview"
@@ -114,8 +109,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:paddingTop="@dimen/detail_view_extra_padding"
                 android:paddingLeft="@dimen/abc_list_item_padding_horizontal_material"
-                android:paddingRight="@dimen/abc_list_item_padding_horizontal_material"
-                />
+                android:paddingRight="@dimen/abc_list_item_padding_horizontal_material" />
 
             <TextView
                 android:id="@+id/detail_wind_textview"
@@ -123,13 +117,14 @@
                 android:gravity="center_vertical"
                 tools:text="4km/h NW"
                 android:textColor="@android:color/white"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                />
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
             <android.support.v7.widget.Space
                 app:layout_columnSpan="2"
                 app:layout_rowWeight="1" />
 
         </android.support.v7.widget.GridLayout>
+
     </LinearLayout>
+
 </FrameLayout>
