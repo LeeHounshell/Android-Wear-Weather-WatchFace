@@ -99,7 +99,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
         BufferedReader reader = null;
 
         // Will contain the raw JSON response as a string.
-        String forecastJsonStr = null;
+        String forecastJsonStr;
 
         String format = "json";
         String units = "metric";
@@ -161,11 +161,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             // If the code didn't successfully get the weather data, there's no point in attempting
             // to parse it.
             setLocationStatus(getContext(), LOCATION_STATUS_SERVER_DOWN);
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
-            setLocationStatus(getContext(), LOCATION_STATUS_SERVER_INVALID);
-        } finally {
+        }
+        finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
             }
@@ -187,8 +184,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
      * into an Object hierarchy for us.
      */
     private void getWeatherDataFromJson(String forecastJsonStr,
-                                        String locationSetting)
-            throws JSONException {
+                                        String locationSetting) {
 
         // Now we have a String representing the complete forecast in JSON Format.
         // Fortunately parsing is easy:  constructor takes the JSON string and converts it
@@ -328,7 +324,6 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 cVVector.add(weatherValues);
             }
 
-            int inserted = 0;
             // add to database
             if ( cVVector.size() > 0 ) {
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];

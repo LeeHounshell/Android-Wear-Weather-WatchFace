@@ -25,9 +25,6 @@ public abstract class PollingCheck {
     private static final long TIME_SLICE = 50;
     private long mTimeout = 3000;
 
-    public PollingCheck() {
-    }
-
     public PollingCheck(@SuppressWarnings("SameParameterValue") long timeout) {
         mTimeout = timeout;
     }
@@ -57,6 +54,7 @@ public abstract class PollingCheck {
         Assert.fail("unexpected timeout");
     }
 
+    @SuppressWarnings("unused")
     public static void check(CharSequence message, long timeout, Callable<Boolean> condition)
             throws Exception {
         while (timeout > 0) {

@@ -15,8 +15,4 @@
  -->
 <resources>
 
-    <style name="ForecastStyle">
-        <item name="android:choiceMode">singleChoice</item>
-    </style>
-
 </resources>

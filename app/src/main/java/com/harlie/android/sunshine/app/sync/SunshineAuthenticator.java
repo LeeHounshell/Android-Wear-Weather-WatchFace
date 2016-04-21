@@ -15,7 +15,7 @@ import android.os.Bundle;
  * http://developer.android.com/training/sync-adapters/creating-authenticator.html
  * Which is a pretty handy reference when creating your own syncadapters.  Just sayin'.
  */
-public class SunshineAuthenticator extends AbstractAccountAuthenticator {
+class SunshineAuthenticator extends AbstractAccountAuthenticator {
 
     public SunshineAuthenticator(Context context) {
         super(context);

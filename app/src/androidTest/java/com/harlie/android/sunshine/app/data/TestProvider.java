@@ -175,7 +175,7 @@ public class TestProvider extends AndroidTestCase {
         WeatherDbHelper dbHelper = new WeatherDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
+        TestUtilities.createNorthPoleLocationValues();
         long locationRowId = TestUtilities.insertNorthPoleLocationValues(mContext);
 
         // Fantastic.  Now that we have a location, add some weather!
@@ -197,6 +197,8 @@ public class TestProvider extends AndroidTestCase {
 
         // Make sure we get the correct cursor out of the database
         TestUtilities.validateCursor("testBasicWeatherQuery", weatherCursor, weatherValues);
+
+        db.close();
     }
 
     /*
@@ -210,7 +212,7 @@ public class TestProvider extends AndroidTestCase {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
-        long locationRowId = TestUtilities.insertNorthPoleLocationValues(mContext);
+        TestUtilities.insertNorthPoleLocationValues(mContext);
 
         // Test the basic content provider query
         Cursor locationCursor = mContext.getContentResolver().query(
@@ -234,6 +236,8 @@ public class TestProvider extends AndroidTestCase {
 
             locationCursor.close();
         }
+
+        db.close();
     }
 
     /*

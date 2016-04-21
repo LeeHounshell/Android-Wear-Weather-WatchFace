@@ -28,7 +28,7 @@ import android.test.AndroidTestCase;
 public class TestUriMatcher extends AndroidTestCase {
     private static final String LOCATION_QUERY = "London, UK";
     private static final long TEST_DATE = 1419033600L;  // December 20th, 2014
-    private static final long TEST_LOCATION_ID = 10L;
+    //private static final long TEST_LOCATION_ID = 10L;
 
     // content://com.harlie.android.sunshine.app/weather"
     private static final Uri TEST_WEATHER_DIR = WeatherContract.WeatherEntry.CONTENT_URI;

@@ -32,7 +32,6 @@
     <string name="action_share">Share</string>
 
     <!-- Menu label to fetch updated weather info from the server -->
-    <string name="action_refresh" translatable="false">Refresh</string>
     <string name="title_activity_detail">Details</string>
     <string name="title_activity_settings">Settings</string>
 
@@ -48,8 +47,8 @@
     <!-- Default postal code for location preference [CHAR LIMIT=NONE] -->
     <string name="pref_location_default" translatable="false">94043</string>
 
-    <string name="pref_location_server_down">server down</string>
-    <string name="pref_location_server_invalid">invalid server</string>
+    <string name="pref_location_server_down">server down (<xliff:g id="location_setting">%1$s</xliff:g>)</string>
+    <string name="pref_location_server_invalid">invalid server (<xliff:g id="location_setting">%1$s</xliff:g>)</string>
 
     <!-- Strings used when displaying the state of the Location in settings -->
     <string name="pref_location_error_description">Invalid Location (<xliff:g id="location_setting">%1$s</xliff:g>)"</string>
@@ -165,8 +164,6 @@
     <string name="condition_504">Extreme Rain</string>
     <string name="condition_511">Freezing Rain</string>
     <string name="condition_520">Light Shower</string>
-    <string name="condition_521">Shower</string>
-    <string name="condition_522">Heavy Shower</string>
     <string name="condition_531">Ragged Shower</string>
     <string name="condition_600">Light Snow</string>
     <string name="condition_601">Snow</string>

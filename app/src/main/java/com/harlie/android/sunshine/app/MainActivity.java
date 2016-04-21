@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             }
         } else {
             Log.i(LOG_TAG, "No valid Google Play Services APK. Weather alerts will be disabled.");
-            // Store regID as null
+            // Store regId as null
             storeRegistrationId(this, null);
         }
     }
@@ -146,7 +146,8 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         // If Google Play Services is not available, some features, such as GCM-powered weather
         // alerts, will not be available.
         if (!checkPlayServices()) {
-            // TODO: Store regID as null
+            // Store regId as null
+            storeRegistrationId(this, null);
         }
 
         String location = Utility.getPreferredLocation(this);
@@ -183,9 +184,9 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             Intent intent = new Intent(this, DetailActivity.class)
                     .setData(contentUri);
 
-            ActivityOptionsCompat activityOptions =
+            @SuppressWarnings("unchecked") ActivityOptionsCompat activityOptions =
                     ActivityOptionsCompat.makeSceneTransitionAnimation(this,
-                            new Pair<View, String>(vh.mIconView, getString(R.string.detail_icon_transition_name)));
+                            new Pair<View, String>(vh.mIconView, getString(R.string.detail_icon_transition_name))); // warning: Unchecked generics array creation for varargs parameter
             ActivityCompat.startActivity(this, intent, activityOptions.toBundle());
         }
     }
@@ -272,13 +273,12 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                String msg = "";
                 try {
                     if (mGcm == null) {
                         mGcm = GoogleCloudMessaging.getInstance(context);
                     }
                     String regId = mGcm.register(PROJECT_NUMBER);
-                    msg = "Device registered, registration ID=" + regId;
+                    Log.i(LOG_TAG, "Device registered, registration ID=" + regId);
 
                     // You should send the registration ID to your server over HTTP,
                     // so it can use GCM/HTTP or CCS to send messages to your app.
@@ -292,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
                     // Persist the registration ID - no need to register again.
                     storeRegistrationId(context, regId);
                 } catch (IOException ex) {
-                    msg = "Error :" + ex.getMessage();
+                    Log.e(LOG_TAG, "Error :" + ex.getMessage());
                     // TODO: If there is an error, don't just keep trying to register.
                     // Require the user to click a button again, or perform
                     // exponential back-off.
