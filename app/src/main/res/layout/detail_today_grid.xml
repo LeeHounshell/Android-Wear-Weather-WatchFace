@@ -43,6 +43,7 @@
 
     <ImageView
         android:id="@+id/detail_icon"
+        android:contentDescription="@string/item_icon"
         android:layout_width="0dp"
         android:adjustViewBounds="true"
         android:maxHeight="@dimen/today_icon"

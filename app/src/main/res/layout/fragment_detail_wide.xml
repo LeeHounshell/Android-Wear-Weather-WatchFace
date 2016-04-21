@@ -21,6 +21,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:baselineAligned="false"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
@@ -51,7 +52,9 @@
             app:columnCount="2"
             android:background="@color/detail_accent_pane_background"
             android:paddingEnd="@dimen/abc_list_item_padding_horizontal_material"
+            android:paddingStart="@dimen/abc_list_item_padding_horizontal_material"
             android:paddingRight="@dimen/abc_list_item_padding_horizontal_material"
+            android:paddingLeft="@dimen/abc_list_item_padding_horizontal_material"
             >
 
             <android.support.v7.widget.Space
