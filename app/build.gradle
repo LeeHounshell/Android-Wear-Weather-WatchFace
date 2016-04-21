@@ -1,25 +1,71 @@
 apply plugin: 'com.android.application'
+apply from: '../preprocessor.gradle'
 
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
 
+    ext.addDependency = {
+        task, flavor, dependency ->
+            println('task='+(String)task+'flavor='+(String)flavor+'dependency='+(String)dependency)
+    }
+
+    if (project.hasProperty("MyProject.properties")
+            && new File(project.property("MyProject.properties") as String).exists()) {
+
+        Properties props = new Properties()
+        props.load(new FileInputStream(file(project.property("MyProject.properties"))))
+
+        signingConfigs {
+            release {
+                keyAlias props['keystore.alias']
+                keyPassword props['keystore.password']
+                storeFile file(props['keystore'])
+                storePassword props['keystore.password']
+            }
+            debug {
+                keyAlias props['keystore.alias']
+                keyPassword props['keystore.password']
+                storeFile file(props['keystore'])
+                storePassword props['keystore.password']
+            }
+        }
+    }
+
     defaultConfig {
-        applicationId "com.example.android.sunshine.app"
-        minSdkVersion 10
+        applicationId "com.harlie.android.sunshine.app"
+        minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
+        debug {
+            debuggable true
+        }
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
+
     buildTypes.each {
         it.buildConfigField 'String', 'OPEN_WEATHER_MAP_API_KEY', MyOpenWeatherMapApiKey
         it.buildConfigField 'String', 'GOOGLE_PROJECT_NUMBER', MyGoogleProjectNumber
+    }
+
+    productFlavors {
+        paid {
+            applicationId "com.harlie.android.sunshine.app.paid"
+            versionName "1.0-Paid"
+        }
+        free {
+            applicationId "com.harlie.android.sunshine.app.free"
+            versionName "1.0-Free"
+        }
     }
 }
 
