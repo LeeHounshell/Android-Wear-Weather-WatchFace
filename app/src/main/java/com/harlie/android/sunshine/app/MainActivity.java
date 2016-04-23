@@ -34,6 +34,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.harlie.android.sunshine.app.sync.SunshineSyncAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -58,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
     private boolean mTwoPane;
     private String mLocation;
     private GoogleCloudMessaging mGcm;
+    private Tracker mTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,11 +114,27 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             } else if (regId.isEmpty()) {
                 registerInBackground(this);
             }
+
+            // Google Analytics: Obtain the shared Tracker instance.
+            AnalyticsApplication application = (AnalyticsApplication) getApplication();
+            mTracker = application.getDefaultTracker();
         } else {
             Log.i(LOG_TAG, "No valid Google Play Services APK. Weather alerts will be disabled.");
             // Store regId as null
             storeRegistrationId(this, null);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
     }
 
     @Override
@@ -145,7 +165,13 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
 
         // If Google Play Services is not available, some features, such as GCM-powered weather
         // alerts, will not be available.
-        if (!checkPlayServices()) {
+        if (checkPlayServices()) {
+            String name = "MainActivity";
+            Log.i(LOG_TAG, "screen name: " + name);
+            mTracker.setScreenName("Image~" + name);
+            mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        }
+        else {
             // Store regId as null
             storeRegistrationId(this, null);
         }
@@ -180,6 +206,12 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.weather_detail_container, fragment, DETAILFRAGMENT_TAG)
                     .commit();
+
+            // Google Analytics: send event
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("Action")
+                    .setAction("ItemSelected: "+contentUri)
+                    .build());
         } else {
             Intent intent = new Intent(this, DetailActivity.class)
                     .setData(contentUri);
