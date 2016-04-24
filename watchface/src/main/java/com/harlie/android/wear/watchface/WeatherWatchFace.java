@@ -53,6 +53,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
      */
     private static final int MSG_UPDATE_TIME = 0;
 
+    private WatchFaceDesignHolder mWatchFaceDesignHolder;
+
     @Override
     public Engine onCreateEngine() {
         return new Engine();
