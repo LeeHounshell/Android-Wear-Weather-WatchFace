@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class WatchFaceDesignHolder implements Parcelable {
+    private boolean isDirty;
     private boolean isDaytime;
     private boolean isSunshine;
     private boolean isOvercast;
@@ -28,6 +29,14 @@ public class WatchFaceDesignHolder implements Parcelable {
     private boolean isLightStorm;
     private boolean isModerateStorm;
     private boolean isHeavyStorm;
+
+    public boolean isDirty() {
+        return isDirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        isDirty = dirty;
+    }
 
     public boolean isDaytime() {
         return isDaytime;
@@ -228,6 +237,7 @@ public class WatchFaceDesignHolder implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByte(isDirty ? (byte) 1 : (byte) 0);
         dest.writeByte(isDaytime ? (byte) 1 : (byte) 0);
         dest.writeByte(isSunshine ? (byte) 1 : (byte) 0);
         dest.writeByte(isOvercast ? (byte) 1 : (byte) 0);
@@ -258,6 +268,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     protected WatchFaceDesignHolder(Parcel in) {
+        this.isDirty = in.readByte() != 0;
         this.isDaytime = in.readByte() != 0;
         this.isSunshine = in.readByte() != 0;
         this.isOvercast = in.readByte() != 0;

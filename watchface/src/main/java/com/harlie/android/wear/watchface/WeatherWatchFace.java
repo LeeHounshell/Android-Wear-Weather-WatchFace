@@ -153,13 +153,14 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             // calculate if day or night
             int hour = cal.get(Calendar.HOUR_OF_DAY);
-            mWatchFaceDesignHolder.setDaytime((hour >= 6 && hour <= 18));
+            mWatchFaceDesignHolder.setDaytime((hour >= 6 && hour < 18));
 
             mBackgroundBitmap = createWatchBackgroundBitmap(mWatchFaceDesignHolder);
         }
 
         private Bitmap createWatchBackgroundBitmap(WatchFaceDesignHolder watchFaceDesignHolder) {
             Log.v(TAG, "createWatchBackgroundBitmap");
+            mWatchFaceDesignHolder.setDirty(false);
             if (watchFaceDesignHolder == null) {
                 Log.v(TAG, "use default clock_face");
                 mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.clock_face));
@@ -399,6 +400,15 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         public void onTimeTick() {
             super.onTimeTick();
             invalidate();
+            Date date = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            int hour = cal.get(Calendar.HOUR_OF_DAY);
+            boolean wasDaytime = mWatchFaceDesignHolder.isDaytime();
+            mWatchFaceDesignHolder.setDaytime((hour >= 6 && hour < 18));
+            if (wasDaytime !=  mWatchFaceDesignHolder.isDaytime()) {
+                mWatchFaceDesignHolder.setDirty(true); // the watch face is out of sync now
+            }
         }
 
         @Override
@@ -409,6 +419,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 if (mLowBitAmbient) {
                     mHandPaint.setAntiAlias(!inAmbientMode);
                 }
+                invalidate();
+            }
+
+            if (! inAmbientMode && mWatchFaceDesignHolder.isDirty()) {
+                Log.v(TAG, "*** UPDATE THE WATCH FACE ***");
+                mBackgroundBitmap = createWatchBackgroundBitmap(mWatchFaceDesignHolder);
                 invalidate();
             }
 
