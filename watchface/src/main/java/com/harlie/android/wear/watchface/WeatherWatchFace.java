@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -30,6 +31,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.wearable.watchface.CanvasWatchFaceService;
@@ -134,7 +136,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             mTime = new Time();
 
-            //mWatchFaceDesignHolder = new WatchFaceDesignHolder(); // FIXME: load previous settings
+            mWatchFaceDesignHolder = new WatchFaceDesignHolder(); // FIXME: load previous settings
             mBackgroundBitmap = createWatchBackgroundBitmap(mWatchFaceDesignHolder);
         }
 
@@ -318,27 +320,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             return mBackgroundBitmap;
         }
 
-        // from: http://stackoverflow.com/questions/16161657/merge-two-images-one-image-is-transparent-without-face-second-image-is-only-f
-        public Bitmap combineImages(Bitmap c, Bitmap s) {
-            Bitmap cs = null;
-
-            int width, height = 0;
-
-            if (c.getWidth() > s.getWidth()) {
-                width = c.getWidth();
-                height = c.getHeight() + s.getHeight();
-            } else {
-                width = s.getWidth();
-                height = c.getHeight() + s.getHeight();
-            }
-
-            cs = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-
-            Canvas comboImage = new Canvas(cs);
-            comboImage.drawBitmap(c, new Matrix(), null);
-            comboImage.drawBitmap(s, new Matrix(), null);
-
-            return cs;
+        // from: http://stackoverflow.com/questions/3674441/combining-2-images-overlayed
+        public Bitmap combineImages(Bitmap topImage, Bitmap bottomImage) {
+            Bitmap overlay = Bitmap.createBitmap(bottomImage.getWidth(), bottomImage.getHeight(), bottomImage.getConfig());
+            Canvas canvas = new Canvas(overlay);
+            canvas.drawBitmap(bottomImage, new Matrix(), null);
+            canvas.drawBitmap(topImage, 0, 0, null);
+            return overlay;
         }
 
         // from: http://stackoverflow.com/questions/3035692/how-to-convert-a-drawable-to-a-bitmap
