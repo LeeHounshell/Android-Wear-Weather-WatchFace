@@ -138,10 +138,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             mWatchFaceDesignHolder = new WatchFaceDesignHolder(); // FIXME: load previous settings
             //mWatchFaceDesignHolder.setModerateWind(true);
-            mWatchFaceDesignHolder.setDaytime(true);
-            mWatchFaceDesignHolder.setSunshine(true);
-            //mWatchFaceDesignHolder.setLightClouds(true);
-            mWatchFaceDesignHolder.setModerateClouds(true);
+            mWatchFaceDesignHolder.setDaytime(false);
+            mWatchFaceDesignHolder.setSunshine(false);
+            mWatchFaceDesignHolder.setMoonPhase(4);
+            mWatchFaceDesignHolder.setLightClouds(false);
+            mWatchFaceDesignHolder.setModerateClouds(false);
+            mWatchFaceDesignHolder.setModerateSnow(true);
             mWatchFaceDesignHolder.setLightRain(true);
             //mWatchFaceDesignHolder.setModerateRain(true);
             mWatchFaceDesignHolder.setAreCloudsLow(true);

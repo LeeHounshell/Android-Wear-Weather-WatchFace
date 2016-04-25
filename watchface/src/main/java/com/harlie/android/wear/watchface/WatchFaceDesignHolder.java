@@ -1,9 +1,15 @@
 package com.harlie.android.wear.watchface;
 
-public class WatchFaceDesignHolder {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class WatchFaceDesignHolder implements Parcelable {
     private boolean isDaytime;
     private boolean isSunshine;
     private int moonPhase;
+    private int highTemp;
+    private int lowTemp;
+    private boolean isMetric;
     private boolean isLightClouds;
     private boolean isModerateClouds;
     private boolean isHeavyClouds;
@@ -44,6 +50,30 @@ public class WatchFaceDesignHolder {
 
     public void setMoonPhase(int moonPhase) {
         this.moonPhase = moonPhase;
+    }
+
+    public int getHighTemp() {
+        return highTemp;
+    }
+
+    public void setHighTemp(int highTemp) {
+        this.highTemp = highTemp;
+    }
+
+    public int getLowTemp() {
+        return lowTemp;
+    }
+
+    public void setLowTemp(int lowTemp) {
+        this.lowTemp = lowTemp;
+    }
+
+    public boolean isMetric() {
+        return isMetric;
+    }
+
+    public void setMetric(boolean metric) {
+        isMetric = metric;
     }
 
     public boolean isLightClouds() {
@@ -182,4 +212,76 @@ public class WatchFaceDesignHolder {
         isHeavyStorm = heavyStorm;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByte(isDaytime ? (byte) 1 : (byte) 0);
+        dest.writeByte(isSunshine ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.moonPhase);
+        dest.writeInt(this.highTemp);
+        dest.writeInt(this.lowTemp);
+        dest.writeByte(isMetric ? (byte) 1 : (byte) 0);
+        dest.writeByte(isLightClouds ? (byte) 1 : (byte) 0);
+        dest.writeByte(isModerateClouds ? (byte) 1 : (byte) 0);
+        dest.writeByte(isHeavyClouds ? (byte) 1 : (byte) 0);
+        dest.writeByte(areCloudsDark ? (byte) 1 : (byte) 0);
+        dest.writeByte(areCloudsLow ? (byte) 1 : (byte) 0);
+        dest.writeByte(isLightRain ? (byte) 1 : (byte) 0);
+        dest.writeByte(isModerateRain ? (byte) 1 : (byte) 0);
+        dest.writeByte(isHeavyRain ? (byte) 1 : (byte) 0);
+        dest.writeByte(isLightSnow ? (byte) 1 : (byte) 0);
+        dest.writeByte(isModerateSnow ? (byte) 1 : (byte) 0);
+        dest.writeByte(isHeavySnow ? (byte) 1 : (byte) 0);
+        dest.writeByte(isLightWind ? (byte) 1 : (byte) 0);
+        dest.writeByte(isModerateWind ? (byte) 1 : (byte) 0);
+        dest.writeByte(isHeavyWind ? (byte) 1 : (byte) 0);
+        dest.writeByte(isLightStorm ? (byte) 1 : (byte) 0);
+        dest.writeByte(isModerateStorm ? (byte) 1 : (byte) 0);
+        dest.writeByte(isHeavyStorm ? (byte) 1 : (byte) 0);
+    }
+
+    public WatchFaceDesignHolder() {
+    }
+
+    protected WatchFaceDesignHolder(Parcel in) {
+        this.isDaytime = in.readByte() != 0;
+        this.isSunshine = in.readByte() != 0;
+        this.moonPhase = in.readInt();
+        this.highTemp = in.readInt();
+        this.lowTemp = in.readInt();
+        this.isMetric = in.readByte() != 0;
+        this.isLightClouds = in.readByte() != 0;
+        this.isModerateClouds = in.readByte() != 0;
+        this.isHeavyClouds = in.readByte() != 0;
+        this.areCloudsDark = in.readByte() != 0;
+        this.areCloudsLow = in.readByte() != 0;
+        this.isLightRain = in.readByte() != 0;
+        this.isModerateRain = in.readByte() != 0;
+        this.isHeavyRain = in.readByte() != 0;
+        this.isLightSnow = in.readByte() != 0;
+        this.isModerateSnow = in.readByte() != 0;
+        this.isHeavySnow = in.readByte() != 0;
+        this.isLightWind = in.readByte() != 0;
+        this.isModerateWind = in.readByte() != 0;
+        this.isHeavyWind = in.readByte() != 0;
+        this.isLightStorm = in.readByte() != 0;
+        this.isModerateStorm = in.readByte() != 0;
+        this.isHeavyStorm = in.readByte() != 0;
+    }
+
+    public static final Parcelable.Creator<WatchFaceDesignHolder> CREATOR = new Parcelable.Creator<WatchFaceDesignHolder>() {
+        @Override
+        public WatchFaceDesignHolder createFromParcel(Parcel source) {
+            return new WatchFaceDesignHolder(source);
+        }
+
+        @Override
+        public WatchFaceDesignHolder[] newArray(int size) {
+            return new WatchFaceDesignHolder[size];
+        }
+    };
 }
