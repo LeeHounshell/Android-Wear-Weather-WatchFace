@@ -1,26 +1,26 @@
 package com.harlie.android.wear.watchface;
 
 public class WatchFaceDesignHolder {
-    boolean isDaytime;
-    boolean isSunshine;
-    int moonPhase;
-    boolean isLightClouds;
-    boolean isModerateClouds;
-    boolean isHeavyClouds;
-    boolean areCloudsDark;
-    boolean areCloudsLow;
-    boolean isLightRain;
-    boolean isModerateRain;
-    boolean isHeavyRain;
-    boolean isLightSnow;
-    boolean isModerateSnow;
-    boolean isHeavySnow;
-    boolean isLightWind;
-    boolean isModerateWind;
-    boolean isHeavyWind;
-    boolean isLightStorm;
-    boolean isModerateStorm;
-    boolean isHeavyStorm;
+    private boolean isDaytime;
+    private boolean isSunshine;
+    private int moonPhase;
+    private boolean isLightClouds;
+    private boolean isModerateClouds;
+    private boolean isHeavyClouds;
+    private boolean areCloudsDark;
+    private boolean areCloudsLow;
+    private boolean isLightRain;
+    private boolean isModerateRain;
+    private boolean isHeavyRain;
+    private boolean isLightSnow;
+    private boolean isModerateSnow;
+    private boolean isHeavySnow;
+    private boolean isLightWind;
+    private boolean isModerateWind;
+    private boolean isHeavyWind;
+    private boolean isLightStorm;
+    private boolean isModerateStorm;
+    private boolean isHeavyStorm;
 
     public boolean isDaytime() {
         return isDaytime;

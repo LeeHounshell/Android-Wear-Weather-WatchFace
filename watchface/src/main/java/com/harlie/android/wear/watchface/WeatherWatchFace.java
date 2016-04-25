@@ -21,10 +21,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -83,6 +87,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
     private class Engine extends CanvasWatchFaceService.Engine {
         final Handler mUpdateTimeHandler = new EngineHandler(this);
         boolean mRegisteredTimeZoneReceiver = false;
+        Bitmap mBackgroundBitmap;
         Paint mBackgroundPaint;
         Paint mHandPaint;
         boolean mAmbient;
@@ -125,6 +130,82 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mHandPaint.setStrokeCap(Paint.Cap.ROUND);
 
             mTime = new Time();
+
+            mBackgroundBitmap = createWatchBackgroundBitmap(mWatchFaceDesignHolder);
+        }
+
+        private Bitmap createWatchBackgroundBitmap(WatchFaceDesignHolder watchFaceDesignHolder) {
+            if (watchFaceDesignHolder.isDaytime()) {
+                if (watchFaceDesignHolder.isSunshine()) {
+                    mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.day));
+                }
+                else {
+                    mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.day_overcast));
+                }
+            }
+            else {
+                switch (watchFaceDesignHolder.getMoonPhase()) {
+                    case 1:
+                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_waning_crescent));
+                        break;
+                    case 2:
+                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable. waning crescent));
+                        break;
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 0:
+                    default:
+                }
+            }
+        }
+
+        // from: http://stackoverflow.com/questions/16161657/merge-two-images-one-image-is-transparent-without-face-second-image-is-only-f
+        public Bitmap combineImages(Bitmap c, Bitmap s) {
+            Bitmap cs = null;
+
+            int width, height = 0;
+
+            if(c.getWidth() > s.getWidth()) {
+                width = c.getWidth();
+                height = c.getHeight() + s.getHeight();
+            } else {
+                width = s.getWidth();
+                height = c.getHeight() + s.getHeight();
+            }
+
+            cs = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+            Canvas comboImage = new Canvas(cs);
+            comboImage.drawBitmap(c, new Matrix(), null);
+            comboImage.drawBitmap(s, new Matrix(), null);
+
+            return cs;
+        }
+
+        // from: http://stackoverflow.com/questions/3035692/how-to-convert-a-drawable-to-a-bitmap
+        public Bitmap drawableToBitmap (Drawable drawable) {
+            Bitmap bitmap = null;
+
+            if (drawable instanceof BitmapDrawable) {
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+                if(bitmapDrawable.getBitmap() != null) {
+                    return bitmapDrawable.getBitmap();
+                }
+            }
+
+            if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+                bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+            } else {
+                bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            }
+
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+            return bitmap;
         }
 
         @Override
