@@ -6,6 +6,7 @@ import android.os.Parcelable;
 public class WatchFaceDesignHolder implements Parcelable {
     private boolean isDaytime;
     private boolean isSunshine;
+    private boolean isOvercast;
     private int moonPhase;
     private int highTemp;
     private int lowTemp;
@@ -42,6 +43,14 @@ public class WatchFaceDesignHolder implements Parcelable {
 
     public void setSunshine(boolean sunshine) {
         isSunshine = sunshine;
+    }
+
+    public boolean isOvercast() {
+        return isOvercast;
+    }
+
+    public void setOvercast(boolean overcast) {
+        isOvercast = overcast;
     }
 
     public int getMoonPhase() {
@@ -221,6 +230,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte(isDaytime ? (byte) 1 : (byte) 0);
         dest.writeByte(isSunshine ? (byte) 1 : (byte) 0);
+        dest.writeByte(isOvercast ? (byte) 1 : (byte) 0);
         dest.writeInt(this.moonPhase);
         dest.writeInt(this.highTemp);
         dest.writeInt(this.lowTemp);
@@ -250,6 +260,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     protected WatchFaceDesignHolder(Parcel in) {
         this.isDaytime = in.readByte() != 0;
         this.isSunshine = in.readByte() != 0;
+        this.isOvercast = in.readByte() != 0;
         this.moonPhase = in.readInt();
         this.highTemp = in.readInt();
         this.lowTemp = in.readInt();

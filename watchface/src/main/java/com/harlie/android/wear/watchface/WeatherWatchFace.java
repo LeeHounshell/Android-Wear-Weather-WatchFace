@@ -41,6 +41,8 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 
 import java.lang.ref.WeakReference;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -137,16 +139,21 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mTime = new Time();
 
             mWatchFaceDesignHolder = new WatchFaceDesignHolder(); // FIXME: load previous settings
-            //mWatchFaceDesignHolder.setModerateWind(true);
-            mWatchFaceDesignHolder.setDaytime(false);
-            mWatchFaceDesignHolder.setSunshine(false);
-            mWatchFaceDesignHolder.setMoonPhase(4);
-            mWatchFaceDesignHolder.setLightClouds(false);
-            mWatchFaceDesignHolder.setModerateClouds(false);
-            mWatchFaceDesignHolder.setModerateSnow(true);
-            mWatchFaceDesignHolder.setLightRain(true);
-            //mWatchFaceDesignHolder.setModerateRain(true);
-            mWatchFaceDesignHolder.setAreCloudsLow(true);
+
+            // calculate current phase of the moon
+            MoonCalculation moonCalculaion = new MoonCalculation();
+            Date date = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            int year = cal.get(Calendar.YEAR);
+            int month = cal.get(Calendar.MONTH) + 1;
+            int day = cal.get(Calendar.DAY_OF_MONTH);
+            Log.v(TAG, "year="+year+", month="+month+", day="+day);
+            mWatchFaceDesignHolder.setMoonPhase(moonCalculaion.moonPhase(year, month, day));
+
+            // calculate if day or night
+            int hour = cal.get(Calendar.HOUR_OF_DAY);
+            mWatchFaceDesignHolder.setDaytime((hour >= 6 && hour <= 18));
 
             mBackgroundBitmap = createWatchBackgroundBitmap(mWatchFaceDesignHolder);
         }
@@ -173,9 +180,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                         Log.v(TAG, "sunny");
                     }
                 }
-                else {
+                else if (watchFaceDesignHolder.isOvercast()) {
                     mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.day_overcast));
                     Log.v(TAG, "overcast");
+                }
+                else {
+                    mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.daylight));
+                    Log.v(TAG, "daylight");
                 }
             }
             else {
@@ -334,6 +345,14 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         // from: http://stackoverflow.com/questions/3674441/combining-2-images-overlayed
         public Bitmap combineImages(Bitmap topImage, Bitmap bottomImage) {
+            if (topImage == null) {
+                Log.w(TAG, "topImage is null!");
+                return bottomImage;
+            }
+            if (bottomImage == null) {
+                Log.w(TAG, "bottomImage is null!");
+                return topImage;
+            }
             Bitmap overlay = Bitmap.createBitmap(bottomImage.getWidth(), bottomImage.getHeight(), bottomImage.getConfig());
             Canvas canvas = new Canvas(overlay);
             canvas.drawBitmap(bottomImage, new Matrix(), null);
