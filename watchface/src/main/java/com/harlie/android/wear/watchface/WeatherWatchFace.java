@@ -137,6 +137,15 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mTime = new Time();
 
             mWatchFaceDesignHolder = new WatchFaceDesignHolder(); // FIXME: load previous settings
+            //mWatchFaceDesignHolder.setModerateWind(true);
+            mWatchFaceDesignHolder.setDaytime(true);
+            mWatchFaceDesignHolder.setSunshine(true);
+            //mWatchFaceDesignHolder.setLightClouds(true);
+            mWatchFaceDesignHolder.setModerateClouds(true);
+            mWatchFaceDesignHolder.setLightRain(true);
+            //mWatchFaceDesignHolder.setModerateRain(true);
+            mWatchFaceDesignHolder.setAreCloudsLow(true);
+
             mBackgroundBitmap = createWatchBackgroundBitmap(mWatchFaceDesignHolder);
         }
 
@@ -152,10 +161,11 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 if (watchFaceDesignHolder.isSunshine()) {
                     mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.day));
                     Log.v(TAG, "day");
-                    if (!watchFaceDesignHolder.isHeavyClouds() && !watchFaceDesignHolder.isModerateClouds()
-                     && !watchFaceDesignHolder.isHeavyRain() && !watchFaceDesignHolder.isModerateRain()
-                     && !watchFaceDesignHolder.isHeavySnow() && !watchFaceDesignHolder.isModerateSnow()
-                     && !watchFaceDesignHolder.isHeavyStorm() && !watchFaceDesignHolder.isModerateStorm()) {
+                    if (!watchFaceDesignHolder.isHeavyClouds()
+                     && !watchFaceDesignHolder.isHeavyRain()
+                     && !watchFaceDesignHolder.isHeavySnow()
+                     && !watchFaceDesignHolder.isHeavyStorm())
+                    {
                         overlay = drawableToBitmap(getDrawable(R.drawable.sunny));
                         mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
                         Log.v(TAG, "sunny");
