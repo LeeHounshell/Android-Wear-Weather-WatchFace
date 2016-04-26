@@ -95,6 +95,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         final Handler mUpdateTimeHandler = new EngineHandler(this);
         boolean mRegisteredTimeZoneReceiver = false;
         Bitmap mBackgroundBitmap;
+        Bitmap mHourHandBitmap;
+        Bitmap mMinuteHandBitmap;
         Paint mBackgroundPaint;
         Paint mHandPaint;
         boolean mAmbient;
@@ -116,6 +118,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onCreate(SurfaceHolder holder) {
+            Log.v(TAG, "onCreate");
             super.onCreate(holder);
 
             setWatchFaceStyle(new WatchFaceStyle.Builder(WeatherWatchFace.this)
@@ -156,6 +159,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mWatchFaceDesignHolder.setDaytime((hour >= 6 && hour < 18));
 
             mBackgroundBitmap = createWatchBackgroundBitmap(mWatchFaceDesignHolder);
+            mHourHandBitmap = drawableToBitmap(getDrawable(R.drawable.hour_little_hand));
+            mMinuteHandBitmap = drawableToBitmap(getDrawable(R.drawable.minute_big_hand));
         }
 
         private Bitmap createWatchBackgroundBitmap(WatchFaceDesignHolder watchFaceDesignHolder) {
@@ -386,12 +391,14 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onDestroy() {
+            Log.v(TAG, "onDestroy");
             mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME);
             super.onDestroy();
         }
 
         @Override
         public void onPropertiesChanged(Bundle properties) {
+            Log.v(TAG, "onPropertiesChanged");
             super.onPropertiesChanged(properties);
             mLowBitAmbient = properties.getBoolean(PROPERTY_LOW_BIT_AMBIENT, false);
         }
@@ -408,11 +415,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mWatchFaceDesignHolder.setDaytime((hour >= 6 && hour < 18));
             if (wasDaytime !=  mWatchFaceDesignHolder.isDaytime()) {
                 mWatchFaceDesignHolder.setDirty(true); // the watch face is out of sync now
+                invalidate();
             }
         }
 
         @Override
         public void onAmbientModeChanged(boolean inAmbientMode) {
+            Log.v(TAG, "onAmbientModeChanged");
             super.onAmbientModeChanged(inAmbientMode);
             if (mAmbient != inAmbientMode) {
                 mAmbient = inAmbientMode;
@@ -435,10 +444,18 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            Log.v(TAG, "onSurfaceChanged");
             if (mBackgroundBitmap != null &&
                     (mBackgroundBitmap.getWidth() != width) || (mBackgroundBitmap.getHeight() != height))
             {
                 mBackgroundBitmap = Bitmap.createScaledBitmap(mBackgroundBitmap, width, height, true /* filter */);
+                float ratio = (float) width / mBackgroundBitmap.getWidth();
+                mMinuteHandBitmap = Bitmap.createScaledBitmap(mMinuteHandBitmap,
+                        (int) (mMinuteHandBitmap.getWidth() * ratio),
+                        (int) (mMinuteHandBitmap.getHeight() * ratio), true);
+                mHourHandBitmap = Bitmap.createScaledBitmap(mHourHandBitmap,
+                        (int) (mHourHandBitmap.getWidth() * ratio),
+                        (int) (mHourHandBitmap.getHeight() * ratio), true);
             }
             super.onSurfaceChanged(holder, format, width, height);
         }
@@ -449,6 +466,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
          */
         @Override
         public void onTapCommand(int tapType, int x, int y, long eventTime) {
+            Log.v(TAG, "onTapCommand");
             Resources resources = WeatherWatchFace.this.getResources();
             switch (tapType) {
                 case TAP_TYPE_TOUCH:
@@ -494,23 +512,41 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             float minRot = minutes / 30f * (float) Math.PI;
             float hrRot = ((mTime.hour + (minutes / 60f)) / 6f) * (float) Math.PI;
 
-            float secLength = centerX - 20;
-            float minLength = centerX - 40;
-            float hrLength = centerX - 80;
+            if (isInAmbientMode()) {
+                mHandPaint.clearShadowLayer();
+                float minLength = centerX - 40;
+                float hrLength = centerX - 80;
+
+                // hour hand
+                float hrX = (float) Math.sin(hrRot) * hrLength;
+                float hrY = (float) -Math.cos(hrRot) * hrLength;
+                canvas.drawLine(centerX, centerY, centerX + hrX, centerY + hrY, mHandPaint);
+
+                // minute hand
+                float minX = (float) Math.sin(minRot) * minLength;
+                float minY = (float) -Math.cos(minRot) * minLength;
+                canvas.drawLine(centerX, centerY, centerX + minX, centerY + minY, mHandPaint);
+
+            }
+            else {
+                // hour hand
+                Matrix matrix = new Matrix();
+                matrix.setRotate (hrRot / (float) Math.PI * 180, mHourHandBitmap.getWidth()/2, mHourHandBitmap.getHeight()/2);
+                canvas.drawBitmap(mHourHandBitmap, matrix, mHandPaint);
+
+                // minute hand
+                matrix = new Matrix();
+                matrix.setRotate (minRot / (float) Math.PI * 180, mHourHandBitmap.getWidth()/2, mHourHandBitmap.getHeight()/2);
+                canvas.drawBitmap(mMinuteHandBitmap, matrix, mHandPaint);
+            }
 
             if (!mAmbient) {
+                // second hand
+                float secLength = centerX - 20;
                 float secX = (float) Math.sin(secRot) * secLength;
                 float secY = (float) -Math.cos(secRot) * secLength;
                 canvas.drawLine(centerX, centerY, centerX + secX, centerY + secY, mHandPaint);
             }
-
-            float minX = (float) Math.sin(minRot) * minLength;
-            float minY = (float) -Math.cos(minRot) * minLength;
-            canvas.drawLine(centerX, centerY, centerX + minX, centerY + minY, mHandPaint);
-
-            float hrX = (float) Math.sin(hrRot) * hrLength;
-            float hrY = (float) -Math.cos(hrRot) * hrLength;
-            canvas.drawLine(centerX, centerY, centerX + hrX, centerY + hrY, mHandPaint);
         }
 
         @Override
