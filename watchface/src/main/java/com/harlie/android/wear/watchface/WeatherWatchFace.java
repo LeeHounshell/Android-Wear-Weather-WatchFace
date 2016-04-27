@@ -100,14 +100,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         Paint mBackgroundPaint;
         Paint mHandPaint;
         boolean mAmbient;
-        Time mTime;
-        final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                mTime.clear(intent.getStringExtra("time-zone"));
-                mTime.setToNow();
-            }
-        };
+        Calendar mCalendar;
         int mTapCount;
 
         /**
@@ -115,6 +108,15 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
          * disable anti-aliasing in ambient mode.
          */
         boolean mLowBitAmbient;
+
+        // receiver to update the time zone
+        final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                mCalendar.setTimeZone(TimeZone.getDefault());
+                invalidate();
+            }
+        };
 
         @Override
         public void onCreate(SurfaceHolder holder) {
@@ -139,23 +141,21 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mHandPaint.setAntiAlias(true);
             mHandPaint.setStrokeCap(Paint.Cap.ROUND);
 
-            mTime = new Time();
-
             mWatchFaceDesignHolder = new WatchFaceDesignHolder(); // FIXME: load previous settings
 
             // calculate current phase of the moon
             MoonCalculation moonCalculaion = new MoonCalculation();
+            mCalendar = Calendar.getInstance();
             Date date = new Date();
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            int year = cal.get(Calendar.YEAR);
-            int month = cal.get(Calendar.MONTH) + 1;
-            int day = cal.get(Calendar.DAY_OF_MONTH);
+            mCalendar.setTime(date);
+            int year = mCalendar.get(Calendar.YEAR);
+            int month = mCalendar.get(Calendar.MONTH) + 1;
+            int day = mCalendar.get(Calendar.DAY_OF_MONTH);
             Log.v(TAG, "year="+year+", month="+month+", day="+day);
             mWatchFaceDesignHolder.setMoonPhase(moonCalculaion.moonPhase(year, month, day));
 
             // calculate if day or night
-            int hour = cal.get(Calendar.HOUR_OF_DAY);
+            int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
             mWatchFaceDesignHolder.setDaytime((hour >= 6 && hour < 18));
 
             mBackgroundBitmap = createWatchBackgroundBitmap(mWatchFaceDesignHolder);
@@ -408,9 +408,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             super.onTimeTick();
             invalidate();
             Date date = new Date();
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            int hour = cal.get(Calendar.HOUR_OF_DAY);
+            mCalendar.setTime(date);
+            int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
             boolean wasDaytime = mWatchFaceDesignHolder.isDaytime();
             mWatchFaceDesignHolder.setDaytime((hour >= 6 && hour < 18));
             if (wasDaytime !=  mWatchFaceDesignHolder.isDaytime()) {
@@ -487,7 +486,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onDraw(Canvas canvas, Rect bounds) {
-            mTime.setToNow();
+            Date date = new Date();
+            mCalendar.setTime(date);
 
             // Draw the background.
             if (isInAmbientMode()) {
@@ -507,10 +507,10 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             float centerX = bounds.width() / 2f;
             float centerY = bounds.height() / 2f;
 
-            float secRot = mTime.second / 30f * (float) Math.PI;
-            int minutes = mTime.minute;
+            float secRot = mCalendar.get(Calendar.SECOND) / 30f * (float) Math.PI;
+            int minutes = mCalendar.get(Calendar.MINUTE);
             float minRot = minutes / 30f * (float) Math.PI;
-            float hrRot = ((mTime.hour + (minutes / 60f)) / 6f) * (float) Math.PI;
+            float hrRot = ((mCalendar.get(Calendar.HOUR) + (minutes / 60f)) / 6f) * (float) Math.PI;
 
             if (isInAmbientMode()) {
                 mHandPaint.clearShadowLayer();
@@ -557,8 +557,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 registerReceiver();
 
                 // Update time zone in case it changed while we weren't visible.
-                mTime.clear(TimeZone.getDefault().getID());
-                mTime.setToNow();
+                mCalendar.setTimeZone(TimeZone.getDefault());
             } else {
                 unregisterReceiver();
             }
