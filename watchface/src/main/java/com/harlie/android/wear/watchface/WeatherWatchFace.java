@@ -34,7 +34,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.ContextCompat;
 import android.support.wearable.watchface.CanvasWatchFaceService;
+import android.support.wearable.watchface.WatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.Time;
 import android.util.Log;
@@ -63,10 +65,16 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
     private static final int MSG_UPDATE_TIME = 0;
 
     private WatchFaceDesignHolder mWatchFaceDesignHolder;
+    private static Context mContext;
 
     @Override
     public Engine onCreateEngine() {
+        mContext = this.getApplicationContext();
         return new Engine();
+    }
+
+    public static Context getContext() {
+        return mContext;
     }
 
     private static class EngineHandler extends Handler {
@@ -133,10 +141,10 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             Resources resources = WeatherWatchFace.this.getResources();
 
             mBackgroundPaint = new Paint();
-            mBackgroundPaint.setColor(resources.getColor(R.color.background));
+            mBackgroundPaint.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.background));
 
             mHandPaint = new Paint();
-            mHandPaint.setColor(resources.getColor(R.color.analog_hands));
+            mHandPaint.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.analog_hands));
             mHandPaint.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke));
             mHandPaint.setAntiAlias(true);
             mHandPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -477,7 +485,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 case TAP_TYPE_TAP:
                     // The user has completed the tap gesture.
                     mTapCount++;
-                    mBackgroundPaint.setColor(resources.getColor(mTapCount % 2 == 0 ?
+                    mBackgroundPaint.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), mTapCount % 2 == 0 ?
                             R.color.background : R.color.background2));
                     break;
             }
