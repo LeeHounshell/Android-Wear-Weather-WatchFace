@@ -84,7 +84,8 @@
         android:layout_below="@id/appbar"
         tools:layout="@android:layout/list_content"
         android:choiceMode="singleChoice"
-        app:autoSelectView="true" />
+        app:autoSelectView="true"
+        tools:ignore="MissingPrefix" />
 
     <!-- This is used to give the card the appropriate margin
          list_item_extra_padding +
