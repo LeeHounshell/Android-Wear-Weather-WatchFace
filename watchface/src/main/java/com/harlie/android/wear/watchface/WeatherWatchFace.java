@@ -29,6 +29,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -111,9 +112,10 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         Paint mBackgroundPaint;
         Paint mHandPaint;
         boolean mAmbient;
-        boolean mIsRound;
         boolean mDaylightChanged;
+        boolean mIsRound;
         Calendar mCalendar;
+        int mBatteryLevel;
         int mTapCount;
 
         /**
@@ -449,6 +451,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 mWatchFaceDesignHolder.setDirty(true); // the watch face is out of sync now
                 invalidate();
             }
+            mBatteryLevel = getBatteryLevel();
         }
 
         @Override
@@ -586,12 +589,19 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 canvas.drawBitmap(mMinuteHandBitmapScaled, matrix, mHandPaint);
             }
 
-            if (!mAmbient) {
+            if (!mAmbient && mBatteryLevel > 0) {
                 // second hand
-                float secLength = centerX - 20;
+                float fullSecLength = centerX - 20;
+                // now shorten the length based on battery percentage remaining
+                float secLength = (fullSecLength * mBatteryLevel) / 100;
+                int secDifference = (int) (fullSecLength - secLength);
                 float secX = (float) Math.sin(secRot) * secLength;
                 float secY = (float) -Math.cos(secRot) * secLength;
-                canvas.drawLine(centerX, centerY, centerX + secX, centerY + secY, mHandPaint);
+                //canvas.drawLine(centerX, centerY, centerX + secX, centerY + secY, mHandPaint);
+                // draw the second hand remaining close to the watch face numbers
+                float fullSecX = (float) Math.sin(secRot) * fullSecLength;
+                float fullSecY = (float) -Math.cos(secRot) * fullSecLength;
+                canvas.drawLine(centerX + secX, centerY + secY, centerX + fullSecX, centerY + fullSecY, mHandPaint);
             }
         }
 
@@ -662,4 +672,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
         }
     }
+
+    // from: http://stackoverflow.com/questions/28938464/android-wear-watch-face-get-battery-percentage-of-phone
+    private int getBatteryLevel()
+    {
+        IntentFilter iFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus =  registerReceiver(null, iFilter);
+        return batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+    }
+
 }
