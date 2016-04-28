@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -38,6 +39,7 @@ import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
@@ -54,6 +56,7 @@ import java.util.concurrent.TimeUnit;
  * devices with low-bit ambient mode, the hands are drawn without anti-aliasing in ambient mode.
  */
 public class WeatherWatchFace extends CanvasWatchFaceService {
+    private final String TAG = "LEE: <" + WeatherWatchFace.class.getSimpleName() + ">";
     /**
      * Update rate in milliseconds for interactive mode. We update once a second to advance the
      * second hand.
@@ -111,6 +114,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         Bitmap mMinuteHandBitmapScaled;
         Paint mBackgroundPaint;
         Paint mHandPaint;
+        Paint mHandPaintAccent;
         boolean mAmbient;
         boolean mDaylightChanged;
         boolean mIsRound;
@@ -172,12 +176,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mHandPaint.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.analog_hands));
             mHandPaint.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke));
             mHandPaint.setAntiAlias(true);
-            if (mIsRound) {
-                mHandPaint.setStrokeCap(Paint.Cap.ROUND);
-            }
-            else {
-                mHandPaint.setStrokeCap(Paint.Cap.SQUARE);
-            }
+            mHandPaint.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
+
+            mHandPaintAccent = new Paint();
+            mHandPaintAccent.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.battery_warning));
+            mHandPaintAccent.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke));
+            mHandPaintAccent.setAntiAlias(true);
+            mHandPaintAccent.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
 
             // calculate if day or night
             int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
@@ -597,11 +602,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 int secDifference = (int) (fullSecLength - secLength);
                 float secX = (float) Math.sin(secRot) * secLength;
                 float secY = (float) -Math.cos(secRot) * secLength;
-                //canvas.drawLine(centerX, centerY, centerX + secX, centerY + secY, mHandPaint);
-                // draw the second hand remaining close to the watch face numbers
+                // draw using normal color first
+                canvas.drawLine(centerX, centerY, centerX + secX, centerY + secY, mHandPaint);
+                // draw the second hand remaining close to the watch face numbers using accent color
                 float fullSecX = (float) Math.sin(secRot) * fullSecLength;
                 float fullSecY = (float) -Math.cos(secRot) * fullSecLength;
-                canvas.drawLine(centerX + secX, centerY + secY, centerX + fullSecX, centerY + fullSecY, mHandPaint);
+                canvas.drawLine(centerX + secX, centerY + secY, centerX + fullSecX, centerY + fullSecY, mHandPaintAccent);
             }
         }
 
