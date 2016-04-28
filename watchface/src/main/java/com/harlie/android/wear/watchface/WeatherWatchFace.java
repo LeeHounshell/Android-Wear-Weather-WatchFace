@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -31,16 +30,17 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
 import android.support.wearable.watchface.CanvasWatchFaceService;
-import android.support.wearable.watchface.WatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
-import android.text.format.Time;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.SurfaceHolder;
+import android.view.WindowInsets;
+import android.view.WindowManager;
 
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
@@ -105,9 +105,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         Bitmap mBackgroundBitmap;
         Bitmap mHourHandBitmap;
         Bitmap mMinuteHandBitmap;
+        Bitmap mBackgroundBitmapScaled;
+        Bitmap mHourHandBitmapScaled;
+        Bitmap mMinuteHandBitmapScaled;
         Paint mBackgroundPaint;
         Paint mHandPaint;
         boolean mAmbient;
+        boolean mIsRound;
         Calendar mCalendar;
         int mTapCount;
 
@@ -138,17 +142,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     .setAcceptsTapEvents(true)
                     .build());
 
-            Resources resources = WeatherWatchFace.this.getResources();
-
-            mBackgroundPaint = new Paint();
-            mBackgroundPaint.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.background));
-
-            mHandPaint = new Paint();
-            mHandPaint.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.analog_hands));
-            mHandPaint.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke));
-            mHandPaint.setAntiAlias(true);
-            mHandPaint.setStrokeCap(Paint.Cap.ROUND);
-
             mWatchFaceDesignHolder = new WatchFaceDesignHolder(); // FIXME: load previous settings
 
             // calculate current phase of the moon
@@ -162,13 +155,39 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             Log.v(TAG, "year="+year+", month="+month+", day="+day);
             mWatchFaceDesignHolder.setMoonPhase(moonCalculaion.moonPhase(year, month, day));
 
+            mHourHandBitmap = drawableToBitmap(getDrawable(R.drawable.hour_little_hand));
+            mMinuteHandBitmap = drawableToBitmap(getDrawable(R.drawable.minute_big_hand));
+
+            createWatchFaceBitmaps();
+
+            Resources resources = WeatherWatchFace.this.getResources();
+
+            mBackgroundPaint = new Paint();
+            mBackgroundPaint.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.background));
+
+            mHandPaint = new Paint();
+            mHandPaint.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.analog_hands));
+            mHandPaint.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke));
+            mHandPaint.setAntiAlias(true);
+            if (mIsRound) {
+                mHandPaint.setStrokeCap(Paint.Cap.ROUND);
+            }
+            else {
+                mHandPaint.setStrokeCap(Paint.Cap.SQUARE);
+            }
+
             // calculate if day or night
             int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
             mWatchFaceDesignHolder.setDaytime((hour >= 6 && hour < 18));
+        }
 
+        private void createWatchFaceBitmaps() {
             mBackgroundBitmap = createWatchBackgroundBitmap(mWatchFaceDesignHolder);
-            mHourHandBitmap = drawableToBitmap(getDrawable(R.drawable.hour_little_hand));
-            mMinuteHandBitmap = drawableToBitmap(getDrawable(R.drawable.minute_big_hand));
+            WindowManager wm = (WindowManager) WeatherWatchFace.getContext().getSystemService(Context.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
+            DisplayMetrics metrics = new DisplayMetrics();
+            display.getMetrics(metrics);
+            scaleWatchFace(metrics.widthPixels, metrics.heightPixels);
         }
 
         private Bitmap createWatchBackgroundBitmap(WatchFaceDesignHolder watchFaceDesignHolder) {
@@ -398,6 +417,11 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         }
 
         @Override
+        public void onApplyWindowInsets(WindowInsets insets) {
+            mIsRound = insets.isRound();
+        }
+
+        @Override
         public void onDestroy() {
             Log.v(TAG, "onDestroy");
             mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME);
@@ -440,7 +464,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             if (! inAmbientMode && mWatchFaceDesignHolder.isDirty()) {
                 Log.v(TAG, "*** UPDATE THE WATCH FACE ***");
-                mBackgroundBitmap = createWatchBackgroundBitmap(mWatchFaceDesignHolder);
+                createWatchFaceBitmaps();
                 invalidate();
             }
 
@@ -455,16 +479,21 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             if (mBackgroundBitmap != null &&
                     (mBackgroundBitmap.getWidth() != width) || (mBackgroundBitmap.getHeight() != height))
             {
-                mBackgroundBitmap = Bitmap.createScaledBitmap(mBackgroundBitmap, width, height, true /* filter */);
-                float ratio = (float) width / mBackgroundBitmap.getWidth();
-                mMinuteHandBitmap = Bitmap.createScaledBitmap(mMinuteHandBitmap,
-                        (int) (mMinuteHandBitmap.getWidth() * ratio),
-                        (int) (mMinuteHandBitmap.getHeight() * ratio), true);
-                mHourHandBitmap = Bitmap.createScaledBitmap(mHourHandBitmap,
-                        (int) (mHourHandBitmap.getWidth() * ratio),
-                        (int) (mHourHandBitmap.getHeight() * ratio), true);
+                scaleWatchFace(width, height);
             }
             super.onSurfaceChanged(holder, format, width, height);
+        }
+
+        private void scaleWatchFace(int width, int height) {
+            Log.v(TAG, "scaleWatchFace");
+            mBackgroundBitmapScaled = Bitmap.createScaledBitmap(mBackgroundBitmap, width, height, true /* filter */);
+            float ratio = (float) width / mBackgroundBitmap.getWidth();
+            mMinuteHandBitmapScaled = Bitmap.createScaledBitmap(mMinuteHandBitmap,
+                    (int) (mMinuteHandBitmap.getWidth() * ratio),
+                    (int) (mMinuteHandBitmap.getHeight() * ratio), true);
+            mHourHandBitmapScaled = Bitmap.createScaledBitmap(mHourHandBitmap,
+                    (int) (mHourHandBitmap.getWidth() * ratio),
+                    (int) (mHourHandBitmap.getHeight() * ratio), true);
         }
 
         /**
@@ -501,17 +530,16 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             if (isInAmbientMode()) {
                 canvas.drawColor(Color.BLACK);
             } else {
-                if (mBackgroundBitmap == null) {
+                if (mBackgroundBitmapScaled == null) {
                     canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), mBackgroundPaint);
                 }
                 else {
-                    canvas.drawBitmap(mBackgroundBitmap, 0, 0, null);
+                    canvas.drawBitmap(mBackgroundBitmapScaled, 0, 0, null);
                 }
             }
 
             // Find the center. Ignore the window insets so that, on round watches with a
-            // "chin", the watch face is centered on the entire screen, not just the usable
-            // portion.
+            // "chin", the watch face is centered on the entire screen, not just the usable portion.
             float centerX = bounds.width() / 2f;
             float centerY = bounds.height() / 2f;
 
@@ -534,18 +562,17 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 float minX = (float) Math.sin(minRot) * minLength;
                 float minY = (float) -Math.cos(minRot) * minLength;
                 canvas.drawLine(centerX, centerY, centerX + minX, centerY + minY, mHandPaint);
-
             }
             else {
                 // hour hand
                 Matrix matrix = new Matrix();
-                matrix.setRotate (hrRot / (float) Math.PI * 180, mHourHandBitmap.getWidth()/2, mHourHandBitmap.getHeight()/2);
-                canvas.drawBitmap(mHourHandBitmap, matrix, mHandPaint);
+                matrix.setRotate (hrRot / (float) Math.PI * 180, mHourHandBitmapScaled.getWidth()/2, mHourHandBitmapScaled.getHeight()/2);
+                canvas.drawBitmap(mHourHandBitmapScaled, matrix, mHandPaint);
 
                 // minute hand
                 matrix = new Matrix();
-                matrix.setRotate (minRot / (float) Math.PI * 180, mHourHandBitmap.getWidth()/2, mHourHandBitmap.getHeight()/2);
-                canvas.drawBitmap(mMinuteHandBitmap, matrix, mHandPaint);
+                matrix.setRotate (minRot / (float) Math.PI * 180, mHourHandBitmapScaled.getWidth()/2, mHourHandBitmapScaled.getHeight()/2);
+                canvas.drawBitmap(mMinuteHandBitmapScaled, matrix, mHandPaint);
             }
 
             if (!mAmbient) {
