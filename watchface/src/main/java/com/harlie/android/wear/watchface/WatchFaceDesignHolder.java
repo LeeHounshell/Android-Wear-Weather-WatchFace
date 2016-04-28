@@ -2,8 +2,11 @@ package com.harlie.android.wear.watchface;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 public class WatchFaceDesignHolder implements Parcelable {
+    private final String TAG = "LEE: <" + WatchFaceDesignHolder.class.getSimpleName() + ">";
+
     private boolean isDirty;
     private boolean isDaytime;
     private boolean isSunshine;
@@ -35,6 +38,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setDirty(boolean dirty) {
+        Log.v(TAG, "setDirty: "+dirty);
         isDirty = dirty;
     }
 
@@ -43,6 +47,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setDaytime(boolean daytime) {
+        Log.v(TAG, "setDaytime: "+daytime);
         isDaytime = daytime;
     }
 
@@ -51,6 +56,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setSunshine(boolean sunshine) {
+        Log.v(TAG, "setSunshine: "+sunshine);
         isSunshine = sunshine;
     }
 
@@ -59,6 +65,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setOvercast(boolean overcast) {
+        Log.v(TAG, "setOvercast: "+overcast);
         isOvercast = overcast;
     }
 
@@ -67,6 +74,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setMoonPhase(int moonPhase) {
+        Log.v(TAG, "setMoonPhase: "+moonPhase);
         this.moonPhase = moonPhase;
     }
 
@@ -75,6 +83,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setHighTemp(int highTemp) {
+        Log.v(TAG, "setHighTemp: "+highTemp);
         this.highTemp = highTemp;
     }
 
@@ -83,6 +92,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setLowTemp(int lowTemp) {
+        Log.v(TAG, "setLowTemp: "+lowTemp);
         this.lowTemp = lowTemp;
     }
 
@@ -91,6 +101,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setMetric(boolean metric) {
+        Log.v(TAG, "setMetric: "+metric);
         isMetric = metric;
     }
 
@@ -99,6 +110,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setLightClouds(boolean lightClouds) {
+        Log.v(TAG, "setLightClouds: "+lightClouds);
         isLightClouds = lightClouds;
     }
 
@@ -107,6 +119,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setModerateClouds(boolean moderateClouds) {
+        Log.v(TAG, "setModerateClouds: "+moderateClouds);
         isModerateClouds = moderateClouds;
     }
 
@@ -115,6 +128,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setHeavyClouds(boolean heavyClouds) {
+        Log.v(TAG, "setHeavyClouds: "+heavyClouds);
         isHeavyClouds = heavyClouds;
     }
 
@@ -123,6 +137,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setAreCloudsDark(boolean areCloudsDark) {
+        Log.v(TAG, "setAreCloudsDark: "+areCloudsDark);
         this.areCloudsDark = areCloudsDark;
     }
 
@@ -131,6 +146,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setAreCloudsLow(boolean areCloudsLow) {
+        Log.v(TAG, "setAreCloudsLow: "+areCloudsLow);
         this.areCloudsLow = areCloudsLow;
     }
 
@@ -139,6 +155,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setLightRain(boolean lightRain) {
+        Log.v(TAG, "setLightRain: "+lightRain);
         isLightRain = lightRain;
     }
 
@@ -147,6 +164,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setModerateRain(boolean moderateRain) {
+        Log.v(TAG, "setModerateRain: "+moderateRain);
         isModerateRain = moderateRain;
     }
 
@@ -155,6 +173,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setHeavyRain(boolean heavyRain) {
+        Log.v(TAG, "setHeavyRain: "+heavyRain);
         isHeavyRain = heavyRain;
     }
 
@@ -163,6 +182,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setLightSnow(boolean lightSnow) {
+        Log.v(TAG, "setLightSnow: "+lightSnow);
         isLightSnow = lightSnow;
     }
 
@@ -171,6 +191,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setModerateSnow(boolean moderateSnow) {
+        Log.v(TAG, "setModerateSnow: "+moderateSnow);
         isModerateSnow = moderateSnow;
     }
 
@@ -179,6 +200,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setHeavySnow(boolean heavySnow) {
+        Log.v(TAG, "setHeavySnow: "+heavySnow);
         isHeavySnow = heavySnow;
     }
 
@@ -187,6 +209,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setLightWind(boolean lightWind) {
+        Log.v(TAG, "setLightWind: "+lightWind);
         isLightWind = lightWind;
     }
 
@@ -195,6 +218,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setModerateWind(boolean moderateWind) {
+        Log.v(TAG, "setModerateWind: "+moderateWind);
         isModerateWind = moderateWind;
     }
 
@@ -203,6 +227,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setHeavyWind(boolean heavyWind) {
+        Log.v(TAG, "setHeavyWind: "+heavyWind);
         isHeavyWind = heavyWind;
     }
 
@@ -211,6 +236,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setLightStorm(boolean lightStorm) {
+        Log.v(TAG, "setLightStorm: "+lightStorm);
         isLightStorm = lightStorm;
     }
 
@@ -219,6 +245,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setModerateStorm(boolean moderateStorm) {
+        Log.v(TAG, "setModerateStorm: "+moderateStorm);
         isModerateStorm = moderateStorm;
     }
 
@@ -227,6 +254,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setHeavyStorm(boolean heavyStorm) {
+        Log.v(TAG, "setHeavyStorm: "+heavyStorm);
         isHeavyStorm = heavyStorm;
     }
 

@@ -165,8 +165,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mHourHandBitmap = drawableToBitmap(getDrawable(R.drawable.hour_little_hand));
             mMinuteHandBitmap = drawableToBitmap(getDrawable(R.drawable.minute_big_hand));
 
-            createWatchFaceBitmaps();
-
             Resources resources = WeatherWatchFace.this.getResources();
 
             mBackgroundPaint = new Paint();
@@ -187,9 +185,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             // calculate if day or night
             int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
             mWatchFaceDesignHolder.setDaytime((hour >= 6 && hour < 18));
+
+            createWatchFaceBitmaps();
         }
 
         private void createWatchFaceBitmaps() {
+            Log.v(TAG, "createWatchBitmaps");
             mBackgroundBitmap = createWatchBackgroundBitmap(mWatchFaceDesignHolder);
             WindowManager wm = (WindowManager) WeatherWatchFace.getContext().getSystemService(Context.WINDOW_SERVICE);
             Display display = wm.getDefaultDisplay();
