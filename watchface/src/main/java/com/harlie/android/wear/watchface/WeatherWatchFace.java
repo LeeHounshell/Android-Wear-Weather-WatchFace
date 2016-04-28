@@ -112,6 +112,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         Paint mHandPaint;
         boolean mAmbient;
         boolean mIsRound;
+        boolean mDaylightChanged;
         Calendar mCalendar;
         int mTapCount;
 
@@ -525,6 +526,16 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         public void onDraw(Canvas canvas, Rect bounds) {
             Date date = new Date();
             mCalendar.setTime(date);
+
+            if (mCalendar.get(Calendar.HOUR) == 6 || mCalendar.get(Calendar.HOUR) == 18) {
+                if (!mDaylightChanged) {
+                    mDaylightChanged = true;
+                    createWatchFaceBitmaps();
+                }
+            }
+            else {
+                mDaylightChanged = false;
+            }
 
             // Draw the background.
             if (isInAmbientMode()) {
