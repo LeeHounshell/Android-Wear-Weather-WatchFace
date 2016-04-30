@@ -1,0 +1,27 @@
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+    <SwitchPreference
+        android:key="use_secondhand"
+        android:title="@string/title_secondhand"
+        android:summaryOn="@string/summary_show"
+        android:summaryOff="@string/summary_hide"
+        app:wear_iconOn="@drawable/ic_second_hand"
+        app:wear_iconOff="@drawable/ic_no_second_hand"
+        android:defaultValue="true"
+        />
+
+<!--
+    <ListPreference
+        android:key="language"
+        android:title="@string/title_language"
+        android:icon="@drawable/ic_language_white_24dp"
+        android:entries="@array/entries_language"
+        android:entryValues="@array/values_language"
+        app:wear_entryIcons="@array/icons_language"
+        android:defaultValue="en"
+        />
+-->
+
+</PreferenceScreen>

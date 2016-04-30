@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">WatchFace</string>
-    <string name="my_analog_name">My Analog</string>
+    <string name="watch_analog_name">Analog Weather</string>
+    <string name="watch_config_name">Settings</string>
+    <string name="title_secondhand">Second-Hand</string>
+    <string name="summary_show">Show</string>
+    <string name="summary_hide">Hide</string>
 </resources>

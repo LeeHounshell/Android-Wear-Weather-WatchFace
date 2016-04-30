@@ -15,3 +15,16 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-keep class me.denley.preferencebinder.** { *; }
+-dontwarn me.denley.preferencebinder.internal.**
+-keep class **$$SharedPreferenceBinder { *; }
+
+-keepclasseswithmembernames class * {
+    @me.denley.preferencebinder.* <fields>;
+}
+
+-keepclasseswithmembernames class * {
+    @me.denley.preferencebinder.* <methods>;
+}
+

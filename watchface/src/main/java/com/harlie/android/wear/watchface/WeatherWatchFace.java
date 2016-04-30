@@ -21,7 +21,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -39,7 +38,6 @@ import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
@@ -50,6 +48,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+
+import me.denley.preferencebinder.PreferenceBinder;
 
 /**
  * Analog watch face with a ticking second hand. In ambient mode, the second hand isn't shown. On
@@ -149,7 +149,9 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     .setAcceptsTapEvents(true)
                     .build());
 
-            mWatchFaceDesignHolder = new WatchFaceDesignHolder(); // FIXME: load previous settings
+            mWatchFaceDesignHolder = new WatchFaceDesignHolder();
+
+            PreferenceBinder.bind(getContext(), mWatchFaceDesignHolder);
 
             // calculate current phase of the moon
             MoonCalculation moonCalculaion = new MoonCalculation();
@@ -434,6 +436,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         public void onDestroy() {
             Log.v(TAG, "onDestroy");
             mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME);
+            PreferenceBinder.unbind(getContext());
             super.onDestroy();
         }
 
@@ -535,6 +538,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         public void onDraw(Canvas canvas, Rect bounds) {
             Date date = new Date();
             mCalendar.setTime(date);
+            boolean useSecondHand = mWatchFaceDesignHolder.useSecondHand();
 
             if (mCalendar.get(Calendar.HOUR) == 6 || mCalendar.get(Calendar.HOUR) == 18) {
                 if (!mDaylightChanged) {
@@ -563,7 +567,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             float centerX = bounds.width() / 2f;
             float centerY = bounds.height() / 2f;
 
-            float secRot = mCalendar.get(Calendar.SECOND) / 30f * (float) Math.PI;
             int minutes = mCalendar.get(Calendar.MINUTE);
             float minRot = minutes / 30f * (float) Math.PI;
             float hrRot = ((mCalendar.get(Calendar.HOUR) + (minutes / 60f)) / 6f) * (float) Math.PI;
@@ -595,8 +598,9 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 canvas.drawBitmap(mMinuteHandBitmapScaled, matrix, mHandPaint);
             }
 
-            if (!mAmbient && mBatteryLevel > 0) {
+            if (useSecondHand && ! mAmbient && mBatteryLevel > 0) {
                 // second hand
+                float secRot = mCalendar.get(Calendar.SECOND) / 30f * (float) Math.PI;
                 float fullSecLength = centerX - 20;
                 // now shorten the length based on battery percentage remaining
                 float secLength = (fullSecLength * mBatteryLevel) / 100;
@@ -678,6 +682,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 mUpdateTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs);
             }
         }
+
     }
 
     // from: http://stackoverflow.com/questions/28938464/android-wear-watch-face-get-battery-percentage-of-phone
