@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import me.denley.preferencebinder.BindPref;
+import me.denley.preferencebinder.PreferenceDefault;
 
 public class WatchFaceDesignHolder implements Parcelable {
     private final String TAG = "LEE: <" + WatchFaceDesignHolder.class.getSimpleName() + ">";
@@ -341,6 +342,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     // we use the Denley preferencebinder code injection framework to handle those values.
     // from: https://github.com/denley/preferencebinder
 
+    @PreferenceDefault("use_secondhand") public static boolean SECONDHAND_PREFERENCE_DEFAULT = true;
     @BindPref(value = "use_secondhand")
     boolean useSecondHand;
     boolean useSecondHandOldValue;
