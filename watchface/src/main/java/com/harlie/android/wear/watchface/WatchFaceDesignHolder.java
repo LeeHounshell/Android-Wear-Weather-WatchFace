@@ -355,4 +355,17 @@ public class WatchFaceDesignHolder implements Parcelable {
         return useSecondHand;
     }
 
+    @PreferenceDefault("use_standardface") public static boolean STANDARDFACE_PREFERENCE_DEFAULT = false;
+    @BindPref(value = "use_standardface")
+    boolean useStandardFace;
+    boolean useStandardFaceOldValue;
+
+    public boolean useStandardFace() {
+        if (useStandardFaceOldValue != useStandardFace) {
+            useStandardFaceOldValue = useStandardFace;
+            setDirty(true);
+        }
+        return useStandardFace;
+    }
+
 }

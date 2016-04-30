@@ -104,6 +104,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
     private class Engine extends CanvasWatchFaceService.Engine {
         private final String TAG = "LEE: <" + Engine.class.getSimpleName() + ">";
 
+        private final float CENTER_GAP_AND_CIRCLE_RADIUS = 4f;
+
         final Handler mUpdateTimeHandler = new EngineHandler(this);
         boolean mRegisteredTimeZoneReceiver = false;
         Bitmap mBackgroundBitmap;
@@ -114,6 +116,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         Bitmap mMinuteHandBitmapScaled;
         Paint mBackgroundPaint;
         Paint mHandPaint;
+        Paint mHandPaintBright;
         Paint mHandPaintAccent;
         boolean mAmbient;
         boolean mDaylightChanged;
@@ -177,6 +180,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mHandPaint.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke));
             mHandPaint.setAntiAlias(true);
             mHandPaint.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
+
+            mHandPaintBright = new Paint();
+            mHandPaintBright.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.analog_hands_bright));
+            mHandPaintBright.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke_bright));
+            mHandPaintBright.setAntiAlias(true);
+            mHandPaintBright.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
 
             mHandPaintAccent = new Paint();
             mHandPaintAccent.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.battery_warning));
@@ -368,14 +377,25 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
             }
 
-            // windy
-            if (watchFaceDesignHolder.isHeavyWind() || watchFaceDesignHolder.isModerateWind() || watchFaceDesignHolder.isLightWind()) {
-                overlay = drawableToBitmap(getDrawable(R.drawable.windy_day));
-                Log.v(TAG, "windy_day");
+            if (watchFaceDesignHolder.useStandardFace()) {
+                // windy
+                if (watchFaceDesignHolder.isHeavyWind() || watchFaceDesignHolder.isModerateWind() || watchFaceDesignHolder.isLightWind()) {
+                    overlay = drawableToBitmap(getDrawable(R.drawable.windy_day_standard));
+                    Log.v(TAG, "windy_day - standard");
+                } else {
+                    overlay = drawableToBitmap(getDrawable(R.drawable.not_windy_day_standard));
+                    Log.v(TAG, "not_windy_day - standard");
+                }
             }
             else {
-                overlay = drawableToBitmap(getDrawable(R.drawable.not_windy_day));
-                Log.v(TAG, "not_windy_day");
+                // windy
+                if (watchFaceDesignHolder.isHeavyWind() || watchFaceDesignHolder.isModerateWind() || watchFaceDesignHolder.isLightWind()) {
+                    overlay = drawableToBitmap(getDrawable(R.drawable.windy_day));
+                    Log.v(TAG, "windy_day - alternate");
+                } else {
+                    overlay = drawableToBitmap(getDrawable(R.drawable.not_windy_day));
+                    Log.v(TAG, "not_windy_day - alternate");
+                }
             }
             mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
 
@@ -475,12 +495,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 invalidate();
             }
 
-            if (! inAmbientMode && mWatchFaceDesignHolder.isDirty()) {
-                Log.v(TAG, "*** UPDATE THE WATCH FACE ***");
-                createWatchFaceBitmaps();
-                invalidate();
-            }
-
             // Whether the timer should be running depends on whether we're visible (as well as
             // whether we're in ambient mode), so we may need to start or stop the timer.
             updateTimer();
@@ -538,17 +552,23 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         public void onDraw(Canvas canvas, Rect bounds) {
             Date date = new Date();
             mCalendar.setTime(date);
-            boolean useSecondHand = mWatchFaceDesignHolder.useSecondHand();
 
-            if (mCalendar.get(Calendar.HOUR) == 6 || mCalendar.get(Calendar.HOUR) == 18) {
-                if (!mDaylightChanged) {
-                    mDaylightChanged = true;
-                    createWatchFaceBitmaps();
-                }
+            if (mWatchFaceDesignHolder.isDirty()) {
+                Log.v(TAG, "*** WATCH FACE UPDATE ***");
+                createWatchFaceBitmaps();
             }
             else {
-                mDaylightChanged = false;
+                if (mCalendar.get(Calendar.HOUR) == 6 || mCalendar.get(Calendar.HOUR) == 18) {
+                    if (!mDaylightChanged) {
+                        Log.v(TAG, "*** WATCH FACE DAYLIGHT CHANGE ***");
+                        mDaylightChanged = true;
+                        createWatchFaceBitmaps();
+                    }
+                } else {
+                    mDaylightChanged = false;
+                }
             }
+            boolean useSecondHand = mWatchFaceDesignHolder.useSecondHand();
 
             // Draw the background.
             if (isInAmbientMode()) {
@@ -571,10 +591,10 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             float minRot = minutes / 30f * (float) Math.PI;
             float hrRot = ((mCalendar.get(Calendar.HOUR) + (minutes / 60f)) / 6f) * (float) Math.PI;
 
+            float minLength = centerX - 40;
+            float hrLength = centerX - 80;
             if (isInAmbientMode()) {
                 mHandPaint.clearShadowLayer();
-                float minLength = centerX - 40;
-                float hrLength = centerX - 80;
 
                 // hour hand
                 float hrX = (float) Math.sin(hrRot) * hrLength;
@@ -585,6 +605,35 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 float minX = (float) Math.sin(minRot) * minLength;
                 float minY = (float) -Math.cos(minRot) * minLength;
                 canvas.drawLine(centerX, centerY, centerX + minX, centerY + minY, mHandPaint);
+            }
+
+            if (mWatchFaceDesignHolder.useStandardFace()) {
+                final float minutesRotation = mCalendar.get(Calendar.MINUTE) * 6f;
+                final float hourHandOffset = mCalendar.get(Calendar.MINUTE) / 2f;
+                final float hoursRotation = (mCalendar.get(Calendar.HOUR) * 30) + hourHandOffset;
+                // save the canvas state before we can begin to rotate it.
+                canvas.save();
+                canvas.rotate(hoursRotation, centerX, centerY);
+                canvas.drawLine(
+                        centerX,
+                        centerY - CENTER_GAP_AND_CIRCLE_RADIUS,
+                        centerX,
+                        centerY - hrLength,
+                        mHandPaintBright);
+
+                canvas.rotate(minutesRotation - hoursRotation, centerX, centerY);
+                canvas.drawLine(
+                        centerX,
+                        centerY - CENTER_GAP_AND_CIRCLE_RADIUS,
+                        centerX,
+                        centerY - minLength,
+                        mHandPaintBright);
+                canvas.drawCircle(
+                        centerX,
+                        centerY,
+                        CENTER_GAP_AND_CIRCLE_RADIUS,
+                        mHandPaintAccent);
+                canvas.restore();
             }
             else {
                 // hour hand
