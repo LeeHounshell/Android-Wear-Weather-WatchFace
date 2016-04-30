@@ -606,45 +606,45 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 float minY = (float) -Math.cos(minRot) * minLength;
                 canvas.drawLine(centerX, centerY, centerX + minX, centerY + minY, mHandPaint);
             }
-
-            if (mWatchFaceDesignHolder.useStandardFace()) {
-                final float minutesRotation = mCalendar.get(Calendar.MINUTE) * 6f;
-                final float hourHandOffset = mCalendar.get(Calendar.MINUTE) / 2f;
-                final float hoursRotation = (mCalendar.get(Calendar.HOUR) * 30) + hourHandOffset;
-                // save the canvas state before we can begin to rotate it.
-                canvas.save();
-                canvas.rotate(hoursRotation, centerX, centerY);
-                canvas.drawLine(
-                        centerX,
-                        centerY - CENTER_GAP_AND_CIRCLE_RADIUS,
-                        centerX,
-                        centerY - hrLength,
-                        mHandPaintBright);
-
-                canvas.rotate(minutesRotation - hoursRotation, centerX, centerY);
-                canvas.drawLine(
-                        centerX,
-                        centerY - CENTER_GAP_AND_CIRCLE_RADIUS,
-                        centerX,
-                        centerY - minLength,
-                        mHandPaintBright);
-                canvas.drawCircle(
-                        centerX,
-                        centerY,
-                        CENTER_GAP_AND_CIRCLE_RADIUS,
-                        mHandPaintAccent);
-                canvas.restore();
-            }
             else {
-                // hour hand
-                Matrix matrix = new Matrix();
-                matrix.setRotate (hrRot / (float) Math.PI * 180, mHourHandBitmapScaled.getWidth()/2, mHourHandBitmapScaled.getHeight()/2);
-                canvas.drawBitmap(mHourHandBitmapScaled, matrix, mHandPaint);
+                if (mWatchFaceDesignHolder.useStandardFace()) {
+                    final float minutesRotation = mCalendar.get(Calendar.MINUTE) * 6f;
+                    final float hourHandOffset = mCalendar.get(Calendar.MINUTE) / 2f;
+                    final float hoursRotation = (mCalendar.get(Calendar.HOUR) * 30) + hourHandOffset;
+                    // save the canvas state before we can begin to rotate it.
+                    canvas.save();
+                    canvas.rotate(hoursRotation, centerX, centerY);
+                    canvas.drawLine(
+                            centerX,
+                            centerY - CENTER_GAP_AND_CIRCLE_RADIUS,
+                            centerX,
+                            centerY - hrLength,
+                            mHandPaintBright);
 
-                // minute hand
-                matrix = new Matrix();
-                matrix.setRotate (minRot / (float) Math.PI * 180, mHourHandBitmapScaled.getWidth()/2, mHourHandBitmapScaled.getHeight()/2);
-                canvas.drawBitmap(mMinuteHandBitmapScaled, matrix, mHandPaint);
+                    canvas.rotate(minutesRotation - hoursRotation, centerX, centerY);
+                    canvas.drawLine(
+                            centerX,
+                            centerY - CENTER_GAP_AND_CIRCLE_RADIUS,
+                            centerX,
+                            centerY - minLength,
+                            mHandPaintBright);
+                    canvas.drawCircle(
+                            centerX,
+                            centerY,
+                            CENTER_GAP_AND_CIRCLE_RADIUS,
+                            mHandPaintAccent);
+                    canvas.restore();
+                } else {
+                    // hour hand
+                    Matrix matrix = new Matrix();
+                    matrix.setRotate(hrRot / (float) Math.PI * 180, mHourHandBitmapScaled.getWidth() / 2, mHourHandBitmapScaled.getHeight() / 2);
+                    canvas.drawBitmap(mHourHandBitmapScaled, matrix, mHandPaint);
+
+                    // minute hand
+                    matrix = new Matrix();
+                    matrix.setRotate(minRot / (float) Math.PI * 180, mHourHandBitmapScaled.getWidth() / 2, mHourHandBitmapScaled.getHeight() / 2);
+                    canvas.drawBitmap(mMinuteHandBitmapScaled, matrix, mHandPaint);
+                }
             }
 
             if (useSecondHand && ! mAmbient && mBatteryLevel > 0) {
