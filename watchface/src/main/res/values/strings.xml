@@ -3,7 +3,8 @@
     <string name="watch_analog_name">Analog Weather</string>
     <string name="watch_config_name">Settings</string>
     <string name="title_secondhand">Second-Hand</string>
-    <string name="title_standardface">Standard-Face</string>
+    <string name="title_standardface">Traditional Face</string>
+    <string name="title_continuous_on">Battery Killer</string>
     <string name="summary_on">On</string>
     <string name="summary_off">Off</string>
     <string name="summary_show">Show</string>

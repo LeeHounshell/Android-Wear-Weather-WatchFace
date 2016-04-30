@@ -552,6 +552,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         public void onDraw(Canvas canvas, Rect bounds) {
             Date date = new Date();
             mCalendar.setTime(date);
+            boolean ambientOverride = mWatchFaceDesignHolder.useContinuousOn();
 
             if (mWatchFaceDesignHolder.isDirty()) {
                 Log.v(TAG, "*** WATCH FACE UPDATE ***");
@@ -571,7 +572,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             boolean useSecondHand = mWatchFaceDesignHolder.useSecondHand();
 
             // Draw the background.
-            if (isInAmbientMode()) {
+            if (mAmbient && ! ambientOverride) {
                 canvas.drawColor(Color.BLACK);
             } else {
                 if (mBackgroundBitmapScaled == null) {
@@ -593,7 +594,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             float minLength = centerX - 40;
             float hrLength = centerX - 80;
-            if (isInAmbientMode()) {
+
+            if (mAmbient && ! ambientOverride) {
                 mHandPaint.clearShadowLayer();
 
                 // hour hand

@@ -50,7 +50,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setDaytime(boolean daytime) {
-        Log.v(TAG, "setDaytime: "+daytime);
+        //Log.v(TAG, "setDaytime: "+daytime);
         isDaytime = daytime;
     }
 
@@ -366,6 +366,19 @@ public class WatchFaceDesignHolder implements Parcelable {
             setDirty(true);
         }
         return useStandardFace;
+    }
+
+    @PreferenceDefault("use_continuous_on") public static boolean CONTINUOUSON_PREFERENCE_DEFAULT = false;
+    @BindPref(value = "use_continuous_on")
+    boolean useContinuousOn;
+    boolean useContinuousOnOldValue;
+
+    public boolean useContinuousOn() {
+        if (useContinuousOnOldValue != useContinuousOn) {
+            useContinuousOnOldValue = useContinuousOn;
+            setDirty(true);
+        }
+        return useContinuousOn;
     }
 
 }

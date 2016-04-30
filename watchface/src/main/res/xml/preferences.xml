@@ -34,4 +34,14 @@
         />
 -->
 
+    <SwitchPreference
+        android:key="use_continuous_on"
+        android:title="@string/title_continuous_on"
+        android:summaryOn="@string/summary_on"
+        android:summaryOff="@string/summary_off"
+        app:wear_iconOn="@drawable/ic_watchclock"
+        app:wear_iconOff="@drawable/ic_watchoff"
+        android:defaultValue="false"
+        />
+
 </PreferenceScreen>
