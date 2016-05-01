@@ -22,17 +22,35 @@
         android:defaultValue="false"
         />
 
-<!--
-    <ListPreference
-        android:key="language"
-        android:title="@string/title_language"
-        android:icon="@drawable/ic_language_white_24dp"
-        android:entries="@array/entries_language"
-        android:entryValues="@array/values_language"
-        app:wear_entryIcons="@array/icons_language"
-        android:defaultValue="en"
+    <SwitchPreference
+        android:key="use_roman_numerals"
+        android:title="@string/title_roman_numerals"
+        android:summaryOn="@string/summary_on"
+        android:summaryOff="@string/summary_off"
+        app:wear_iconOn="@drawable/ic_watchroman"
+        app:wear_iconOff="@drawable/ic_watchclock"
+        android:defaultValue="false"
         />
--->
+
+    <SwitchPreference
+        android:key="use_goldcolor"
+        android:title="@string/title_goldcolor"
+        android:summaryOn="@string/summary_on"
+        android:summaryOff="@string/summary_off"
+        app:wear_iconOn="@drawable/ic_watchclock"
+        app:wear_iconOff="@drawable/ic_watchclock"
+        android:defaultValue="false"
+        />
+
+    <SwitchPreference
+        android:key="use_ivorytickmarks"
+        android:title="@string/title_ivorytickmarks"
+        android:summaryOn="@string/summary_on"
+        android:summaryOff="@string/summary_off"
+        app:wear_iconOn="@drawable/ic_watchivory"
+        app:wear_iconOff="@drawable/ic_watchoff"
+        android:defaultValue="false"
+        />
 
     <SwitchPreference
         android:key="use_continuous_on"

@@ -400,9 +400,40 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
 
             // clock face
-            overlay = drawableToBitmap(getDrawable(R.drawable.clock_face));
-            mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
-            Log.v(TAG, "clock_face");
+            if (mWatchFaceDesignHolder.useRomanNumeralsFace()) {
+                if (mWatchFaceDesignHolder.useGoldColor()) {
+                    overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_roman_gold));
+                    mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
+                    Log.v(TAG, "clock_face_roman_gold");
+                } else {
+                    overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_roman_plain));
+                    mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
+                    Log.v(TAG, "clock_face_roman_plain");
+                }
+            }
+            else {
+                if (mWatchFaceDesignHolder.useGoldColor()) {
+                    overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_gold));
+                    mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
+                    Log.v(TAG, "clock_face_gold");
+                } else {
+                    overlay = drawableToBitmap(getDrawable(R.drawable.clock_face));
+                    mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
+                    Log.v(TAG, "clock_face_plain");
+                }
+            }
+
+            // face tick marks
+            if (mWatchFaceDesignHolder.useIvoryTickmarks()) {
+                overlay = drawableToBitmap(getDrawable(R.drawable.tickmarks_ivory));
+                mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
+                Log.v(TAG, "tickmarks_ivory");
+            }
+            else {
+                overlay = drawableToBitmap(getDrawable(R.drawable.tickmarks_plain));
+                mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
+                Log.v(TAG, "tickmarks_plain");
+            }
 
             return mBackgroundBitmap;
         }
@@ -464,6 +495,9 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         public void onPropertiesChanged(Bundle properties) {
             Log.v(TAG, "onPropertiesChanged");
             super.onPropertiesChanged(properties);
+            if (mWatchFaceDesignHolder != null) {
+                mWatchFaceDesignHolder.setDirty(true); // the watch face is out of sync now
+            }
             mLowBitAmbient = properties.getBoolean(PROPERTY_LOW_BIT_AMBIENT, false);
         }
 
@@ -478,7 +512,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mWatchFaceDesignHolder.setDaytime((hour >= 6 && hour < 18));
             if (wasDaytime !=  mWatchFaceDesignHolder.isDaytime()) {
                 mWatchFaceDesignHolder.setDirty(true); // the watch face is out of sync now
-                invalidate();
             }
             mBatteryLevel = getBatteryLevel();
         }
@@ -552,6 +585,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         public void onDraw(Canvas canvas, Rect bounds) {
             Date date = new Date();
             mCalendar.setTime(date);
+
+            boolean useSecondHand = mWatchFaceDesignHolder.useSecondHand();
             boolean ambientOverride = mWatchFaceDesignHolder.useContinuousOn();
 
             if (mWatchFaceDesignHolder.isDirty()) {
@@ -569,7 +604,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     mDaylightChanged = false;
                 }
             }
-            boolean useSecondHand = mWatchFaceDesignHolder.useSecondHand();
 
             // Draw the background.
             if (mAmbient && ! ambientOverride) {

@@ -4,7 +4,10 @@
     <string name="watch_config_name">Settings</string>
     <string name="title_secondhand">Second-Hand</string>
     <string name="title_standardface">Traditional Face</string>
-    <string name="title_continuous_on">Battery Killer</string>
+    <string name="title_roman_numerals">Roman Numerals</string>
+    <string name="title_goldcolor">Precious Gold</string>
+    <string name="title_ivorytickmarks">Ivory Tickmarks</string>
+    <string name="title_continuous_on">Always On</string>
     <string name="summary_on">On</string>
     <string name="summary_off">Off</string>
     <string name="summary_show">Show</string>

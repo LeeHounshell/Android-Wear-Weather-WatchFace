@@ -37,6 +37,12 @@ public class WatchFaceDesignHolder implements Parcelable {
     private boolean isHeavyStorm;
 
     public boolean isDirty() {
+        // check/mark dirty before returning..
+        useSecondHand();
+        useStandardFace();
+        useGoldColor();
+        useIvoryTickmarks();
+        useContinuousOn();
         return isDirty;
     }
 
@@ -344,8 +350,8 @@ public class WatchFaceDesignHolder implements Parcelable {
 
     @PreferenceDefault("use_secondhand") public static boolean SECONDHAND_PREFERENCE_DEFAULT = true;
     @BindPref(value = "use_secondhand")
-    boolean useSecondHand;
-    boolean useSecondHandOldValue;
+    boolean useSecondHand = SECONDHAND_PREFERENCE_DEFAULT;
+    boolean useSecondHandOldValue = !SECONDHAND_PREFERENCE_DEFAULT;
 
     public boolean useSecondHand() {
         if (useSecondHandOldValue != useSecondHand) {
@@ -357,8 +363,8 @@ public class WatchFaceDesignHolder implements Parcelable {
 
     @PreferenceDefault("use_standardface") public static boolean STANDARDFACE_PREFERENCE_DEFAULT = false;
     @BindPref(value = "use_standardface")
-    boolean useStandardFace;
-    boolean useStandardFaceOldValue;
+    boolean useStandardFace = STANDARDFACE_PREFERENCE_DEFAULT;
+    boolean useStandardFaceOldValue = !STANDARDFACE_PREFERENCE_DEFAULT;
 
     public boolean useStandardFace() {
         if (useStandardFaceOldValue != useStandardFace) {
@@ -368,10 +374,49 @@ public class WatchFaceDesignHolder implements Parcelable {
         return useStandardFace;
     }
 
+    @PreferenceDefault("use_roman_numerals") public static boolean ROMANFACE_PREFERENCE_DEFAULT = false;
+    @BindPref(value = "use_roman_numerals")
+    boolean useRomanNumeralsFace = ROMANFACE_PREFERENCE_DEFAULT;
+    boolean useRomanNumeralsOldValue = !ROMANFACE_PREFERENCE_DEFAULT;
+
+    public boolean useRomanNumeralsFace() {
+        if (useRomanNumeralsOldValue != useRomanNumeralsFace) {
+            useRomanNumeralsOldValue = useRomanNumeralsFace;
+            setDirty(true);
+        }
+        return useRomanNumeralsFace;
+    }
+
+    @PreferenceDefault("use_goldcolor") public static boolean GOLDCOLOR_PREFERENCE_DEFAULT = false;
+    @BindPref(value = "use_goldcolor")
+    boolean useGoldColor = GOLDCOLOR_PREFERENCE_DEFAULT;
+    boolean useGoldColorOldValue = !GOLDCOLOR_PREFERENCE_DEFAULT;
+
+    public boolean useGoldColor() {
+        if (useGoldColorOldValue != useGoldColor) {
+            useGoldColorOldValue = useGoldColor;
+            setDirty(true);
+        }
+        return useGoldColor;
+    }
+
+    @PreferenceDefault("use_ivorytickmarks") public static boolean IVORYTICKMARKS_PREFERENCE_DEFAULT = false;
+    @BindPref(value = "use_ivorytickmarks")
+    boolean useIvoryTickmarks = IVORYTICKMARKS_PREFERENCE_DEFAULT;
+    boolean useIvoryTickmarksOldValue = !IVORYTICKMARKS_PREFERENCE_DEFAULT;
+
+    public boolean useIvoryTickmarks() {
+        if (useIvoryTickmarksOldValue != useIvoryTickmarks) {
+            useIvoryTickmarksOldValue = useIvoryTickmarks;
+            setDirty(true);
+        }
+        return useIvoryTickmarks;
+    }
+
     @PreferenceDefault("use_continuous_on") public static boolean CONTINUOUSON_PREFERENCE_DEFAULT = false;
     @BindPref(value = "use_continuous_on")
-    boolean useContinuousOn;
-    boolean useContinuousOnOldValue;
+    boolean useContinuousOn = CONTINUOUSON_PREFERENCE_DEFAULT;
+    boolean useContinuousOnOldValue = !CONTINUOUSON_PREFERENCE_DEFAULT;
 
     public boolean useContinuousOn() {
         if (useContinuousOnOldValue != useContinuousOn) {
