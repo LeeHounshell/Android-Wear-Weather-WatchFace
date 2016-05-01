@@ -412,7 +412,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 }
             }
             else {
-                if (mWatchFaceDesignHolder.useGoldColor()) {
+                // check for special cases
+                if (mWatchFaceDesignHolder.useGoldColor() && mWatchFaceDesignHolder.useIvoryTickmarks() && ! mWatchFaceDesignHolder.useRomanNumeralsFace()) {
+                    overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_diamond));
+                    mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
+                    Log.v(TAG, "clock_face_diamond");
+                }
+                else if (mWatchFaceDesignHolder.useGoldColor()) {
                     overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_gold));
                     mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
                     Log.v(TAG, "clock_face_gold");
