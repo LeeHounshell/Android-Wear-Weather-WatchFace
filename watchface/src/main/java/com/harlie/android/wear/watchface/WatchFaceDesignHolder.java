@@ -40,8 +40,10 @@ public class WatchFaceDesignHolder implements Parcelable {
         // check/mark dirty before returning..
         useSecondHand();
         useStandardFace();
+        useRomanNumeralsFace();
         useGoldColor();
         useIvoryTickmarks();
+        useStaticBackground();
         useContinuousOn();
         return isDirty;
     }
@@ -411,6 +413,19 @@ public class WatchFaceDesignHolder implements Parcelable {
             setDirty(true);
         }
         return useIvoryTickmarks;
+    }
+
+    @PreferenceDefault("use_staticbackground") public static boolean STATICBACKGROUND_PREFERENCE_DEFAULT = false;
+    @BindPref(value = "use_staticbackground")
+    boolean useStaticBackground = STATICBACKGROUND_PREFERENCE_DEFAULT;
+    boolean useStaticBackgroundOldValue = !STATICBACKGROUND_PREFERENCE_DEFAULT;
+
+    public boolean useStaticBackground() {
+        if (useStaticBackgroundOldValue != useStaticBackground) {
+            useStaticBackgroundOldValue = useStaticBackground;
+            setDirty(true);
+        }
+        return useStaticBackground;
     }
 
     @PreferenceDefault("use_continuous_on") public static boolean CONTINUOUSON_PREFERENCE_DEFAULT = false;

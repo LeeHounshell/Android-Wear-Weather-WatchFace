@@ -227,185 +227,191 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 return mBackgroundBitmap;
             }
             Bitmap overlay = null;
-            if (watchFaceDesignHolder.isDaytime()) {
-                if (watchFaceDesignHolder.isSunshine()) {
-                    mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.day));
-                    Log.v(TAG, "day");
-                    if (!watchFaceDesignHolder.isHeavyClouds()
-                     && !watchFaceDesignHolder.isHeavyRain()
-                     && !watchFaceDesignHolder.isHeavySnow()
-                     && !watchFaceDesignHolder.isHeavyStorm())
-                    {
-                        overlay = drawableToBitmap(getDrawable(R.drawable.sunny));
-                        mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
-                        Log.v(TAG, "sunny");
+            if (mWatchFaceDesignHolder.useStaticBackground()) {
+                if (watchFaceDesignHolder.isDaytime()) {
+                    if (watchFaceDesignHolder.isOvercast()) {
+                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.day_overcast));
+                        Log.v(TAG, "overcast - static");
+                    }
+                    else {
+                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.day));
+                        Log.v(TAG, "day - static");
                     }
                 }
-                else if (watchFaceDesignHolder.isOvercast()) {
-                    mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.day_overcast));
-                    Log.v(TAG, "overcast");
-                }
                 else {
-                    mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.daylight));
-                    Log.v(TAG, "daylight");
+                    mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night));
+                    Log.v(TAG, "night - static");
                 }
             }
             else {
-                switch (watchFaceDesignHolder.getMoonPhase()) {
-                    case 1:
-                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_waxing_crescent));
-                        Log.v(TAG, "night_waxing_crescent");
-                        break;
-                    case 2:
-                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_first_quarter));
-                        Log.v(TAG, "night_first_quarter");
-                        break;
-                    case 3:
-                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_waxing_gibbous));
-                        Log.v(TAG, "night_waxing_gibbous");
-                        break;
-                    case 4:
-                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_full_moon));
-                        Log.v(TAG, "night_full_moon");
-                        break;
-                    case 5:
-                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_waning_gibbous));
-                        Log.v(TAG, "night_waning_gibbous");
-                        break;
-                    case 6:
-                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_last_quarter));
-                        Log.v(TAG, "night_last_quarter");
-                        break;
-                    case 7:
-                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_waning_crescent));
-                        Log.v(TAG, "night_waning_crescent");
-                        break;
-                    case 0:
-                    default:
-                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_no_moon));
-                        Log.v(TAG, "night_no_moon");
-                        break;
+                if (watchFaceDesignHolder.isDaytime()) {
+                    if (watchFaceDesignHolder.isSunshine()) {
+                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.day));
+                        Log.v(TAG, "day");
+                        if (!watchFaceDesignHolder.isHeavyClouds()
+                                && !watchFaceDesignHolder.isHeavyRain()
+                                && !watchFaceDesignHolder.isHeavySnow()
+                                && !watchFaceDesignHolder.isHeavyStorm()) {
+                            overlay = drawableToBitmap(getDrawable(R.drawable.sunny));
+                            mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
+                            Log.v(TAG, "sunny");
+                        }
+                    } else if (watchFaceDesignHolder.isOvercast()) {
+                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.day_overcast));
+                        Log.v(TAG, "overcast");
+                    } else {
+                        mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.day));
+                        Log.v(TAG, "day");
+                    }
+                } else {
+                    switch (watchFaceDesignHolder.getMoonPhase()) {
+                        case 1:
+                            mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_waxing_crescent));
+                            Log.v(TAG, "night_waxing_crescent");
+                            break;
+                        case 2:
+                            mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_first_quarter));
+                            Log.v(TAG, "night_first_quarter");
+                            break;
+                        case 3:
+                            mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_waxing_gibbous));
+                            Log.v(TAG, "night_waxing_gibbous");
+                            break;
+                        case 4:
+                            mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_full_moon));
+                            Log.v(TAG, "night_full_moon");
+                            break;
+                        case 5:
+                            mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_waning_gibbous));
+                            Log.v(TAG, "night_waning_gibbous");
+                            break;
+                        case 6:
+                            mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_last_quarter));
+                            Log.v(TAG, "night_last_quarter");
+                            break;
+                        case 7:
+                            mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_waning_crescent));
+                            Log.v(TAG, "night_waning_crescent");
+                            break;
+                        case 0:
+                        default:
+                            mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night_no_moon));
+                            Log.v(TAG, "night_no_moon");
+                            break;
+                    }
                 }
-            }
 
-            // cloudy
-            if (watchFaceDesignHolder.isHeavyClouds() || watchFaceDesignHolder.isModerateClouds() || watchFaceDesignHolder.isLightClouds()) {
-                overlay = null;
-                if (watchFaceDesignHolder.isAreCloudsLow()) {
-                    if (watchFaceDesignHolder.isAreCloudsDark()) {
-                        if (watchFaceDesignHolder.isHeavyClouds() || watchFaceDesignHolder.isModerateClouds()) {
-                            overlay = drawableToBitmap(getDrawable(R.drawable.moderate_dark_low_clouds));
-                            Log.v(TAG, "moderate_dark_low_clouds");
-                        } else {
-                            overlay = drawableToBitmap(getDrawable(R.drawable.dark_low_cloud));
-                            Log.v(TAG, "dark_low_cloud");
+                // cloudy
+                if (watchFaceDesignHolder.isHeavyClouds() || watchFaceDesignHolder.isModerateClouds() || watchFaceDesignHolder.isLightClouds()) {
+                    overlay = null;
+                    if (watchFaceDesignHolder.isAreCloudsLow()) {
+                        if (watchFaceDesignHolder.isAreCloudsDark()) {
+                            if (watchFaceDesignHolder.isHeavyClouds() || watchFaceDesignHolder.isModerateClouds()) {
+                                overlay = drawableToBitmap(getDrawable(R.drawable.moderate_dark_low_clouds));
+                                Log.v(TAG, "moderate_dark_low_clouds");
+                            } else {
+                                overlay = drawableToBitmap(getDrawable(R.drawable.dark_low_cloud));
+                                Log.v(TAG, "dark_low_cloud");
+                            }
+                        } else { // light clouds
+                            if (watchFaceDesignHolder.isHeavyClouds() || watchFaceDesignHolder.isModerateClouds()) {
+                                overlay = drawableToBitmap(getDrawable(R.drawable.moderate_light_low_clouds));
+                                Log.v(TAG, "moderate_light_low_clouds");
+                            } else {
+                                overlay = drawableToBitmap(getDrawable(R.drawable.light_low_cloud));
+                                Log.v(TAG, "light_low_cloud");
+                            }
                         }
-                    } else { // light clouds
-                        if (watchFaceDesignHolder.isHeavyClouds() || watchFaceDesignHolder.isModerateClouds()) {
-                            overlay = drawableToBitmap(getDrawable(R.drawable.moderate_light_low_clouds));
-                            Log.v(TAG, "moderate_light_low_clouds");
-                        } else {
-                            overlay = drawableToBitmap(getDrawable(R.drawable.light_low_cloud));
-                            Log.v(TAG, "light_low_cloud");
+                    } else { // high clouds
+                        if (watchFaceDesignHolder.isAreCloudsDark()) {
+                            if (watchFaceDesignHolder.isHeavyClouds() || watchFaceDesignHolder.isModerateClouds()) {
+                                overlay = drawableToBitmap(getDrawable(R.drawable.moderate_dark_high_clouds));
+                                Log.v(TAG, "moderate_dark_high_clouds");
+                            } else {
+                                overlay = drawableToBitmap(getDrawable(R.drawable.dark_high_cloud));
+                                Log.v(TAG, "dark_high_cloud");
+                            }
+                        } else { // light clouds
+                            if (watchFaceDesignHolder.isHeavyClouds() || watchFaceDesignHolder.isModerateClouds()) {
+                                overlay = drawableToBitmap(getDrawable(R.drawable.moderate_light_high_clouds));
+                                Log.v(TAG, "moderate_light_high_clouds");
+                            } else {
+                                overlay = drawableToBitmap(getDrawable(R.drawable.light_high_cloud));
+                                Log.v(TAG, "light_high_cloud");
+                            }
                         }
                     }
-                }
-                else { // high clouds
-                    if (watchFaceDesignHolder.isAreCloudsDark()) {
-                        if (watchFaceDesignHolder.isHeavyClouds() || watchFaceDesignHolder.isModerateClouds()) {
-                            overlay = drawableToBitmap(getDrawable(R.drawable.moderate_dark_high_clouds));
-                            Log.v(TAG, "moderate_dark_high_clouds");
-                        } else {
-                            overlay = drawableToBitmap(getDrawable(R.drawable.dark_high_cloud));
-                            Log.v(TAG, "dark_high_cloud");
-                        }
-                    } else { // light clouds
-                        if (watchFaceDesignHolder.isHeavyClouds() || watchFaceDesignHolder.isModerateClouds()) {
-                            overlay = drawableToBitmap(getDrawable(R.drawable.moderate_light_high_clouds));
-                            Log.v(TAG, "moderate_light_high_clouds");
-                        } else {
-                            overlay = drawableToBitmap(getDrawable(R.drawable.light_high_cloud));
-                            Log.v(TAG, "light_high_cloud");
-                        }
+                    if (overlay != null) {
+                        mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
                     }
                 }
-                if (overlay != null) {
+
+                // rainy
+                if (watchFaceDesignHolder.isHeavyRain() || watchFaceDesignHolder.isModerateRain() || watchFaceDesignHolder.isLightRain()) {
+                    if (watchFaceDesignHolder.isHeavyRain()) {
+                        overlay = drawableToBitmap(getDrawable(R.drawable.heavy_rain));
+                        Log.v(TAG, "heavy_rain");
+                    } else if (watchFaceDesignHolder.isModerateRain()) {
+                        overlay = drawableToBitmap(getDrawable(R.drawable.moderate_rain));
+                        Log.v(TAG, "moderate_rain");
+                    } else {
+                        overlay = drawableToBitmap(getDrawable(R.drawable.light_rain));
+                        Log.v(TAG, "light_rain");
+                    }
                     mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
                 }
-            }
 
-            // rainy
-            if (watchFaceDesignHolder.isHeavyRain() || watchFaceDesignHolder.isModerateRain() || watchFaceDesignHolder.isLightRain()) {
-                if (watchFaceDesignHolder.isHeavyRain()) {
-                    overlay = drawableToBitmap(getDrawable(R.drawable.heavy_rain));
-                    Log.v(TAG, "heavy_rain");
+                // snowy
+                if (watchFaceDesignHolder.isHeavySnow() || watchFaceDesignHolder.isModerateSnow() || watchFaceDesignHolder.isLightSnow()) {
+                    if (watchFaceDesignHolder.isHeavySnow()) {
+                        overlay = drawableToBitmap(getDrawable(R.drawable.heavy_snow));
+                        Log.v(TAG, "heavy_snow");
+                    } else if (watchFaceDesignHolder.isModerateSnow()) {
+                        overlay = drawableToBitmap(getDrawable(R.drawable.moderate_snow));
+                        Log.v(TAG, "moderate_snow");
+                    } else {
+                        overlay = drawableToBitmap(getDrawable(R.drawable.light_snow));
+                        Log.v(TAG, "light_snow");
+                    }
+                    mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
                 }
-                else if (watchFaceDesignHolder.isModerateRain()) {
-                    overlay = drawableToBitmap(getDrawable(R.drawable.moderate_rain));
-                    Log.v(TAG, "moderate_rain");
-                }
-                else {
-                    overlay = drawableToBitmap(getDrawable(R.drawable.light_rain));
-                    Log.v(TAG, "light_rain");
-                }
-                mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
-            }
 
-            // snowy
-            if (watchFaceDesignHolder.isHeavySnow() || watchFaceDesignHolder.isModerateSnow() || watchFaceDesignHolder.isLightSnow()) {
-                if (watchFaceDesignHolder.isHeavySnow()) {
-                    overlay = drawableToBitmap(getDrawable(R.drawable.heavy_snow));
-                    Log.v(TAG, "heavy_snow");
+                // stormy
+                if (watchFaceDesignHolder.isHeavyStorm() || watchFaceDesignHolder.isModerateStorm() || watchFaceDesignHolder.isLightStorm()) {
+                    if (watchFaceDesignHolder.isHeavyStorm()) {
+                        overlay = drawableToBitmap(getDrawable(R.drawable.heavy_storm));
+                        Log.v(TAG, "heavy_storm");
+                    } else if (watchFaceDesignHolder.isModerateStorm()) {
+                        overlay = drawableToBitmap(getDrawable(R.drawable.moderate_storm));
+                        Log.v(TAG, "moderate_storm");
+                    } else {
+                        overlay = drawableToBitmap(getDrawable(R.drawable.light_storm));
+                        Log.v(TAG, "light_storm");
+                    }
+                    mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
                 }
-                else if (watchFaceDesignHolder.isModerateSnow()) {
-                    overlay = drawableToBitmap(getDrawable(R.drawable.moderate_snow));
-                    Log.v(TAG, "moderate_snow");
-                }
-                else {
-                    overlay = drawableToBitmap(getDrawable(R.drawable.light_snow));
-                    Log.v(TAG, "light_snow");
-                }
-                mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
-            }
 
-            // stormy
-            if (watchFaceDesignHolder.isHeavyStorm() || watchFaceDesignHolder.isModerateStorm() || watchFaceDesignHolder.isLightStorm()) {
-                if (watchFaceDesignHolder.isHeavyStorm()) {
-                    overlay = drawableToBitmap(getDrawable(R.drawable.heavy_storm));
-                    Log.v(TAG, "heavy_storm");
-                }
-                else if (watchFaceDesignHolder.isModerateStorm()) {
-                    overlay = drawableToBitmap(getDrawable(R.drawable.moderate_storm));
-                    Log.v(TAG, "moderate_storm");
-                }
-                else {
-                    overlay = drawableToBitmap(getDrawable(R.drawable.light_storm));
-                    Log.v(TAG, "light_storm");
-                }
-                mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
-            }
-
-            if (watchFaceDesignHolder.useStandardFace()) {
-                // windy
-                if (watchFaceDesignHolder.isHeavyWind() || watchFaceDesignHolder.isModerateWind() || watchFaceDesignHolder.isLightWind()) {
-                    overlay = drawableToBitmap(getDrawable(R.drawable.windy_day_standard));
-                    Log.v(TAG, "windy_day - standard");
+                if (watchFaceDesignHolder.useStandardFace()) {
+                    // windy
+                    if (watchFaceDesignHolder.isHeavyWind() || watchFaceDesignHolder.isModerateWind() || watchFaceDesignHolder.isLightWind()) {
+                        overlay = drawableToBitmap(getDrawable(R.drawable.windy_day_standard));
+                        Log.v(TAG, "windy_day - standard");
+                    } else {
+                        overlay = drawableToBitmap(getDrawable(R.drawable.not_windy_day_standard));
+                        Log.v(TAG, "not_windy_day - standard");
+                    }
                 } else {
-                    overlay = drawableToBitmap(getDrawable(R.drawable.not_windy_day_standard));
-                    Log.v(TAG, "not_windy_day - standard");
+                    // windy
+                    if (watchFaceDesignHolder.isHeavyWind() || watchFaceDesignHolder.isModerateWind() || watchFaceDesignHolder.isLightWind()) {
+                        overlay = drawableToBitmap(getDrawable(R.drawable.windy_day));
+                        Log.v(TAG, "windy_day - alternate");
+                    } else {
+                        overlay = drawableToBitmap(getDrawable(R.drawable.not_windy_day));
+                        Log.v(TAG, "not_windy_day - alternate");
+                    }
                 }
+                mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
             }
-            else {
-                // windy
-                if (watchFaceDesignHolder.isHeavyWind() || watchFaceDesignHolder.isModerateWind() || watchFaceDesignHolder.isLightWind()) {
-                    overlay = drawableToBitmap(getDrawable(R.drawable.windy_day));
-                    Log.v(TAG, "windy_day - alternate");
-                } else {
-                    overlay = drawableToBitmap(getDrawable(R.drawable.not_windy_day));
-                    Log.v(TAG, "not_windy_day - alternate");
-                }
-            }
-            mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
 
             // clock face
             mIsDiamond = false;
