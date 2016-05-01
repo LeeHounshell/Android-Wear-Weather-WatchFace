@@ -242,6 +242,14 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.night));
                     Log.v(TAG, "night - static");
                 }
+                if (mWatchFaceDesignHolder.useStandardFace()) {
+                    overlay = drawableToBitmap(getDrawable(R.drawable.not_windy_day_standard));
+                    Log.v(TAG, "not_windy_day - standard - static");
+                }
+                else {
+                    overlay = drawableToBitmap(getDrawable(R.drawable.not_windy_day));
+                    Log.v(TAG, "not_windy_day - alternate - static");
+                }
             }
             else {
                 if (watchFaceDesignHolder.isDaytime()) {
@@ -410,8 +418,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                         Log.v(TAG, "not_windy_day - alternate");
                     }
                 }
-                mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
             }
+            mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
 
             // clock face
             mIsDiamondOrRuby = false;
