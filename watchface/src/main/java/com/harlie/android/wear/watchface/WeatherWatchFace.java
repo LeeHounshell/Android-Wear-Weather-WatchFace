@@ -424,7 +424,10 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
 
             // face tick marks
-            if (mWatchFaceDesignHolder.useIvoryTickmarks()) {
+            if (! mWatchFaceDesignHolder.useSecondHand()) {
+                Log.v(TAG, "tickmarks_none");
+            }
+            else if (mWatchFaceDesignHolder.useIvoryTickmarks()) {
                 overlay = drawableToBitmap(getDrawable(R.drawable.tickmarks_ivory));
                 mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
                 Log.v(TAG, "tickmarks_ivory");
