@@ -122,6 +122,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         boolean mAmbient;
         boolean mDaylightChanged;
         boolean mIsRound;
+        boolean mIsDiamond;
         Calendar mCalendar;
         int mBatteryLevel;
         int mTapCount;
@@ -407,6 +408,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
 
             // clock face
+            mIsDiamond = false;
             if (mWatchFaceDesignHolder.useRomanNumeralsFace()) {
                 if (mWatchFaceDesignHolder.useGoldColor()) {
                     overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_roman_gold));
@@ -421,6 +423,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             else {
                 // check for special cases
                 if (mWatchFaceDesignHolder.useGoldColor() && mWatchFaceDesignHolder.useIvoryTickmarks() && ! mWatchFaceDesignHolder.useRomanNumeralsFace()) {
+                    mIsDiamond = true;
                     overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_diamond));
                     mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
                     Log.v(TAG, "clock_face_diamond");
@@ -654,7 +657,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             float hrRot = ((mCalendar.get(Calendar.HOUR) + (minutes / 60f)) / 6f) * (float) Math.PI;
 
             float hrLength = centerX / 2;
-            float minLength = hrLength + (hrLength / 3);
+            float minLength = hrLength + (hrLength / (mIsDiamond ? 2 : 3));
 
             if (mAmbient && ! ambientOverride) {
                 mHandPaint.clearShadowLayer();
