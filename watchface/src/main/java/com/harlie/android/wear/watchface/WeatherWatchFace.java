@@ -117,6 +117,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         Paint mBackgroundPaint;
         Paint mHandPaint;
         Paint mHandPaintBright;
+        Paint mHandPaintGold;
         Paint mHandPaintAccent;
         boolean mAmbient;
         boolean mDaylightChanged;
@@ -186,6 +187,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mHandPaintBright.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke_bright));
             mHandPaintBright.setAntiAlias(true);
             mHandPaintBright.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
+
+            mHandPaintGold = new Paint();
+            mHandPaintGold.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.analog_hands_gold));
+            mHandPaintGold.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke_bright));
+            mHandPaintGold.setAntiAlias(true);
+            mHandPaintGold.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
 
             mHandPaintAccent = new Paint();
             mHandPaintAccent.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.battery_warning));
@@ -640,12 +647,14 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             float centerX = bounds.width() / 2f;
             float centerY = bounds.height() / 2f;
 
+            // we know there are 60 seconds in a minute and 360 degrees in a circle, so 1 second of time = 6 degrees arc
+
             int minutes = mCalendar.get(Calendar.MINUTE);
             float minRot = minutes / 30f * (float) Math.PI;
             float hrRot = ((mCalendar.get(Calendar.HOUR) + (minutes / 60f)) / 6f) * (float) Math.PI;
 
-            float minLength = centerX - 40;
-            float hrLength = centerX - 80;
+            float hrLength = centerX / 2;
+            float minLength = hrLength + (hrLength / 3);
 
             if (mAmbient && ! ambientOverride) {
                 mHandPaint.clearShadowLayer();
@@ -673,7 +682,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                             centerY - CENTER_GAP_AND_CIRCLE_RADIUS,
                             centerX,
                             centerY - hrLength,
-                            mHandPaintBright);
+                            (mWatchFaceDesignHolder.useGoldColor()) ? mHandPaintGold : mHandPaintBright);
 
                     canvas.rotate(minutesRotation - hoursRotation, centerX, centerY);
                     canvas.drawLine(
@@ -681,7 +690,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                             centerY - CENTER_GAP_AND_CIRCLE_RADIUS,
                             centerX,
                             centerY - minLength,
-                            mHandPaintBright);
+                            (mWatchFaceDesignHolder.useGoldColor()) ? mHandPaintGold : mHandPaintBright);
                     canvas.drawCircle(
                             centerX,
                             centerY,

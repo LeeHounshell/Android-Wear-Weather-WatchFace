@@ -4,5 +4,6 @@
     <color name="background2">#000088</color>
     <color name="analog_hands">#cccccc</color>
     <color name="analog_hands_bright">#eeeeee</color>
+    <color name="analog_hands_gold">#ffd700</color>
     <color name="battery_warning">#ff69b4</color>
 </resources>
