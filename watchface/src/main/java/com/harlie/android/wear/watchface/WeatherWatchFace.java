@@ -424,7 +424,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             // clock face
             mIsDiamondOrRuby = false;
             if (mWatchFaceDesignHolder.useRomanNumeralsFace()) {
-                if (mWatchFaceDesignHolder.useGoldColor()) {
+                if (mWatchFaceDesignHolder.useGoldInlay()) {
                     overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_roman_gold));
                     mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
                     Log.v(TAG, "clock_face_roman_gold");
@@ -436,11 +436,11 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
             else {
                 // check for special cases
-                if (mWatchFaceDesignHolder.useGoldColor() && mWatchFaceDesignHolder.useIvoryTickmarks() && ! mWatchFaceDesignHolder.useRomanNumeralsFace()) {
+                if (mWatchFaceDesignHolder.useGoldInlay() && mWatchFaceDesignHolder.usePreciousStones()) {
                     mIsDiamondOrRuby = true;
                     if (mWatchFaceDesignHolder.useSecondHand()) {
-                        overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_ruby));
-                        Log.v(TAG, "clock_face_ruby");
+                        overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_emerald));
+                        Log.v(TAG, "clock_face_emerald");
                     }
                     else {
                         overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_diamond));
@@ -448,14 +448,20 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     }
                     mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
                 }
-                else if (mWatchFaceDesignHolder.useGoldColor()) {
+                else if (mWatchFaceDesignHolder.usePreciousStones()) {
+                    overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_ruby));
+                    mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
+                    Log.v(TAG, "clock_face_ruby");
+                }
+                else if (mWatchFaceDesignHolder.useGoldInlay()) {
                     overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_gold));
                     mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
                     Log.v(TAG, "clock_face_gold");
-                } else {
+                }
+                else {
                     overlay = drawableToBitmap(getDrawable(R.drawable.clock_face));
                     mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
-                    Log.v(TAG, "clock_face_plain");
+                    Log.v(TAG, "clock_face");
                 }
             }
 
@@ -463,14 +469,14 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             if (! mWatchFaceDesignHolder.useSecondHand()) {
                 Log.v(TAG, "tickmarks_none");
             }
-            else if (mWatchFaceDesignHolder.useIvoryTickmarks()) {
+            else if (mWatchFaceDesignHolder.usePreciousStones()) {
                 overlay = drawableToBitmap(getDrawable(R.drawable.tickmarks_ivory));
                 mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
-                Log.v(TAG, "tickmarks_ivory");
+                Log.v(TAG, "precious_stones - tickmarks_ivory");
             }
             else {
                 // check for special cases
-                if (! mWatchFaceDesignHolder.useRomanNumeralsFace() && ! mWatchFaceDesignHolder.useIvoryTickmarks() && ! mWatchFaceDesignHolder.useGoldColor()) {
+                if (! mWatchFaceDesignHolder.useRomanNumeralsFace() && ! mWatchFaceDesignHolder.useGoldInlay()) {
                     Log.v(TAG, "tickmarks_none");
                 }
                 else if (! mWatchFaceDesignHolder.useRomanNumeralsFace()) {
@@ -705,7 +711,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                             centerY - CENTER_GAP_AND_CIRCLE_RADIUS,
                             centerX,
                             centerY - hrLength,
-                            (mWatchFaceDesignHolder.useGoldColor()) ? mHandPaintGold : mHandPaintBright);
+                            (mWatchFaceDesignHolder.useGoldInlay()) ? mHandPaintGold : mHandPaintBright);
 
                     canvas.rotate(minutesRotation - hoursRotation, centerX, centerY);
                     canvas.drawLine(
@@ -713,7 +719,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                             centerY - CENTER_GAP_AND_CIRCLE_RADIUS,
                             centerX,
                             centerY - minLength,
-                            (mWatchFaceDesignHolder.useGoldColor()) ? mHandPaintGold : mHandPaintBright);
+                            (mWatchFaceDesignHolder.useGoldInlay()) ? mHandPaintGold : mHandPaintBright);
                     canvas.drawCircle(
                             centerX,
                             centerY,

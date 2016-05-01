@@ -41,8 +41,8 @@ public class WatchFaceDesignHolder implements Parcelable {
         useSecondHand();
         useStandardFace();
         useRomanNumeralsFace();
-        useGoldColor();
-        useIvoryTickmarks();
+        useGoldInlay();
+        usePreciousStones();
         useStaticBackground();
         useContinuousOn();
         return isDirty;
@@ -350,6 +350,19 @@ public class WatchFaceDesignHolder implements Parcelable {
     // we use the Denley preferencebinder code injection framework to handle those values.
     // from: https://github.com/denley/preferencebinder
 
+    @PreferenceDefault("use_static_background") public static boolean STATICBACKGROUND_PREFERENCE_DEFAULT = false;
+    @BindPref(value = "use_static_background")
+    boolean useStaticBackground = STATICBACKGROUND_PREFERENCE_DEFAULT;
+    boolean useStaticBackgroundOldValue = !STATICBACKGROUND_PREFERENCE_DEFAULT;
+
+    public boolean useStaticBackground() {
+        if (useStaticBackgroundOldValue != useStaticBackground) {
+            useStaticBackgroundOldValue = useStaticBackground;
+            setDirty(true);
+        }
+        return useStaticBackground;
+    }
+
     @PreferenceDefault("use_secondhand") public static boolean SECONDHAND_PREFERENCE_DEFAULT = true;
     @BindPref(value = "use_secondhand")
     boolean useSecondHand = SECONDHAND_PREFERENCE_DEFAULT;
@@ -389,43 +402,30 @@ public class WatchFaceDesignHolder implements Parcelable {
         return useRomanNumeralsFace;
     }
 
-    @PreferenceDefault("use_goldcolor") public static boolean GOLDCOLOR_PREFERENCE_DEFAULT = false;
-    @BindPref(value = "use_goldcolor")
-    boolean useGoldColor = GOLDCOLOR_PREFERENCE_DEFAULT;
-    boolean useGoldColorOldValue = !GOLDCOLOR_PREFERENCE_DEFAULT;
+    @PreferenceDefault("use_gold_inlay") public static boolean GOLDINLAY_PREFERENCE_DEFAULT = false;
+    @BindPref(value = "use_gold_inlay")
+    boolean useGoldInlay = GOLDINLAY_PREFERENCE_DEFAULT;
+    boolean useGoldInlayOldValue = !GOLDINLAY_PREFERENCE_DEFAULT;
 
-    public boolean useGoldColor() {
-        if (useGoldColorOldValue != useGoldColor) {
-            useGoldColorOldValue = useGoldColor;
+    public boolean useGoldInlay() {
+        if (useGoldInlayOldValue != useGoldInlay) {
+            useGoldInlayOldValue = useGoldInlay;
             setDirty(true);
         }
-        return useGoldColor;
+        return useGoldInlay;
     }
 
-    @PreferenceDefault("use_ivorytickmarks") public static boolean IVORYTICKMARKS_PREFERENCE_DEFAULT = false;
-    @BindPref(value = "use_ivorytickmarks")
-    boolean useIvoryTickmarks = IVORYTICKMARKS_PREFERENCE_DEFAULT;
-    boolean useIvoryTickmarksOldValue = !IVORYTICKMARKS_PREFERENCE_DEFAULT;
+    @PreferenceDefault("use_precious_stones") public static boolean PRECIOUSSTONES_PREFERENCE_DEFAULT = false;
+    @BindPref(value = "use_precious_stones")
+    boolean usePreciousStones = PRECIOUSSTONES_PREFERENCE_DEFAULT;
+    boolean usePreciousStonesOldValue = !PRECIOUSSTONES_PREFERENCE_DEFAULT;
 
-    public boolean useIvoryTickmarks() {
-        if (useIvoryTickmarksOldValue != useIvoryTickmarks) {
-            useIvoryTickmarksOldValue = useIvoryTickmarks;
+    public boolean usePreciousStones() {
+        if (usePreciousStonesOldValue != usePreciousStones) {
+            usePreciousStonesOldValue = usePreciousStones;
             setDirty(true);
         }
-        return useIvoryTickmarks;
-    }
-
-    @PreferenceDefault("use_staticbackground") public static boolean STATICBACKGROUND_PREFERENCE_DEFAULT = false;
-    @BindPref(value = "use_staticbackground")
-    boolean useStaticBackground = STATICBACKGROUND_PREFERENCE_DEFAULT;
-    boolean useStaticBackgroundOldValue = !STATICBACKGROUND_PREFERENCE_DEFAULT;
-
-    public boolean useStaticBackground() {
-        if (useStaticBackgroundOldValue != useStaticBackground) {
-            useStaticBackgroundOldValue = useStaticBackground;
-            setDirty(true);
-        }
-        return useStaticBackground;
+        return usePreciousStones;
     }
 
     @PreferenceDefault("use_continuous_on") public static boolean CONTINUOUSON_PREFERENCE_DEFAULT = false;

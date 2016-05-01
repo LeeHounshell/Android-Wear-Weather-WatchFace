@@ -5,8 +5,8 @@
     <string name="title_secondhand">Second-Hand</string>
     <string name="title_standardface">Traditional Face</string>
     <string name="title_roman_numerals">Roman Numerals</string>
-    <string name="title_goldcolor">Precious Gold</string>
-    <string name="title_ivorytickmarks">Ivory Tickmarks</string>
+    <string name="title_gold_inlay">Gold Inlay</string>
+    <string name="title_precious_stones">Jewels</string>
     <string name="title_staticbackground">Disable Weather</string>
     <string name="title_continuous_on">Always On</string>
     <string name="summary_enabled">Weather ON</string>

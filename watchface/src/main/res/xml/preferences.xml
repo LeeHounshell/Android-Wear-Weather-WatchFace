@@ -3,6 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <SwitchPreference
+        android:key="use_static_background"
+        android:title="@string/title_staticbackground"
+        android:summaryOn="@string/summary_disabled"
+        android:summaryOff="@string/summary_enabled"
+        app:wear_iconOn="@drawable/ic_watchivory"
+        app:wear_iconOff="@drawable/ic_weather"
+        android:defaultValue="false"
+        />
+
+    <SwitchPreference
         android:key="use_secondhand"
         android:title="@string/title_secondhand"
         android:summaryOn="@string/summary_show"
@@ -33,8 +43,8 @@
         />
 
     <SwitchPreference
-        android:key="use_goldcolor"
-        android:title="@string/title_goldcolor"
+        android:key="use_gold_inlay"
+        android:title="@string/title_gold_inlay"
         android:summaryOn="@string/summary_on"
         android:summaryOff="@string/summary_off"
         app:wear_iconOn="@drawable/ic_watchclock"
@@ -43,22 +53,12 @@
         />
 
     <SwitchPreference
-        android:key="use_ivorytickmarks"
-        android:title="@string/title_ivorytickmarks"
+        android:key="use_precious_stones"
+        android:title="@string/title_precious_stones"
         android:summaryOn="@string/summary_on"
         android:summaryOff="@string/summary_off"
         app:wear_iconOn="@drawable/ic_watchivory"
         app:wear_iconOff="@drawable/ic_watchoff"
-        android:defaultValue="false"
-        />
-
-    <SwitchPreference
-        android:key="use_staticbackground"
-        android:title="@string/title_staticbackground"
-        android:summaryOn="@string/summary_disabled"
-        android:summaryOff="@string/summary_enabled"
-        app:wear_iconOn="@drawable/ic_watchivory"
-        app:wear_iconOff="@drawable/ic_weather"
         android:defaultValue="false"
         />
 
