@@ -430,9 +430,18 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 Log.v(TAG, "tickmarks_ivory");
             }
             else {
-                overlay = drawableToBitmap(getDrawable(R.drawable.tickmarks_plain));
-                mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
-                Log.v(TAG, "tickmarks_plain");
+                // check for special cases
+                if (! mWatchFaceDesignHolder.useRomanNumeralsFace() && ! mWatchFaceDesignHolder.useIvoryTickmarks() && ! mWatchFaceDesignHolder.useGoldColor()) {
+                    Log.v(TAG, "tickmarks_none");
+                }
+                else if (! mWatchFaceDesignHolder.useRomanNumeralsFace()) {
+                    overlay = drawableToBitmap(getDrawable(R.drawable.tickmarks_plain));
+                    mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
+                    Log.v(TAG, "tickmarks_plain");
+                }
+                else {
+                    Log.v(TAG, "tickmarks_none");
+                }
             }
 
             return mBackgroundBitmap;
