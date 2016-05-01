@@ -431,12 +431,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 if (mWatchFaceDesignHolder.useGoldColor() && mWatchFaceDesignHolder.useIvoryTickmarks() && ! mWatchFaceDesignHolder.useRomanNumeralsFace()) {
                     mIsDiamondOrRuby = true;
                     if (mWatchFaceDesignHolder.useSecondHand()) {
-                        overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_diamond));
-                        Log.v(TAG, "clock_face_diamond");
-                    }
-                    else {
                         overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_ruby));
                         Log.v(TAG, "clock_face_ruby");
+                    }
+                    else {
+                        overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_diamond));
+                        Log.v(TAG, "clock_face_diamond");
                     }
                     mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
                 }
