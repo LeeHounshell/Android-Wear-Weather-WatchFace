@@ -493,23 +493,26 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             {
                 Log.v(TAG, "tickmarks_none");
             }
+            else if (mWatchFaceDesignHolder.usePreciousStones() && ! mWatchFaceDesignHolder.useGoldInlay()) {
+                overlay = drawableToBitmap(getDrawable(R.drawable.tickmarks_plain));
+                mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
+                Log.v(TAG, "tickmarks_plain");
+            }
             else if (mWatchFaceDesignHolder.usePreciousStones()) {
                 overlay = drawableToBitmap(getDrawable(R.drawable.tickmarks_ivory));
                 mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
                 Log.v(TAG, "precious_stones - tickmarks_ivory");
             }
+            else if (! mWatchFaceDesignHolder.useRomanNumeralsFace() && ! mWatchFaceDesignHolder.useGoldInlay()) {
+                Log.v(TAG, "tickmarks_none");
+            }
+            else if (! mWatchFaceDesignHolder.useRomanNumeralsFace()) {
+                overlay = drawableToBitmap(getDrawable(R.drawable.tickmarks_plain));
+                mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
+                Log.v(TAG, "tickmarks_plain");
+            }
             else {
-                if (! mWatchFaceDesignHolder.useRomanNumeralsFace() && ! mWatchFaceDesignHolder.useGoldInlay()) {
-                    Log.v(TAG, "tickmarks_none");
-                }
-                else if (! mWatchFaceDesignHolder.useRomanNumeralsFace()) {
-                    overlay = drawableToBitmap(getDrawable(R.drawable.tickmarks_plain));
-                    mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
-                    Log.v(TAG, "tickmarks_plain");
-                }
-                else {
-                    Log.v(TAG, "tickmarks_none");
-                }
+                Log.v(TAG, "tickmarks_none");
             }
 
             return mBackgroundBitmap;

@@ -48,7 +48,7 @@
         android:summaryOn="@string/summary_on"
         android:summaryOff="@string/summary_off"
         app:wear_iconOn="@drawable/ic_goldinlay"
-        app:wear_iconOff="@drawable/ic_watchclock"
+        app:wear_iconOff="@drawable/ic_watchoff"
         android:defaultValue="false"
         />
 
