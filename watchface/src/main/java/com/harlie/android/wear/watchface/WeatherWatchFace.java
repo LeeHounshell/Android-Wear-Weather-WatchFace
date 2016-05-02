@@ -723,14 +723,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 float minX = (float) Math.sin(minRot) * minLength;
                 float minY = (float) -Math.cos(minRot) * minLength;
                 canvas.drawLine(centerX, centerY, centerX + minX, centerY + minY, mHandPaint);
-
-                if (! useSecondHand) {
-                    canvas.drawCircle(
-                            centerX,
-                            centerY,
-                            CENTER_GAP_AND_CIRCLE_RADIUS,
-                            mHandPaintJoint);
-                }
             }
             else {
                 if (mWatchFaceDesignHolder.useStandardFace()) {
@@ -746,7 +738,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                             centerX,
                             centerY - hrLength,
                             (mWatchFaceDesignHolder.useGoldInlay()) ? mHandPaintGold : mHandPaintBright);
-
                     canvas.rotate(minutesRotation - hoursRotation, centerX, centerY);
                     canvas.drawLine(
                             centerX,
@@ -754,13 +745,11 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                             centerX,
                             centerY - minLength,
                             (mWatchFaceDesignHolder.useGoldInlay()) ? mHandPaintGold : mHandPaintBright);
-                    if (! useSecondHand) {
-                        canvas.drawCircle(
-                                centerX,
-                                centerY,
-                                CENTER_GAP_AND_CIRCLE_RADIUS,
-                                mHandPaintJoint);
-                    }
+                    canvas.drawCircle(
+                            centerX,
+                            centerY,
+                            CENTER_GAP_AND_CIRCLE_RADIUS,
+                            mHandPaintJoint);
                     canvas.restore();
                 } else {
                     // hour hand
