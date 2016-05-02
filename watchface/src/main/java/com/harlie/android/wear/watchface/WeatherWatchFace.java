@@ -483,7 +483,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
 
             // face tick marks - check for special cases
-            if (! mWatchFaceDesignHolder.useSecondHand()) {
+            if (! mWatchFaceDesignHolder.useSecondHand() || mAmbient) {
                 Log.v(TAG, "tickmarks_none");
             }
             else if (! mWatchFaceDesignHolder.useStandardFace()
@@ -605,6 +605,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 if (mLowBitAmbient) {
                     mHandPaint.setAntiAlias(!inAmbientMode);
                 }
+                mWatchFaceDesignHolder.setDirty(true);
                 invalidate();
             }
 
