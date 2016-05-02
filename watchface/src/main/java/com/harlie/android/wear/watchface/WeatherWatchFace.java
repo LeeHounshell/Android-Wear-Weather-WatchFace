@@ -723,6 +723,14 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 float minX = (float) Math.sin(minRot) * minLength;
                 float minY = (float) -Math.cos(minRot) * minLength;
                 canvas.drawLine(centerX, centerY, centerX + minX, centerY + minY, mHandPaint);
+
+                if (! useSecondHand) {
+                    canvas.drawCircle(
+                            centerX,
+                            centerY,
+                            CENTER_GAP_AND_CIRCLE_RADIUS,
+                            mHandPaintJoint);
+                }
             }
             else {
                 if (mWatchFaceDesignHolder.useStandardFace()) {
