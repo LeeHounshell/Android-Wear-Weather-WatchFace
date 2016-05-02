@@ -107,6 +107,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         private final float CENTER_GAP_AND_CIRCLE_RADIUS = 4f;
 
         final Handler mUpdateTimeHandler = new EngineHandler(this);
+
         boolean mRegisteredTimeZoneReceiver = false;
         Bitmap mBackgroundBitmap;
         Bitmap mBackgroundAmbientBitmap;
@@ -156,7 +157,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             super.onCreate(holder);
 
             setWatchFaceStyle(new WatchFaceStyle.Builder(WeatherWatchFace.this)
-                    .setCardPeekMode(WatchFaceStyle.PEEK_MODE_SHORT)
+                    .setCardPeekMode(WatchFaceStyle.PEEK_MODE_VARIABLE)
                     .setBackgroundVisibility(WatchFaceStyle.BACKGROUND_VISIBILITY_INTERRUPTIVE)
                     .setShowSystemUiTime(false)
                     .setAcceptsTapEvents(true)
@@ -593,7 +594,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         @Override
         public void onTimeTick() {
             super.onTimeTick();
-            invalidate();
             Date date = new Date();
             mCalendar.setTime(date);
             int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
@@ -603,6 +603,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 mWatchFaceDesignHolder.setDirty(true); // the watch face is out of sync now
             }
             mBatteryLevel = getBatteryLevel();
+            invalidate();
         }
 
         @Override
@@ -615,8 +616,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     mHandPaint.setAntiAlias(!inAmbientMode);
                 }
                 mWatchFaceDesignHolder.setDirty(true);
-                invalidate();
             }
+            invalidate();
 
             // Whether the timer should be running depends on whether we're visible (as well as
             // whether we're in ambient mode), so we may need to start or stop the timer.
@@ -808,6 +809,14 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                         CENTER_GAP_AND_CIRCLE_RADIUS,
                         mHandPaintJoint);
             }
+
+//            if (mWatchFaceDesignHolder.usePreciousStones()) {
+//                // Draw every frame as long as we're visible and in interactive mode.
+//                if (isVisible() && !mAmbient) {
+//                    invalidate();
+//                }
+//            }
+
         }
 
         @Override
