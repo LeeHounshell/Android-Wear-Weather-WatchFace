@@ -5,8 +5,8 @@
     <SwitchPreference
         android:key="use_static_background"
         android:title="@string/title_staticbackground"
-        android:summaryOn="@string/summary_disabled"
-        android:summaryOff="@string/summary_enabled"
+        android:summaryOn="@string/summary_weather_disabled"
+        android:summaryOff="@string/summary_weather_enabled"
         app:wear_iconOn="@drawable/ic_noweather"
         app:wear_iconOff="@drawable/ic_weather"
         android:defaultValue="false"
