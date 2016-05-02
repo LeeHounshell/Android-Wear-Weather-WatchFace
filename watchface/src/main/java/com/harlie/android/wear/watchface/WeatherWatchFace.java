@@ -128,7 +128,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         boolean mAmbient;
         boolean mDaylightChanged;
         boolean mIsRound;
-        boolean mIsDiamondOrRuby;
+        boolean mIsJewelStudded;
         Calendar mCalendar;
         int mBatteryLevel;
         int mTapCount;
@@ -453,7 +453,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
 
             // clock face
-            mIsDiamondOrRuby = false;
+            mIsJewelStudded = false;
             if (mWatchFaceDesignHolder.useRomanNumeralsFace()) {
                 if (mWatchFaceDesignHolder.useGoldInlay()) {
                     overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_roman_gold));
@@ -468,18 +468,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             else {
                 // check for special cases
                 if (mWatchFaceDesignHolder.useGoldInlay() && mWatchFaceDesignHolder.usePreciousStones()) {
-                    mIsDiamondOrRuby = true;
-                    if (mWatchFaceDesignHolder.useSecondHand()) {
-                        overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_emerald));
-                        Log.v(TAG, "clock_face_emerald");
-                    }
-                    else {
-                        overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_diamond));
-                        Log.v(TAG, "clock_face_diamond");
-                    }
+                    mIsJewelStudded = true;
+                    overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_diamond));
                     mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
+                    Log.v(TAG, "clock_face_diamond");
                 }
                 else if (mWatchFaceDesignHolder.usePreciousStones()) {
+                    mIsJewelStudded = true;
                     overlay = drawableToBitmap(getDrawable(R.drawable.clock_face_ruby));
                     mBackgroundBitmap = combineImages(overlay, mBackgroundBitmap);
                     Log.v(TAG, "clock_face_ruby");
@@ -497,7 +492,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
 
             // face tick marks - check for special cases
-            if (! mWatchFaceDesignHolder.useSecondHand() || mAmbient) {
+            if (! mWatchFaceDesignHolder.useSecondHand() || mAmbient || mIsJewelStudded) {
                 Log.v(TAG, "tickmarks_none");
             }
             else if (! mWatchFaceDesignHolder.useStandardFace()
@@ -730,7 +725,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             float hrRot = ((mCalendar.get(Calendar.HOUR) + (minutes / 60f)) / 6f) * (float) Math.PI;
 
             float hrLength = centerX / 2;
-            float minLength = hrLength + (hrLength / (mIsDiamondOrRuby ? 2 : 3));
+            float minLength = hrLength + (hrLength / (mIsJewelStudded ? 2 : 3));
 
             // draw the hour and minute hands
             if (realAmbientMode) {
