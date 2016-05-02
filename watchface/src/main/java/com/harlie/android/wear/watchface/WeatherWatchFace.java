@@ -109,9 +109,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         final Handler mUpdateTimeHandler = new EngineHandler(this);
         boolean mRegisteredTimeZoneReceiver = false;
         Bitmap mBackgroundBitmap;
+        Bitmap mBackgroundAmbientBitmap;
+        Bitmap mBackgroundAmbientGoldBitmap;
         Bitmap mHourHandBitmap;
         Bitmap mMinuteHandBitmap;
         Bitmap mBackgroundBitmapScaled;
+        Bitmap mBackgroundAmbientBitmapScaled;
+        Bitmap mBackgroundAmbientGoldBitmapScaled;
         Bitmap mHourHandBitmapScaled;
         Bitmap mMinuteHandBitmapScaled;
         Paint mBackgroundPaint;
@@ -128,6 +132,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         Calendar mCalendar;
         int mBatteryLevel;
         int mTapCount;
+        int mHeight;
+        int mWidth;
 
         /**
          * Whether the display supports fewer bits for each color in ambient mode. When true, we
@@ -223,17 +229,25 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
             mWatchFaceDesignHolder.setDaytime((hour >= 6 && hour < 18));
 
+            WindowManager wm = (WindowManager) WeatherWatchFace.getContext().getSystemService(Context.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
+            DisplayMetrics metrics = new DisplayMetrics();
+            display.getMetrics(metrics);
+            mWidth = metrics.widthPixels;
+            mHeight = metrics.heightPixels;
+
             createWatchFaceBitmaps();
+
+            mBackgroundAmbientBitmap = drawableToBitmap(getDrawable(R.drawable.clock_face_ambient));
+            mBackgroundAmbientBitmapScaled = Bitmap.createScaledBitmap(mBackgroundAmbientBitmap, mWidth, mHeight, true /* filter */);
+            mBackgroundAmbientGoldBitmap = drawableToBitmap(getDrawable(R.drawable.clock_face_ambient_gold));
+            mBackgroundAmbientGoldBitmapScaled = Bitmap.createScaledBitmap(mBackgroundAmbientGoldBitmap, mWidth, mHeight, true /* filter */);
         }
 
         private void createWatchFaceBitmaps() {
             Log.v(TAG, "createWatchBitmaps");
             mBackgroundBitmap = createWatchBackgroundBitmap(mWatchFaceDesignHolder);
-            WindowManager wm = (WindowManager) WeatherWatchFace.getContext().getSystemService(Context.WINDOW_SERVICE);
-            Display display = wm.getDefaultDisplay();
-            DisplayMetrics metrics = new DisplayMetrics();
-            display.getMetrics(metrics);
-            scaleWatchFace(metrics.widthPixels, metrics.heightPixels);
+            scaleWatchFace(mWidth, mHeight);
         }
 
         private Bitmap createWatchBackgroundBitmap(WatchFaceDesignHolder watchFaceDesignHolder) {
@@ -668,6 +682,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             boolean useSecondHand = mWatchFaceDesignHolder.useSecondHand();
             boolean ambientOverride = mWatchFaceDesignHolder.useContinuousOn();
+            boolean realAmbientMode = (mAmbient && ! ambientOverride);
 
             if (mWatchFaceDesignHolder.isDirty()) {
                 Log.v(TAG, "*** WATCH FACE UPDATE ***");
@@ -686,8 +701,14 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
 
             // Draw the background.
-            if (mAmbient && ! ambientOverride) {
+            if (realAmbientMode) {
                 canvas.drawColor(Color.BLACK);
+                if (mWatchFaceDesignHolder.useGoldInlay()) {
+                    canvas.drawBitmap(mBackgroundAmbientGoldBitmapScaled, 0, 0, null);
+                }
+                else {
+                    canvas.drawBitmap(mBackgroundAmbientBitmapScaled, 0, 0, null);
+                }
             } else {
                 if (mBackgroundBitmapScaled == null) {
                     canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), mBackgroundPaint);
@@ -711,9 +732,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             float hrLength = centerX / 2;
             float minLength = hrLength + (hrLength / (mIsDiamondOrRuby ? 2 : 3));
 
-            if (mAmbient && ! ambientOverride) {
-                mHandPaint.clearShadowLayer();
-
+            // draw the hour and minute hands
+            if (realAmbientMode) {
                 // hour hand
                 float hrX = (float) Math.sin(hrRot) * hrLength;
                 float hrY = (float) -Math.cos(hrRot) * hrLength;
@@ -724,7 +744,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 float minY = (float) -Math.cos(minRot) * minLength;
                 canvas.drawLine(centerX, centerY, centerX + minX, centerY + minY, mHandPaint);
             }
-            else {
+            else if (! mAmbient || (mAmbient && mWatchFaceDesignHolder.useContinuousOn())) {
                 if (mWatchFaceDesignHolder.useStandardFace()) {
                     final float minutesRotation = mCalendar.get(Calendar.MINUTE) * 6f;
                     final float hourHandOffset = mCalendar.get(Calendar.MINUTE) / 2f;
@@ -752,12 +772,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                             mHandPaintJoint);
                     canvas.restore();
                 } else {
-                    // hour hand
+                    // hour hand from Bitmap
                     Matrix matrix = new Matrix();
                     matrix.setRotate(hrRot / (float) Math.PI * 180, mHourHandBitmapScaled.getWidth() / 2, mHourHandBitmapScaled.getHeight() / 2);
                     canvas.drawBitmap(mHourHandBitmapScaled, matrix, mHandPaint);
 
-                    // minute hand
+                    // minute hand from Bitmap
                     matrix = new Matrix();
                     matrix.setRotate(minRot / (float) Math.PI * 180, mHourHandBitmapScaled.getWidth() / 2, mHourHandBitmapScaled.getHeight() / 2);
                     canvas.drawBitmap(mMinuteHandBitmapScaled, matrix, mHandPaint);
