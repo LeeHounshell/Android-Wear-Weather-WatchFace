@@ -226,7 +226,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 mBackgroundBitmap = drawableToBitmap(getDrawable(R.drawable.clock_face));
                 return mBackgroundBitmap;
             }
-            Bitmap overlay = null;
+            Bitmap overlay;
             if (mWatchFaceDesignHolder.useStaticBackground()) {
                 if (watchFaceDesignHolder.isDaytime()) {
                     if (watchFaceDesignHolder.isOvercast()) {
@@ -311,7 +311,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
                 // cloudy
                 if (watchFaceDesignHolder.isHeavyClouds() || watchFaceDesignHolder.isModerateClouds() || watchFaceDesignHolder.isLightClouds()) {
-                    overlay = null;
                     if (watchFaceDesignHolder.isAreCloudsLow()) {
                         if (watchFaceDesignHolder.isAreCloudsDark()) {
                             if (watchFaceDesignHolder.isHeavyClouds() || watchFaceDesignHolder.isModerateClouds()) {
@@ -465,8 +464,15 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 }
             }
 
-            // face tick marks
+            // face tick marks - check for special cases
             if (! mWatchFaceDesignHolder.useSecondHand()) {
+                Log.v(TAG, "tickmarks_none");
+            }
+            else if (! mWatchFaceDesignHolder.useStandardFace()
+                    && ! mWatchFaceDesignHolder.useRomanNumeralsFace()
+                    && mWatchFaceDesignHolder.useGoldInlay()
+                    && mWatchFaceDesignHolder.usePreciousStones())
+            {
                 Log.v(TAG, "tickmarks_none");
             }
             else if (mWatchFaceDesignHolder.usePreciousStones()) {
@@ -475,7 +481,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 Log.v(TAG, "precious_stones - tickmarks_ivory");
             }
             else {
-                // check for special cases
                 if (! mWatchFaceDesignHolder.useRomanNumeralsFace() && ! mWatchFaceDesignHolder.useGoldInlay()) {
                     Log.v(TAG, "tickmarks_none");
                 }
@@ -511,7 +516,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         // from: http://stackoverflow.com/questions/3035692/how-to-convert-a-drawable-to-a-bitmap
         public Bitmap drawableToBitmap (Drawable drawable) {
-            Bitmap bitmap = null;
+            Bitmap bitmap;
 
             if (drawable instanceof BitmapDrawable) {
                 BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
@@ -591,7 +596,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             Log.v(TAG, "onSurfaceChanged");
             if (mBackgroundBitmap != null &&
-                    (mBackgroundBitmap.getWidth() != width) || (mBackgroundBitmap.getHeight() != height))
+                    ((mBackgroundBitmap.getWidth() != width) || (mBackgroundBitmap.getHeight() != height)))
             {
                 scaleWatchFace(width, height);
             }
@@ -617,7 +622,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         @Override
         public void onTapCommand(int tapType, int x, int y, long eventTime) {
             Log.v(TAG, "onTapCommand");
-            Resources resources = WeatherWatchFace.this.getResources();
             switch (tapType) {
                 case TAP_TYPE_TOUCH:
                     // The user has started touching the screen.
@@ -745,7 +749,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 float fullSecLength = centerX - 20;
                 // now shorten the length based on battery percentage remaining
                 float secLength = (fullSecLength * mBatteryLevel) / 100;
-                int secDifference = (int) (fullSecLength - secLength);
                 float secX = (float) Math.sin(secRot) * secLength;
                 float secY = (float) -Math.cos(secRot) * secLength;
                 // draw using normal color first
@@ -831,6 +834,9 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
     {
         IntentFilter iFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus =  registerReceiver(null, iFilter);
+        if (batteryStatus == null) {
+            return 0;
+        }
         return batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
     }
 

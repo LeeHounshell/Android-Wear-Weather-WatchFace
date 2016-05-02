@@ -7,7 +7,7 @@
         android:title="@string/title_staticbackground"
         android:summaryOn="@string/summary_disabled"
         android:summaryOff="@string/summary_enabled"
-        app:wear_iconOn="@drawable/ic_watchivory"
+        app:wear_iconOn="@drawable/ic_noweather"
         app:wear_iconOff="@drawable/ic_weather"
         android:defaultValue="false"
         />
@@ -47,7 +47,7 @@
         android:title="@string/title_gold_inlay"
         android:summaryOn="@string/summary_on"
         android:summaryOff="@string/summary_off"
-        app:wear_iconOn="@drawable/ic_watchclock"
+        app:wear_iconOn="@drawable/ic_goldinlay"
         app:wear_iconOff="@drawable/ic_watchclock"
         android:defaultValue="false"
         />
@@ -57,7 +57,7 @@
         android:title="@string/title_precious_stones"
         android:summaryOn="@string/summary_on"
         android:summaryOff="@string/summary_off"
-        app:wear_iconOn="@drawable/ic_watchivory"
+        app:wear_iconOn="@drawable/ic_jewels"
         app:wear_iconOff="@drawable/ic_watchoff"
         android:defaultValue="false"
         />
