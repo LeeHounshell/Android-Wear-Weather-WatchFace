@@ -214,7 +214,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mHandPaintGold.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
 
             mHandPaintJoint = new Paint();
-            mHandPaintJoint.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.battery_warning));
+            mHandPaintJoint.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.analog_hands));
             mHandPaintJoint.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke));
             mHandPaintJoint.setAntiAlias(true);
             mHandPaintJoint.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
@@ -742,11 +742,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                             centerX,
                             centerY - minLength,
                             (mWatchFaceDesignHolder.useGoldInlay()) ? mHandPaintGold : mHandPaintBright);
-                    canvas.drawCircle(
-                            centerX,
-                            centerY,
-                            CENTER_GAP_AND_CIRCLE_RADIUS,
-                            mHandPaintJoint);
+                    if (! useSecondHand) {
+                        canvas.drawCircle(
+                                centerX,
+                                centerY,
+                                CENTER_GAP_AND_CIRCLE_RADIUS,
+                                mHandPaintJoint);
+                    }
                     canvas.restore();
                 } else {
                     // hour hand
@@ -784,6 +786,11 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     // draw the second hand battery segment using accent color
                     canvas.drawLine(centerX + secX, centerY + secY, centerX + fullSecX, centerY + fullSecY, mHandPaintAccent);
                 }
+                canvas.drawCircle(
+                        centerX,
+                        centerY,
+                        CENTER_GAP_AND_CIRCLE_RADIUS,
+                        mHandPaintJoint);
             }
         }
 
