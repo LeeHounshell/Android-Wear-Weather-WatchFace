@@ -117,9 +117,10 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         Paint mBackgroundPaint;
         Paint mHandPaint;
         Paint mHandPaintShadow;
+        Paint mHandPaintAccent;
         Paint mHandPaintBright;
         Paint mHandPaintGold;
-        Paint mHandPaintAccent;
+        Paint mHandPaintJoint;
         boolean mAmbient;
         boolean mDaylightChanged;
         boolean mIsRound;
@@ -189,32 +190,34 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mHandPaintShadow.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke));
             mHandPaintShadow.setAntiAlias(true);
             mHandPaintShadow.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
-            mHandPaintShadow.setShadowLayer(3.0f, 5.0f, 5.0f, Color.BLACK);
+            mHandPaintShadow.setShadowLayer(3.0f, 4.0f, 4.0f, Color.BLACK);
             mHandPaintShadow.setStyle(Paint.Style.STROKE);
-
-            mHandPaintBright = new Paint();
-            mHandPaintBright.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.analog_hands_bright));
-            mHandPaintBright.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke_bright));
-            mHandPaintBright.setAntiAlias(true);
-            mHandPaintBright.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
-            mHandPaintBright.setShadowLayer(3.0f, 5.0f, 5.0f, Color.BLACK);
-            mHandPaintBright.setStyle(Paint.Style.STROKE);
-
-            mHandPaintGold = new Paint();
-            mHandPaintGold.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.analog_hands_gold));
-            mHandPaintGold.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke_bright));
-            mHandPaintGold.setAntiAlias(true);
-            mHandPaintGold.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
-            mHandPaintGold.setShadowLayer(3.0f, 5.0f, 5.0f, Color.BLACK);
-            mHandPaintGold.setStyle(Paint.Style.STROKE);
 
             mHandPaintAccent = new Paint();
             mHandPaintAccent.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.battery_warning));
             mHandPaintAccent.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke));
             mHandPaintAccent.setAntiAlias(true);
             mHandPaintAccent.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
-            mHandPaintAccent.setShadowLayer(3.0f, 5.0f, 5.0f, Color.BLACK);
+            mHandPaintAccent.setShadowLayer(3.0f, 4.0f, 4.0f, Color.BLACK);
             mHandPaintAccent.setStyle(Paint.Style.STROKE);
+
+            mHandPaintBright = new Paint();
+            mHandPaintBright.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.analog_hands_bright));
+            mHandPaintBright.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke_bright));
+            mHandPaintBright.setAntiAlias(true);
+            mHandPaintBright.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
+
+            mHandPaintGold = new Paint();
+            mHandPaintGold.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.analog_hands_gold));
+            mHandPaintGold.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke_bright));
+            mHandPaintGold.setAntiAlias(true);
+            mHandPaintGold.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
+
+            mHandPaintJoint = new Paint();
+            mHandPaintJoint.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.battery_warning));
+            mHandPaintJoint.setStrokeWidth(resources.getDimension(R.dimen.analog_hand_stroke));
+            mHandPaintJoint.setAntiAlias(true);
+            mHandPaintJoint.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
 
             // calculate if day or night
             int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
@@ -743,7 +746,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                             centerX,
                             centerY,
                             CENTER_GAP_AND_CIRCLE_RADIUS,
-                            mHandPaintAccent);
+                            mHandPaintJoint);
                     canvas.restore();
                 } else {
                     // hour hand
@@ -761,17 +764,26 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             if (useSecondHand && ! mAmbient && mBatteryLevel > 0) {
                 // second hand
                 float secRot = mCalendar.get(Calendar.SECOND) / 30f * (float) Math.PI;
-                float fullSecLength = centerX - 20;
+                float fullSecLength = minLength + (hrLength / 6);
                 // now shorten the length based on battery percentage remaining
                 float secLength = (fullSecLength * mBatteryLevel) / 100;
                 float secX = (float) Math.sin(secRot) * secLength;
                 float secY = (float) -Math.cos(secRot) * secLength;
                 float fullSecX = (float) Math.sin(secRot) * fullSecLength;
                 float fullSecY = (float) -Math.cos(secRot) * fullSecLength;
-                // draw the second hand battery segment using accent color
-                canvas.drawLine(centerX + secX, centerY + secY, centerX + fullSecX, centerY + fullSecY, mHandPaintAccent);
-                // draw the second hand base segment using normal color
-                canvas.drawLine(centerX, centerY, centerX + secX, centerY + secY, mHandPaintShadow);
+                // we need to adjust the draw order to avoid a shadow appearing at the segment joint
+                if (mCalendar.get(Calendar.SECOND) >= 35 || mCalendar.get(Calendar.SECOND) <= 5) {
+                    // draw the second hand battery segment using accent color
+                    canvas.drawLine(centerX + secX, centerY + secY, centerX + fullSecX, centerY + fullSecY, mHandPaintAccent);
+                    // draw the second hand base segment using normal color
+                    canvas.drawLine(centerX, centerY, centerX + secX, centerY + secY, mHandPaintShadow);
+                }
+                else {
+                    // draw the second hand base segment using normal color
+                    canvas.drawLine(centerX, centerY, centerX + secX, centerY + secY, mHandPaintShadow);
+                    // draw the second hand battery segment using accent color
+                    canvas.drawLine(centerX + secX, centerY + secY, centerX + fullSecX, centerY + fullSecY, mHandPaintAccent);
+                }
             }
         }
 
