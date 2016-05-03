@@ -497,7 +497,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
 
             // face tick marks - check for special cases
-            if (! mWatchFaceDesignHolder.useSecondHand() || mAmbient || mIsJewelStudded) {
+            if (! mWatchFaceDesignHolder.useSecondHand() || mAmbient || mIsJewelStudded || mWatchFaceDesignHolder.useHypnosis()) {
                 Log.v(TAG, "tickmarks_none");
             }
             else if (! mWatchFaceDesignHolder.useStandardFace()
