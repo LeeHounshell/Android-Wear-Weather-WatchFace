@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.TimeUtils;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.util.DisplayMetrics;
@@ -787,7 +788,15 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
 
             if (!mAmbient && mBatteryLevel > 0) {
-                float secRot = mCalendar.get(Calendar.SECOND) / 30f * (float) Math.PI;
+                float secRot;
+                float seconds;
+                if ((mWatchFaceDesignHolder.usePreciousStones() && mWatchFaceDesignHolder.useGoldInlay()) || mWatchFaceDesignHolder.useHypnosis()) {
+                    seconds = (mCalendar.get(Calendar.SECOND) + mCalendar.get(Calendar.MILLISECOND) / 1000f); // calculate for sweeping second hand
+                }
+                else {
+                    seconds = mCalendar.get(Calendar.SECOND); // calculate for ticking second hand
+                }
+                secRot = seconds / 30f * (float) Math.PI;
                 if (mWatchFaceDesignHolder.useHypnosis()) {
                     // second hand from Bitmap
                     Matrix matrix = new Matrix();
@@ -823,12 +832,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 }
             }
 
-//            if (mWatchFaceDesignHolder.usePreciousStones()) {
-//                // Draw every frame as long as we're visible and in interactive mode.
-//                if (isVisible() && !mAmbient) {
-//                    invalidate();
-//                }
-//            }
+            if ((mWatchFaceDesignHolder.usePreciousStones() && mWatchFaceDesignHolder.useGoldInlay()) || mWatchFaceDesignHolder.useHypnosis()) {
+                // Draw every frame as long as we're visible and in interactive mode.
+                if (isVisible() && !mAmbient) {
+                    invalidate(); // sweep the second hand
+                }
+            }
 
         }
 
