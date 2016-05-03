@@ -441,4 +441,16 @@ public class WatchFaceDesignHolder implements Parcelable {
         return useContinuousOn;
     }
 
+    @PreferenceDefault("contact_lee") public static boolean CONTACTLEE_PREFERENCE_DEFAULT = false;
+    @BindPref(value = "contact_lee")
+    boolean contactLee = CONTACTLEE_PREFERENCE_DEFAULT;
+    boolean contactLeeOldValue = !CONTACTLEE_PREFERENCE_DEFAULT;
+
+    public boolean contactLee() {
+        if (contactLeeOldValue != contactLee) {
+            contactLeeOldValue = contactLee;
+        }
+        return contactLee;
+    }
+
 }

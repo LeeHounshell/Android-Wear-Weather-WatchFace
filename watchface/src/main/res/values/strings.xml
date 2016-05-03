@@ -9,6 +9,8 @@
     <string name="title_precious_stones">Jewel Stones</string>
     <string name="title_staticbackground">Weather Control</string>
     <string name="title_continuous_on">Always On</string>
+    <string name="title_developer">Developer</string>
+    <string name="lee_hounshell">Lee Hounshell</string>
     <string name="summary_weather_enabled">Weather ON</string>
     <string name="summary_weather_disabled">Weather OFF</string>
     <string name="summary_on">On</string>

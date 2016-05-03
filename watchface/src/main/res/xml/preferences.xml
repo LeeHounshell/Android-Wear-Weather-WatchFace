@@ -72,4 +72,14 @@
         android:defaultValue="false"
         />
 
+    <SwitchPreference
+        android:key="contact_lee"
+        android:title="@string/title_developer"
+        android:summaryOn="@string/lee_hounshell"
+        android:summaryOff="@string/lee_hounshell"
+        app:wear_iconOn="@drawable/ic_lee_hounshell"
+        app:wear_iconOff="@drawable/ic_lee_hounshell"
+        android:defaultValue="false"
+        />
+
 </PreferenceScreen>
