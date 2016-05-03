@@ -114,11 +114,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         Bitmap mBackgroundAmbientGoldBitmap;
         Bitmap mHourHandBitmap;
         Bitmap mMinuteHandBitmap;
+        Bitmap mSecondHandBitmap;
         Bitmap mBackgroundBitmapScaled;
         Bitmap mBackgroundAmbientBitmapScaled;
         Bitmap mBackgroundAmbientGoldBitmapScaled;
         Bitmap mHourHandBitmapScaled;
         Bitmap mMinuteHandBitmapScaled;
+        Bitmap mSecondHandBitmapScaled;
         Paint mBackgroundPaint;
         Paint mHandPaint;
         Paint mHandPaintShadow;
@@ -180,6 +182,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             mHourHandBitmap = drawableToBitmap(getDrawable(R.drawable.hour_little_hand));
             mMinuteHandBitmap = drawableToBitmap(getDrawable(R.drawable.minute_big_hand));
+            mSecondHandBitmap = drawableToBitmap(getDrawable(R.drawable.hypnosis));
 
             Resources resources = WeatherWatchFace.this.getResources();
 
@@ -639,10 +642,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             Log.v(TAG, "scaleWatchFace");
             mBackgroundBitmapScaled = Bitmap.createScaledBitmap(mBackgroundBitmap, width, height, true /* filter */);
             float ratio = (float) width / mBackgroundBitmap.getWidth();
+            mHourHandBitmapScaled = Bitmap.createScaledBitmap(mHourHandBitmap,
+                    (int) (mHourHandBitmap.getWidth() * ratio),
+                    (int) (mHourHandBitmap.getHeight() * ratio), true);
             mMinuteHandBitmapScaled = Bitmap.createScaledBitmap(mMinuteHandBitmap,
                     (int) (mMinuteHandBitmap.getWidth() * ratio),
                     (int) (mMinuteHandBitmap.getHeight() * ratio), true);
-            mHourHandBitmapScaled = Bitmap.createScaledBitmap(mHourHandBitmap,
+            mSecondHandBitmapScaled = Bitmap.createScaledBitmap(mSecondHandBitmap,
                     (int) (mHourHandBitmap.getWidth() * ratio),
                     (int) (mHourHandBitmap.getHeight() * ratio), true);
         }
@@ -780,34 +786,41 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 }
             }
 
-            if (useSecondHand && ! mAmbient && mBatteryLevel > 0) {
-                // second hand
+            if (!mAmbient && mBatteryLevel > 0) {
                 float secRot = mCalendar.get(Calendar.SECOND) / 30f * (float) Math.PI;
-                float fullSecLength = minLength + (hrLength / 6);
-                // now shorten the length based on battery percentage remaining
-                float secLength = (fullSecLength * mBatteryLevel) / 100;
-                float secX = (float) Math.sin(secRot) * secLength;
-                float secY = (float) -Math.cos(secRot) * secLength;
-                float fullSecX = (float) Math.sin(secRot) * fullSecLength;
-                float fullSecY = (float) -Math.cos(secRot) * fullSecLength;
-                // we need to adjust the draw order to avoid a shadow appearing at the segment joint
-                if (mCalendar.get(Calendar.SECOND) >= 35 || mCalendar.get(Calendar.SECOND) <= 5) {
-                    // draw the second hand battery segment using accent color
-                    canvas.drawLine(centerX + secX, centerY + secY, centerX + fullSecX, centerY + fullSecY, mHandPaintAccent);
-                    // draw the second hand base segment using normal color
-                    canvas.drawLine(centerX, centerY, centerX + secX, centerY + secY, mHandPaintShadow);
+                if (mWatchFaceDesignHolder.useHypnosis()) {
+                    // second hand from Bitmap
+                    Matrix matrix = new Matrix();
+                    matrix.setRotate(secRot / (float) Math.PI * 180, mSecondHandBitmapScaled.getWidth() / 2, mSecondHandBitmapScaled.getHeight() / 2);
+                    canvas.drawBitmap(mSecondHandBitmapScaled, matrix, mHandPaint);
                 }
-                else {
-                    // draw the second hand base segment using normal color
-                    canvas.drawLine(centerX, centerY, centerX + secX, centerY + secY, mHandPaintShadow);
-                    // draw the second hand battery segment using accent color
-                    canvas.drawLine(centerX + secX, centerY + secY, centerX + fullSecX, centerY + fullSecY, mHandPaintAccent);
+                else if (useSecondHand) {
+                    // second hand
+                    float fullSecLength = minLength + (hrLength / 6);
+                    // now shorten the length based on battery percentage remaining
+                    float secLength = (fullSecLength * mBatteryLevel) / 100;
+                    float secX = (float) Math.sin(secRot) * secLength;
+                    float secY = (float) -Math.cos(secRot) * secLength;
+                    float fullSecX = (float) Math.sin(secRot) * fullSecLength;
+                    float fullSecY = (float) -Math.cos(secRot) * fullSecLength;
+                    // we need to adjust the draw order to avoid a shadow appearing at the segment joint
+                    if (mCalendar.get(Calendar.SECOND) >= 35 || mCalendar.get(Calendar.SECOND) <= 5) {
+                        // draw the second hand battery segment using accent color
+                        canvas.drawLine(centerX + secX, centerY + secY, centerX + fullSecX, centerY + fullSecY, mHandPaintAccent);
+                        // draw the second hand base segment using normal color
+                        canvas.drawLine(centerX, centerY, centerX + secX, centerY + secY, mHandPaintShadow);
+                    } else {
+                        // draw the second hand base segment using normal color
+                        canvas.drawLine(centerX, centerY, centerX + secX, centerY + secY, mHandPaintShadow);
+                        // draw the second hand battery segment using accent color
+                        canvas.drawLine(centerX + secX, centerY + secY, centerX + fullSecX, centerY + fullSecY, mHandPaintAccent);
+                    }
+                    canvas.drawCircle(
+                            centerX,
+                            centerY,
+                            CENTER_GAP_AND_CIRCLE_RADIUS,
+                            mHandPaintJoint);
                 }
-                canvas.drawCircle(
-                        centerX,
-                        centerY,
-                        CENTER_GAP_AND_CIRCLE_RADIUS,
-                        mHandPaintJoint);
             }
 
 //            if (mWatchFaceDesignHolder.usePreciousStones()) {

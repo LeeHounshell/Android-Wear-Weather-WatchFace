@@ -45,6 +45,7 @@ public class WatchFaceDesignHolder implements Parcelable {
         usePreciousStones();
         useStaticBackground();
         useContinuousOn();
+        useHypnosis();
         return isDirty;
     }
 
@@ -439,6 +440,19 @@ public class WatchFaceDesignHolder implements Parcelable {
             setDirty(true);
         }
         return useContinuousOn;
+    }
+
+    @PreferenceDefault("use_hypnosis") public static boolean HYPNOSIS_PREFERENCE_DEFAULT = false;
+    @BindPref(value = "use_hypnosis")
+    boolean useHypnosis = HYPNOSIS_PREFERENCE_DEFAULT;
+    boolean useHypnosisOldValue = !HYPNOSIS_PREFERENCE_DEFAULT;
+
+    public boolean useHypnosis() {
+        if (useHypnosisOldValue != useHypnosis) {
+            useHypnosisOldValue = useHypnosis;
+            setDirty(true);
+        }
+        return useHypnosis;
     }
 
     @PreferenceDefault("contact_lee") public static boolean CONTACTLEE_PREFERENCE_DEFAULT = false;

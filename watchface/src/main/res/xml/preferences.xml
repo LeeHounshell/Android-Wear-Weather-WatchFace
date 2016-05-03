@@ -73,6 +73,16 @@
         />
 
     <SwitchPreference
+        android:key="use_hypnosis"
+        android:title="@string/title_hypnosis"
+        android:summaryOn="@string/summary_on"
+        android:summaryOff="@string/summary_off"
+        app:wear_iconOn="@drawable/ic_hypnosis"
+        app:wear_iconOff="@drawable/ic_second_hand"
+        android:defaultValue="false"
+        />
+
+    <SwitchPreference
         android:key="contact_lee"
         android:title="@string/title_developer"
         android:summaryOn="@string/lee_hounshell"
