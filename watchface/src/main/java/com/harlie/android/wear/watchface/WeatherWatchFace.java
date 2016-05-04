@@ -114,13 +114,17 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         Bitmap mBackgroundAmbientBitmap;
         Bitmap mBackgroundAmbientGoldBitmap;
         Bitmap mHourHandBitmap;
+        Bitmap mHourHandGlovesBitmap;
         Bitmap mMinuteHandBitmap;
+        Bitmap mMinuteHandGlovesBitmap;
         Bitmap mSecondHandBitmap;
         Bitmap mBackgroundBitmapScaled;
         Bitmap mBackgroundAmbientBitmapScaled;
         Bitmap mBackgroundAmbientGoldBitmapScaled;
         Bitmap mHourHandBitmapScaled;
+        Bitmap mHourHandGlovesBitmapScaled;
         Bitmap mMinuteHandBitmapScaled;
+        Bitmap mMinuteHandGlovesBitmapScaled;
         Bitmap mSecondHandBitmapScaled;
         Paint mBackgroundPaint;
         Paint mHandPaint;
@@ -182,7 +186,9 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mWatchFaceDesignHolder.setMoonPhase(moonCalculaion.moonPhase(year, month, day));
 
             mHourHandBitmap = drawableToBitmap(getDrawable(R.drawable.hour_little_hand));
+            mHourHandGlovesBitmap = drawableToBitmap(getDrawable(R.drawable.hour_little_hand_ambient));
             mMinuteHandBitmap = drawableToBitmap(getDrawable(R.drawable.minute_big_hand));
+            mMinuteHandGlovesBitmap = drawableToBitmap(getDrawable(R.drawable.minute_big_hand_ambient));
             mSecondHandBitmap = drawableToBitmap(getDrawable(R.drawable.hypnosis));
 
             Resources resources = WeatherWatchFace.this.getResources();
@@ -646,12 +652,18 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mHourHandBitmapScaled = Bitmap.createScaledBitmap(mHourHandBitmap,
                     (int) (mHourHandBitmap.getWidth() * ratio),
                     (int) (mHourHandBitmap.getHeight() * ratio), true);
+            mHourHandGlovesBitmapScaled = Bitmap.createScaledBitmap(mHourHandGlovesBitmap,
+                    (int) (mHourHandGlovesBitmap.getWidth() * ratio),
+                    (int) (mHourHandGlovesBitmap.getHeight() * ratio), true);
             mMinuteHandBitmapScaled = Bitmap.createScaledBitmap(mMinuteHandBitmap,
                     (int) (mMinuteHandBitmap.getWidth() * ratio),
                     (int) (mMinuteHandBitmap.getHeight() * ratio), true);
+            mMinuteHandGlovesBitmapScaled = Bitmap.createScaledBitmap(mMinuteHandGlovesBitmap,
+                    (int) (mMinuteHandGlovesBitmap.getWidth() * ratio),
+                    (int) (mMinuteHandGlovesBitmap.getHeight() * ratio), true);
             mSecondHandBitmapScaled = Bitmap.createScaledBitmap(mSecondHandBitmap,
-                    (int) (mHourHandBitmap.getWidth() * ratio),
-                    (int) (mHourHandBitmap.getHeight() * ratio), true);
+                    (int) (mSecondHandBitmap.getWidth() * ratio),
+                    (int) (mSecondHandBitmap.getHeight() * ratio), true);
         }
 
         /**
@@ -737,15 +749,28 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             // draw the hour and minute hands
             if (realAmbientMode) {
-                // hour hand
-                float hrX = (float) Math.sin(hrRot) * hrLength;
-                float hrY = (float) -Math.cos(hrRot) * hrLength;
-                canvas.drawLine(centerX, centerY, centerX + hrX, centerY + hrY, mHandPaint);
+                if (! mWatchFaceDesignHolder.useStandardFace() && ! mWatchFaceDesignHolder.useGoldInlay() && ! mWatchFaceDesignHolder.usePreciousStones()) {
+                    // glow hour hand from Bitmap
+                    Matrix matrix = new Matrix();
+                    matrix.setRotate(hrRot / (float) Math.PI * 180, mHourHandGlovesBitmapScaled.getWidth() / 2, mHourHandGlovesBitmapScaled.getHeight() / 2);
+                    canvas.drawBitmap(mHourHandGlovesBitmapScaled, matrix, mHandPaint);
 
-                // minute hand
-                float minX = (float) Math.sin(minRot) * minLength;
-                float minY = (float) -Math.cos(minRot) * minLength;
-                canvas.drawLine(centerX, centerY, centerX + minX, centerY + minY, mHandPaint);
+                    // glow minute hand from Bitmap
+                    matrix = new Matrix();
+                    matrix.setRotate(minRot / (float) Math.PI * 180, mMinuteHandGlovesBitmapScaled.getWidth() / 2, mMinuteHandGlovesBitmapScaled.getHeight() / 2);
+                    canvas.drawBitmap(mMinuteHandGlovesBitmapScaled, matrix, mHandPaint);
+                }
+                else{
+                    // hour hand
+                    float hrX = (float) Math.sin(hrRot) * hrLength;
+                    float hrY = (float) -Math.cos(hrRot) * hrLength;
+                    canvas.drawLine(centerX, centerY, centerX + hrX, centerY + hrY, mHandPaint);
+
+                    // minute hand
+                    float minX = (float) Math.sin(minRot) * minLength;
+                    float minY = (float) -Math.cos(minRot) * minLength;
+                    canvas.drawLine(centerX, centerY, centerX + minX, centerY + minY, mHandPaint);
+                }
             }
             else if (! mAmbient || (mAmbient && mWatchFaceDesignHolder.useContinuousOn())) {
                 if (mWatchFaceDesignHolder.useStandardFace()) {
@@ -782,7 +807,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
                     // minute hand from Bitmap
                     matrix = new Matrix();
-                    matrix.setRotate(minRot / (float) Math.PI * 180, mHourHandBitmapScaled.getWidth() / 2, mHourHandBitmapScaled.getHeight() / 2);
+                    matrix.setRotate(minRot / (float) Math.PI * 180, mMinuteHandBitmapScaled.getWidth() / 2, mMinuteHandBitmapScaled.getHeight() / 2);
                     canvas.drawBitmap(mMinuteHandBitmapScaled, matrix, mHandPaint);
                 }
             }
