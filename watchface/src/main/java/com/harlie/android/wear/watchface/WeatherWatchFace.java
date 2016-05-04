@@ -34,7 +34,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.util.TimeUtils;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.util.DisplayMetrics;
@@ -137,6 +136,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         boolean mDaylightChanged;
         boolean mIsRound;
         boolean mIsJewelStudded;
+        boolean mIsDeviceMuted;
         Calendar mCalendar;
         int mBatteryLevel;
         int mTapCount;
@@ -635,6 +635,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         }
 
         @Override
+        public void onInterruptionFilterChanged(int interruptionFilter) {
+            Log.v(TAG, "onInterruptionFilterChanged");
+            super.onInterruptionFilterChanged(interruptionFilter);
+            mIsDeviceMuted = (interruptionFilter == android.support.wearable.watchface.WatchFaceService.INTERRUPTION_FILTER_NONE);
+        }
+
+        @Override
         public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             Log.v(TAG, "onSurfaceChanged");
             if (mBackgroundBitmap != null &&
@@ -812,7 +819,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 }
             }
 
-            if (!mAmbient && mBatteryLevel > 0) {
+            if (!mAmbient && !mIsDeviceMuted && mBatteryLevel > 0) {
                 float secRot;
                 float seconds;
                 if ((mWatchFaceDesignHolder.usePreciousStones() && mWatchFaceDesignHolder.useGoldInlay()) || mWatchFaceDesignHolder.useHypnosis()) {
@@ -859,7 +866,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             if ((mWatchFaceDesignHolder.usePreciousStones() && mWatchFaceDesignHolder.useGoldInlay()) || mWatchFaceDesignHolder.useHypnosis()) {
                 // Draw every frame as long as we're visible and in interactive mode.
-                if (isVisible() && !mAmbient) {
+                if (isVisible() && !mAmbient && !mIsDeviceMuted) {
                     invalidate(); // sweep the second hand
                 }
             }
