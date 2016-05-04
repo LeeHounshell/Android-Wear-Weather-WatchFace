@@ -29,14 +29,10 @@
                 android:resource="@drawable/preview_analog" />
             <!-- wearable configuration activity -->
             <meta-data
-                android:name=
-                    "com.google.android.wearable.watchface.wearableConfigurationAction"
-                android:value=
-                    "com.harlie.android.wear.watchface.CONFIG_ANALOG" />
-
+                android:name= "com.google.android.wearable.watchface.wearableConfigurationAction"
+                android:value= "com.harlie.android.wear.watchface.CONFIG_ANALOG" />
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />
-
                 <category android:name="com.google.android.wearable.watchface.category.WATCH_FACE" />
             </intent-filter>
         </service>
@@ -45,13 +41,13 @@
             android:name=".WatchSettingsActivity"
             android:label="@string/watch_config_name">
             <intent-filter>
-                <action android:name=
-                    "com.harlie.android.wear.watchface.CONFIG_ANALOG" />
-                <category android:name=
-                    "com.google.android.wearable.watchface.category.WEARABLE_CONFIGURATION" />
+                <action android:name= "com.harlie.android.wear.watchface.CONFIG_ANALOG" />
+                <category android:name= "com.google.android.wearable.watchface.category.WEARABLE_CONFIGURATION" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <activity android:name="android.support.wearable.activity.ConfirmationActivity" />
 
         <meta-data
             android:name="com.google.android.gms.version"
