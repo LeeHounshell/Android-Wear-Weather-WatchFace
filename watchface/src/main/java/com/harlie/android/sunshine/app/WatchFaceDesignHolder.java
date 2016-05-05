@@ -1,4 +1,4 @@
-package com.harlie.android.wear.watchface;
+package com.harlie.android.sunshine.app;
 
 import android.os.Parcel;
 import android.os.Parcelable;

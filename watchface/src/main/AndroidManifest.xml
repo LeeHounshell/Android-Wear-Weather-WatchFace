@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.harlie.android.wear.watchface">
+    package="com.harlie.android.sunshine.app">
 
     <uses-feature android:name="android.hardware.type.watch" />
 
@@ -30,7 +30,7 @@
             <!-- wearable configuration activity -->
             <meta-data
                 android:name= "com.google.android.wearable.watchface.wearableConfigurationAction"
-                android:value= "com.harlie.android.wear.watchface.CONFIG_ANALOG" />
+                android:value= "com.harlie.android.sunshine.app.CONFIG_ANALOG" />
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />
                 <category android:name="com.google.android.wearable.watchface.category.WATCH_FACE" />
@@ -41,7 +41,7 @@
             android:name=".WatchSettingsActivity"
             android:label="@string/watch_config_name">
             <intent-filter>
-                <action android:name= "com.harlie.android.wear.watchface.CONFIG_ANALOG" />
+                <action android:name= "com.harlie.android.sunshine.app.CONFIG_ANALOG" />
                 <category android:name= "com.google.android.wearable.watchface.category.WEARABLE_CONFIGURATION" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

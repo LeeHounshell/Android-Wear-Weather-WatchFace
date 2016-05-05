@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.harlie.android.wear.watchface;
+package com.harlie.android.sunshine.app;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

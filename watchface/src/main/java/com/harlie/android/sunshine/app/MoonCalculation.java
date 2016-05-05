@@ -1,4 +1,4 @@
-package com.harlie.android.wear.watchface;
+package com.harlie.android.sunshine.app;
 
 /**
  From:      http://raingod.com/raingod/resources/Programming/Java/Software/Moon/javafiles/MoonCalculation.java
