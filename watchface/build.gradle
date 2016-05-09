@@ -13,15 +13,8 @@ android {
         versionName "1.0"
     }
     buildTypes {
-        debug {
-            minifyEnabled true
-            useProguard false
-            debuggable true
-        }
         release {
             minifyEnabled false
-            useProguard true
-            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -29,6 +22,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-v4:23.3.0'
     compile 'com.google.android.support:wearable:1.4.0'
     compile 'com.google.android.gms:play-services-wearable:8.4.0'
     compile 'me.denley.wearpreferenceactivity:wearpreferenceactivity:0.5.0'
