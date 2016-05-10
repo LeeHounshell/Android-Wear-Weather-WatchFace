@@ -37,20 +37,28 @@ import android.view.View;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.harlie.android.sunshine.app.sync.SunshineSyncAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.wearable.Wearable;
+import com.harlie.android.sunshine.app.sync.ListenerService;
+import com.harlie.android.sunshine.app.sync.SunshineSyncAdapter;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity implements ForecastFragment.Callback {
+public class MainActivity
+        extends
+            AppCompatActivity
+        implements
+            ForecastFragment.Callback
+{
+    private static final String TAG = "LEE: <" + MainActivity.class.getSimpleName() + ">";
 
-    private final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     /**
      * Substitute you own project number here. This project number comes
@@ -65,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         mLocation = Utility.getPreferredLocation(this);
 
@@ -119,26 +128,32 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             AnalyticsApplication application = (AnalyticsApplication) getApplication();
             mTracker = application.getDefaultTracker();
         } else {
-            Log.i(LOG_TAG, "No valid Google Play Services APK. Weather alerts will be disabled.");
+            Log.i(TAG, "No valid Google Play Services APK. Weather alerts will be disabled.");
             // Store regId as null
             storeRegistrationId(this, null);
         }
+
+        Log.v(TAG, "connect ListenerService..");
+        ListenerService.connect(getApplicationContext());
     }
 
     @Override
     protected void onStart() {
+        Log.v(TAG, "onStart");
         super.onStart();
         GoogleAnalytics.getInstance(this).reportActivityStart(this);
     }
 
     @Override
     protected void onStop() {
+        Log.v(TAG, "onStop");
         super.onStop();
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.v(TAG, "onCreateOptionsMenu");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
@@ -146,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.v(TAG, "onOptionsItemSelected");
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -156,18 +172,32 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
+        else if (id == R.id.action_sync) {
+            ListenerService.sendWeatherDataToWear();
+        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
+    protected void onPause() {
+        Log.v(TAG, "onPause");
+        super.onPause();
+        //Log.v(TAG, "disconnecting..");
+        //ListenerService.disconnect();
+    }
+
+    @Override
     protected void onResume() {
+        Log.v(TAG, "onResume");
         super.onResume();
+        //Log.v(TAG, "connecting..");
+        //ListenerService.connect(getApplicationContext());
 
         // If Google Play Services is not available, some features, such as GCM-powered weather
         // alerts, will not be available.
         if (checkPlayServices()) {
             String name = "MainActivity";
-            Log.i(LOG_TAG, "screen name: " + name);
+            Log.i(TAG, "screen name: " + name);
             mTracker.setScreenName("Image~" + name);
             mTracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
@@ -193,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
 
     @Override
     public void onItemSelected(Uri contentUri, ForecastAdapter.ForecastAdapterViewHolder vh) {
+        Log.v(TAG, "onItemSelected");
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
@@ -229,13 +260,14 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
      * the Google Play Store or enable it in the device's system settings.
      */
     private boolean checkPlayServices() {
+        Log.v(TAG, "checkPlayServices");
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                 GooglePlayServicesUtil.getErrorDialog(resultCode, this,
                         PLAY_SERVICES_RESOLUTION_REQUEST).show();
             } else {
-                Log.i(LOG_TAG, "This device is not supported.");
+                Log.i(TAG, "This device is not supported.");
                 finish();
             }
             return false;
@@ -252,10 +284,11 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
      *         registration ID.
      */
     private String getRegistrationId(Context context) {
+        Log.v(TAG, "getRegistrationId");
         final SharedPreferences prefs = getGCMPreferences(context);
         String registrationId = prefs.getString(PROPERTY_REG_ID, "");
         if (registrationId.isEmpty()) {
-            Log.i(LOG_TAG, "GCM Registration not found.");
+            Log.i(TAG, "GCM Registration not found.");
             return "";
         }
 
@@ -265,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
         int currentVersion = getAppVersion(context);
         if (registeredVersion != currentVersion) {
-            Log.i(LOG_TAG, "App version changed.");
+            Log.i(TAG, "App version changed.");
             return "";
         }
         return registrationId;
@@ -275,6 +308,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
      * @return Application's {@code SharedPreferences}.
      */
     private SharedPreferences getGCMPreferences(@SuppressWarnings("UnusedParameters") Context context) {
+        Log.v(TAG, "getGCMPreferences");
         // Sunshine persists the registration ID in shared preferences, but
         // how you store the registration ID in your app is up to you. Just make sure
         // that it is private!
@@ -285,6 +319,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
      * @return Application's version code from the {@code PackageManager}.
      */
     private static int getAppVersion(Context context) {
+        Log.v(TAG, "getAppVersion");
         try {
             PackageInfo packageInfo = context.getPackageManager()
                     .getPackageInfo(context.getPackageName(), 0);
@@ -302,6 +337,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
      * shared preferences.
      */
     private void registerInBackground(final Context context) {
+        Log.v(TAG, "registerInBackground");
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -310,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
                         mGcm = GoogleCloudMessaging.getInstance(context);
                     }
                     String regId = mGcm.register(PROJECT_NUMBER);
-                    Log.i(LOG_TAG, "Device registered, registration ID=" + regId);
+                    Log.i(TAG, "Device registered, registration ID=" + regId);
 
                     // You should send the registration ID to your server over HTTP,
                     // so it can use GCM/HTTP or CCS to send messages to your app.
@@ -324,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
                     // Persist the registration ID - no need to register again.
                     storeRegistrationId(context, regId);
                 } catch (IOException ex) {
-                    Log.e(LOG_TAG, "Error :" + ex.getMessage());
+                    Log.e(TAG, "Error :" + ex.getMessage());
                     // TODO: If there is an error, don't just keep trying to register.
                     // Require the user to click a button again, or perform
                     // exponential back-off.
@@ -342,12 +378,22 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
      * @param regId registration ID
      */
     private void storeRegistrationId(Context context, String regId) {
+        Log.v(TAG, "storeRegistrationId");
         final SharedPreferences prefs = getGCMPreferences(context);
         int appVersion = getAppVersion(context);
-        Log.i(LOG_TAG, "Saving regId on app version " + appVersion);
+        Log.i(TAG, "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_REG_ID, regId);
         editor.putInt(PROPERTY_APP_VERSION, appVersion);
         editor.apply();
     }
+
+    @Override
+    protected void onDestroy() {
+        Log.v(TAG, "onDestroy");
+        Log.v(TAG, "disconnect ListenerService..");
+        ListenerService.disconnect();
+        super.onDestroy();
+    }
+
 }

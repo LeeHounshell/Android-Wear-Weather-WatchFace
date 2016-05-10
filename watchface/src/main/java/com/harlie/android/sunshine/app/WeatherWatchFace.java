@@ -39,6 +39,7 @@ import android.support.wearable.watchface.WatchFaceStyle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 import android.view.WindowManager;
@@ -57,6 +58,9 @@ import me.denley.preferencebinder.PreferenceBinder;
  */
 public class WeatherWatchFace extends CanvasWatchFaceService {
     private final String TAG = "LEE: <" + WeatherWatchFace.class.getSimpleName() + ">";
+
+    private static Engine engine;
+
     /**
      * Update rate in milliseconds for interactive mode. We update once a second to advance the
      * second hand.
@@ -73,15 +77,20 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
     @Override
     public Engine onCreateEngine() {
+        Log.v(TAG, "onCreateEngine");
         mContext = this.getApplicationContext();
-        return new Engine();
+        Log.v(TAG, "connect ListenerService..");
+        ListenerService.connect(getContext());
+        engine = new Engine();
+        return engine;
     }
 
     public static Context getContext() {
         return mContext;
     }
 
-    private static class EngineHandler extends Handler {
+    private static class EngineHandler extends Handler
+    {
         private final WeakReference<WeatherWatchFace.Engine> mWeakReference;
 
         public EngineHandler(WeatherWatchFace.Engine reference) {
@@ -99,55 +108,56 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 }
             }
         }
+
     }
 
-    private class Engine extends CanvasWatchFaceService.Engine {
+    private class Engine extends CanvasWatchFaceService.Engine
+    {
         private final String TAG = "LEE: <" + Engine.class.getSimpleName() + ">";
-
-        private final float CENTER_GAP_AND_CIRCLE_RADIUS = 4f;
 
         final Handler mUpdateTimeHandler = new EngineHandler(this);
 
-        boolean mRegisteredTimeZoneReceiver = false;
-        Bitmap mBackgroundBitmap;
-        Bitmap mBackgroundAmbientBitmap;
-        Bitmap mBackgroundAmbientGoldBitmap;
-        Bitmap mHourHandBitmap;
-        Bitmap mHourHandGlovesBitmap;
-        Bitmap mMinuteHandBitmap;
-        Bitmap mMinuteHandGlovesBitmap;
-        Bitmap mSecondHandBitmap;
-        Bitmap mBackgroundBitmapScaled;
-        Bitmap mBackgroundAmbientBitmapScaled;
-        Bitmap mBackgroundAmbientGoldBitmapScaled;
-        Bitmap mHourHandBitmapScaled;
-        Bitmap mHourHandGlovesBitmapScaled;
-        Bitmap mMinuteHandBitmapScaled;
-        Bitmap mMinuteHandGlovesBitmapScaled;
-        Bitmap mSecondHandBitmapScaled;
-        Paint mBackgroundPaint;
-        Paint mHandPaint;
-        Paint mHandPaintShadow;
-        Paint mHandPaintAccent;
-        Paint mHandPaintBright;
-        Paint mHandPaintGold;
-        Paint mHandPaintJoint;
-        boolean mAmbient;
-        boolean mDaylightChanged;
-        boolean mIsRound;
-        boolean mIsJewelStudded;
-        boolean mIsDeviceMuted;
-        Calendar mCalendar;
-        int mBatteryLevel;
-        int mTapCount;
-        int mHeight;
-        int mWidth;
+        private final float CENTER_GAP_AND_CIRCLE_RADIUS = 4f;
+        private boolean mRegisteredTimeZoneReceiver = false;
+        private Bitmap mBackgroundBitmap;
+        private Bitmap mBackgroundAmbientBitmap;
+        private Bitmap mBackgroundAmbientGoldBitmap;
+        private Bitmap mHourHandBitmap;
+        private Bitmap mHourHandGlovesBitmap;
+        private Bitmap mMinuteHandBitmap;
+        private Bitmap mMinuteHandGlovesBitmap;
+        private Bitmap mSecondHandBitmap;
+        private Bitmap mBackgroundBitmapScaled;
+        private Bitmap mBackgroundAmbientBitmapScaled;
+        private Bitmap mBackgroundAmbientGoldBitmapScaled;
+        private Bitmap mHourHandBitmapScaled;
+        private Bitmap mHourHandGlovesBitmapScaled;
+        private Bitmap mMinuteHandBitmapScaled;
+        private Bitmap mMinuteHandGlovesBitmapScaled;
+        private Bitmap mSecondHandBitmapScaled;
+        private Paint mBackgroundPaint;
+        private Paint mHandPaint;
+        private Paint mHandPaintShadow;
+        private Paint mHandPaintAccent;
+        private Paint mHandPaintBright;
+        private Paint mHandPaintGold;
+        private Paint mHandPaintJoint;
+        private boolean mAmbient;
+        private boolean mDaylightChanged;
+        private boolean mIsRound;
+        private boolean mIsJewelStudded;
+        private boolean mIsDeviceMuted;
+        private Calendar mCalendar;
+        private int mBatteryLevel;
+        private int mTapCount;
+        private int mHeight;
+        private int mWidth;
 
         /**
          * Whether the display supports fewer bits for each color in ambient mode. When true, we
          * disable anti-aliasing in ambient mode.
          */
-        boolean mLowBitAmbient;
+        private boolean mLowBitAmbient;
 
         // receiver to update the time zone
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
@@ -164,8 +174,11 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             super.onCreate(holder);
 
             setWatchFaceStyle(new WatchFaceStyle.Builder(WeatherWatchFace.this)
-                    .setCardPeekMode(WatchFaceStyle.PEEK_MODE_VARIABLE)
+                    .setCardPeekMode(WatchFaceStyle.PEEK_MODE_SHORT)
                     .setBackgroundVisibility(WatchFaceStyle.BACKGROUND_VISIBILITY_INTERRUPTIVE)
+                    .setStatusBarGravity(Gravity.TOP | Gravity.RIGHT)
+                    .setHotwordIndicatorGravity(Gravity.TOP | Gravity.LEFT)
+                    .setPeekOpacityMode(WatchFaceStyle.PEEK_OPACITY_MODE_TRANSLUCENT)
                     .setShowSystemUiTime(false)
                     .setAcceptsTapEvents(true)
                     .build());
@@ -253,6 +266,9 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mBackgroundAmbientBitmapScaled = Bitmap.createScaledBitmap(mBackgroundAmbientBitmap, mWidth, mHeight, true /* filter */);
             mBackgroundAmbientGoldBitmap = drawableToBitmap(getDrawable(R.drawable.clock_face_ambient_gold));
             mBackgroundAmbientGoldBitmapScaled = Bitmap.createScaledBitmap(mBackgroundAmbientGoldBitmap, mWidth, mHeight, true /* filter */);
+
+            // sync with phone
+            ListenerService.createSyncMessage();
         }
 
         private void createWatchFaceBitmaps() {
@@ -588,6 +604,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             Log.v(TAG, "onDestroy");
             mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME);
             PreferenceBinder.unbind(getContext());
+            Log.v(TAG, "disconnect ListenerService..");
+            ListenerService.disconnect();
             super.onDestroy();
         }
 
@@ -767,7 +785,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     matrix.setRotate(minRot / (float) Math.PI * 180, mMinuteHandGlovesBitmapScaled.getWidth() / 2, mMinuteHandGlovesBitmapScaled.getHeight() / 2);
                     canvas.drawBitmap(mMinuteHandGlovesBitmapScaled, matrix, mHandPaint);
                 }
-                else{
+                else {
                     // hour hand
                     float hrX = (float) Math.sin(hrRot) * hrLength;
                     float hrY = (float) -Math.cos(hrRot) * hrLength;
@@ -781,25 +799,28 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
             else if (! mAmbient || (mAmbient && mWatchFaceDesignHolder.useContinuousOn())) {
                 if (mWatchFaceDesignHolder.useStandardFace()) {
-                    final float minutesRotation = mCalendar.get(Calendar.MINUTE) * 6f;
+                    final float minutesRot = mCalendar.get(Calendar.MINUTE) * 6f;
                     final float hourHandOffset = mCalendar.get(Calendar.MINUTE) / 2f;
-                    final float hoursRotation = (mCalendar.get(Calendar.HOUR) * 30) + hourHandOffset;
+                    final float hourRot = (mCalendar.get(Calendar.HOUR) * 30) + hourHandOffset;
                     // save the canvas state before we can begin to rotate it.
                     canvas.save();
-                    canvas.rotate(hoursRotation, centerX, centerY);
+                    canvas.rotate(hourRot, centerX, centerY);
+                    // draw hour hand
                     canvas.drawLine(
                             centerX,
                             centerY - CENTER_GAP_AND_CIRCLE_RADIUS,
                             centerX,
                             centerY - hrLength,
                             (mWatchFaceDesignHolder.useGoldInlay()) ? mHandPaintGold : mHandPaintBright);
-                    canvas.rotate(minutesRotation - hoursRotation, centerX, centerY);
+                    canvas.rotate(minutesRot - hourRot, centerX, centerY);
+                    // draw minute hand
                     canvas.drawLine(
                             centerX,
                             centerY - CENTER_GAP_AND_CIRCLE_RADIUS,
                             centerX,
                             centerY - minLength,
                             (mWatchFaceDesignHolder.useGoldInlay()) ? mHandPaintGold : mHandPaintBright);
+                    // draw pivot point
                     canvas.drawCircle(
                             centerX,
                             centerY,
@@ -879,11 +900,15 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             if (visible) {
                 registerReceiver();
-
                 // Update time zone in case it changed while we weren't visible.
                 mCalendar.setTimeZone(TimeZone.getDefault());
-            } else {
+                //Log.v(TAG, "connecting..");
+                //ListenerService.connect(getApplicationContext());
+            }
+            else {
                 unregisterReceiver();
+                //Log.v(TAG, "disconnecting..");
+                //ListenerService.disconnect();
             }
 
             // Whether the timer should be running depends on whether we're visible (as well as

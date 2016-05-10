@@ -4,10 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import me.denley.preferencebinder.BindPref;
-import me.denley.preferencebinder.PreferenceDefault;
-
-// NOTE: this class needs to maintain Parcelable compatibility with the app version.
+// NOTE: this class needs to maintain Parcelable compatibility with the wear version.
 public class WatchFaceDesignHolder implements Parcelable {
     private final String TAG = "LEE: <" + WatchFaceDesignHolder.class.getSimpleName() + ">";
 
@@ -37,16 +34,35 @@ public class WatchFaceDesignHolder implements Parcelable {
     private boolean isModerateStorm;
     private boolean isHeavyStorm;
 
+    public WatchFaceDesignHolder(WatchFaceDesignHolder copy) {
+        this.isDirty = copy.isDirty();
+        this.isDaytime = copy.isDaytime();
+        this.isSunshine = copy.isSunshine();
+        this.isOvercast = copy.isOvercast();
+        this.moonPhase = copy.getMoonPhase();
+        this.highTemp = copy.getHighTemp();
+        this.lowTemp = copy.getLowTemp();
+        this.isMetric = copy.isMetric();
+        this.isLightClouds = copy.isLightClouds();
+        this.isModerateClouds = copy.isModerateClouds();
+        this.isHeavyClouds = copy.isHeavyClouds();
+        this.areCloudsDark = copy.isAreCloudsDark();
+        this.areCloudsLow = copy.isAreCloudsLow();
+        this.isLightRain = copy.isLightRain();
+        this.isModerateRain = copy.isModerateRain();
+        this.isHeavyRain = copy.isHeavyRain();
+        this.isLightSnow = copy.isLightSnow();
+        this.isModerateSnow = copy.isModerateSnow();
+        this.isHeavySnow = copy.isHeavySnow();
+        this.isLightWind = copy.isLightWind();
+        this.isModerateWind = copy.isModerateWind();
+        this.isHeavyWind = copy.isHeavyWind();
+        this.isLightStorm = copy.isLightStorm();
+        this.isModerateStorm = copy.isModerateStorm();
+        this.isHeavyStorm = copy.isHeavyStorm();
+    }
+
     public boolean isDirty() {
-        // check/mark dirty before returning..
-        useSecondHand();
-        useStandardFace();
-        useRomanNumeralsFace();
-        useGoldInlay();
-        usePreciousStones();
-        useStaticBackground();
-        useContinuousOn();
-        useHypnosis();
         return isDirty;
     }
 
@@ -336,7 +352,7 @@ public class WatchFaceDesignHolder implements Parcelable {
         this.isHeavyStorm = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<WatchFaceDesignHolder> CREATOR = new Parcelable.Creator<WatchFaceDesignHolder>() {
+    public static final Creator<WatchFaceDesignHolder> CREATOR = new Creator<WatchFaceDesignHolder>() {
         @Override
         public WatchFaceDesignHolder createFromParcel(Parcel source) {
             return new WatchFaceDesignHolder(source);
@@ -347,125 +363,5 @@ public class WatchFaceDesignHolder implements Parcelable {
             return new WatchFaceDesignHolder[size];
         }
     };
-
-    // the watchface design also includes shared preference values (not part of the Parcelable)
-    // we use the Denley preferencebinder code injection framework to handle those values.
-    // from: https://github.com/denley/preferencebinder
-
-    @PreferenceDefault("use_static_background") public static boolean STATICBACKGROUND_PREFERENCE_DEFAULT = false;
-    @BindPref(value = "use_static_background")
-    boolean useStaticBackground = STATICBACKGROUND_PREFERENCE_DEFAULT;
-    boolean useStaticBackgroundOldValue = !STATICBACKGROUND_PREFERENCE_DEFAULT;
-
-    public boolean useStaticBackground() {
-        if (useStaticBackgroundOldValue != useStaticBackground) {
-            useStaticBackgroundOldValue = useStaticBackground;
-            setDirty(true);
-        }
-        return useStaticBackground;
-    }
-
-    @PreferenceDefault("use_secondhand") public static boolean SECONDHAND_PREFERENCE_DEFAULT = true;
-    @BindPref(value = "use_secondhand")
-    boolean useSecondHand = SECONDHAND_PREFERENCE_DEFAULT;
-    boolean useSecondHandOldValue = !SECONDHAND_PREFERENCE_DEFAULT;
-
-    public boolean useSecondHand() {
-        if (useSecondHandOldValue != useSecondHand) {
-            useSecondHandOldValue = useSecondHand;
-            setDirty(true);
-        }
-        return useSecondHand;
-    }
-
-    @PreferenceDefault("use_standardface") public static boolean STANDARDFACE_PREFERENCE_DEFAULT = false;
-    @BindPref(value = "use_standardface")
-    boolean useStandardFace = STANDARDFACE_PREFERENCE_DEFAULT;
-    boolean useStandardFaceOldValue = !STANDARDFACE_PREFERENCE_DEFAULT;
-
-    public boolean useStandardFace() {
-        if (useStandardFaceOldValue != useStandardFace) {
-            useStandardFaceOldValue = useStandardFace;
-            setDirty(true);
-        }
-        return useStandardFace;
-    }
-
-    @PreferenceDefault("use_roman_numerals") public static boolean ROMANFACE_PREFERENCE_DEFAULT = false;
-    @BindPref(value = "use_roman_numerals")
-    boolean useRomanNumeralsFace = ROMANFACE_PREFERENCE_DEFAULT;
-    boolean useRomanNumeralsOldValue = !ROMANFACE_PREFERENCE_DEFAULT;
-
-    public boolean useRomanNumeralsFace() {
-        if (useRomanNumeralsOldValue != useRomanNumeralsFace) {
-            useRomanNumeralsOldValue = useRomanNumeralsFace;
-            setDirty(true);
-        }
-        return useRomanNumeralsFace;
-    }
-
-    @PreferenceDefault("use_gold_inlay") public static boolean GOLDINLAY_PREFERENCE_DEFAULT = false;
-    @BindPref(value = "use_gold_inlay")
-    boolean useGoldInlay = GOLDINLAY_PREFERENCE_DEFAULT;
-    boolean useGoldInlayOldValue = !GOLDINLAY_PREFERENCE_DEFAULT;
-
-    public boolean useGoldInlay() {
-        if (useGoldInlayOldValue != useGoldInlay) {
-            useGoldInlayOldValue = useGoldInlay;
-            setDirty(true);
-        }
-        return useGoldInlay;
-    }
-
-    @PreferenceDefault("use_precious_stones") public static boolean PRECIOUSSTONES_PREFERENCE_DEFAULT = false;
-    @BindPref(value = "use_precious_stones")
-    boolean usePreciousStones = PRECIOUSSTONES_PREFERENCE_DEFAULT;
-    boolean usePreciousStonesOldValue = !PRECIOUSSTONES_PREFERENCE_DEFAULT;
-
-    public boolean usePreciousStones() {
-        if (usePreciousStonesOldValue != usePreciousStones) {
-            usePreciousStonesOldValue = usePreciousStones;
-            setDirty(true);
-        }
-        return usePreciousStones;
-    }
-
-    @PreferenceDefault("use_continuous_on") public static boolean CONTINUOUSON_PREFERENCE_DEFAULT = false;
-    @BindPref(value = "use_continuous_on")
-    boolean useContinuousOn = CONTINUOUSON_PREFERENCE_DEFAULT;
-    boolean useContinuousOnOldValue = !CONTINUOUSON_PREFERENCE_DEFAULT;
-
-    public boolean useContinuousOn() {
-        if (useContinuousOnOldValue != useContinuousOn) {
-            useContinuousOnOldValue = useContinuousOn;
-            setDirty(true);
-        }
-        return useContinuousOn;
-    }
-
-    @PreferenceDefault("use_hypnosis") public static boolean HYPNOSIS_PREFERENCE_DEFAULT = false;
-    @BindPref(value = "use_hypnosis")
-    boolean useHypnosis = HYPNOSIS_PREFERENCE_DEFAULT;
-    boolean useHypnosisOldValue = !HYPNOSIS_PREFERENCE_DEFAULT;
-
-    public boolean useHypnosis() {
-        if (useHypnosisOldValue != useHypnosis) {
-            useHypnosisOldValue = useHypnosis;
-            setDirty(true);
-        }
-        return useHypnosis;
-    }
-
-    @PreferenceDefault("contact_lee") public static boolean CONTACTLEE_PREFERENCE_DEFAULT = false;
-    @BindPref(value = "contact_lee")
-    boolean contactLee = CONTACTLEE_PREFERENCE_DEFAULT;
-    boolean contactLeeOldValue = !CONTACTLEE_PREFERENCE_DEFAULT;
-
-    public boolean contactLee() {
-        if (contactLeeOldValue != contactLee) {
-            contactLeeOldValue = contactLee;
-        }
-        return contactLee;
-    }
 
 }
