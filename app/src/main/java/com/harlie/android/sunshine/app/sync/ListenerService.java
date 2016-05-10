@@ -27,7 +27,6 @@ public class ListenerService
         implements
             GoogleApiClient.ConnectionCallbacks,
             GoogleApiClient.OnConnectionFailedListener,
-            DataApi.DataListener,
             MessageApi.MessageListener
 {
     private static final String TAG = "LEE: <" + ListenerService.class.getSimpleName() + ">";
@@ -36,14 +35,14 @@ public class ListenerService
     private static GoogleApiClient sGoogleApiClient;
     private static WatchFaceDesignHolder sWatchFaceDesignHolder;
 
-    public static final String SYNC_PATH = "/sync";
+    public static final String SYNC_PATH = "/sunshine/sync";
+    public static final String WEATHER_INFO_PATH = "/sunshine/weather";
+    public static final String LEE_HOUNSHELL_WEAR_PATH = "/sunshine/lee-hounshell";
+    public static final String LEE_HOUNSHELL_WEB_PAGE = "http://linkedin.com/pub/lee-hounshell/2/674/852";
     public static final String SYNC = "true";
-    public static final String WEATHER_INFO_PATH = "/weather";
     public static final String WEATHER_INFO_KEY = "weather_info";
     public static final String KEY_HIGH_TEMP = "high_temp";
     public static final String KEY_LOW_TEMP = "low_temp";
-    public static final String LEE_HOUNSHELL_WEAR_PATH = "/lee-hounshell";
-    public static final String LEE_HOUNSHELL_WEB_PAGE = "http://linkedin.com/pub/lee-hounshell/2/674/852";
 
     public ListenerService() {
         super();
@@ -135,6 +134,7 @@ public class ListenerService
         }).start();
     }
 
+    /*
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
         Log.v(TAG, "onDataChanged");
@@ -174,6 +174,7 @@ public class ListenerService
             }
         }
     }
+    */
 
     // receive the message from wear
     @Override
