@@ -33,6 +33,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
@@ -171,6 +172,7 @@ public class MainActivity
             return true;
         }
         else if (id == R.id.action_sync) {
+            Toast.makeText(this, getResources().getString(R.string.action_sync), Toast.LENGTH_SHORT).show();
             ListenerService.sendWeatherDataToWear();
         }
         return super.onOptionsItemSelected(item);
