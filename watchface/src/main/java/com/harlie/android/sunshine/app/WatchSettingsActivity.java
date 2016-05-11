@@ -7,9 +7,6 @@ import android.preference.PreferenceManager;
 import android.support.wearable.activity.ConfirmationActivity;
 import android.util.Log;
 
-import com.harlie.android.sunshine.app.R;
-import com.harlie.android.sunshine.app.WeatherWatchFace;
-
 import preference.WearPreferenceActivity;
 
 public class WatchSettingsActivity extends WearPreferenceActivity

@@ -39,9 +39,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.wearable.Wearable;
 import com.harlie.android.sunshine.app.sync.ListenerService;
 import com.harlie.android.sunshine.app.sync.SunshineSyncAdapter;
 

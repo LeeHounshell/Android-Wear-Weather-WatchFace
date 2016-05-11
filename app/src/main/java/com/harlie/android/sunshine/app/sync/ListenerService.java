@@ -9,9 +9,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.DataApi;
-import com.google.android.gms.wearable.DataEvent;
-import com.google.android.gms.wearable.DataEventBuffer;
-import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.PutDataMapRequest;
@@ -20,6 +17,7 @@ import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 import com.harlie.android.sunshine.app.WatchFaceDesignHolder;
 
+// wear messages come from the watch into the sunshine app
 // from: https://gist.github.com/gabrielemariotti/117b05aad4db251f7534
 public class ListenerService
         extends
@@ -38,8 +36,6 @@ public class ListenerService
     public static final String SYNC_PATH = "/sunshine/sync";
     public static final String WEATHER_INFO_PATH = "/sunshine/weather";
     public static final String LEE_HOUNSHELL_WEAR_PATH = "/sunshine/lee-hounshell";
-    public static final String LEE_HOUNSHELL_WEB_PAGE = "http://linkedin.com/pub/lee-hounshell/2/674/852";
-    public static final String SYNC = "true";
     public static final String WEATHER_INFO_KEY = "weather_info";
     public static final String KEY_HIGH_TEMP = "high_temp";
     public static final String KEY_LOW_TEMP = "low_temp";
@@ -134,58 +130,19 @@ public class ListenerService
         }).start();
     }
 
-    /*
-    @Override
-    public void onDataChanged(DataEventBuffer dataEvents) {
-        Log.v(TAG, "onDataChanged");
-        super.onDataChanged(dataEvents);
-        for (DataEvent event : dataEvents) {
-            if (event.getType() == DataEvent.TYPE_CHANGED) {
-                DataMapItem mapItem = DataMapItem.fromDataItem(event.getDataItem());
-                String path = event.getDataItem().getUri().getPath();
-                byte[] data = event.getDataItem().getData();
-                if (ListenerService.WEATHER_INFO_PATH.equals(path)) {
-                    Log.v(TAG, "---> GOT WEATHER_INFO_PATH!");
-                    Log.w(TAG, "DATA: "+data);
-                    // FIXME: fill in data
-                    String high = mapItem.getDataMap().getString(KEY_HIGH_TEMP);
-                    if (high != null && ! high.equals("null")) {
-                        sWatchFaceDesignHolder.setHighTemp( Integer.valueOf(high) );
-                        sWatchFaceDesignHolder.setDirty(true);
-                    }
-                    String low = mapItem.getDataMap().getString(KEY_LOW_TEMP);
-                    if (low != null && ! low.equals("null")) {
-                        sWatchFaceDesignHolder.setLowTemp( Integer.valueOf(low) );
-                        sWatchFaceDesignHolder.setDirty(true);
-                    }
-                }
-                else if (ListenerService.SYNC_PATH.equals(path)) {
-                    Log.v(TAG, "---> GOT SYNC_PATH!");
-                    Log.w(TAG, "DATA: "+data);
-                }
-                else if (ListenerService.LEE_HOUNSHELL_WEAR_PATH.equals(path)) {
-                    Log.v(TAG, "---> GOT LEE_HOUNSHELL_WEAR_PATH!");
-                    Log.w(TAG, "DATA: "+data);
-                }
-                else {
-                    Log.w(TAG, "UNEXPECTED PATH: "+path);
-                    Log.w(TAG, "UNEXPECTED DATA: "+data);
-                }
-            }
-        }
-    }
-    */
-
     // receive the message from wear
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
-        Log.v(TAG, "onMessageReceived");
-        Log.v(TAG, "messageEvent: path="+messageEvent.getPath()+", data="+messageEvent.getData());
+        Log.v(TAG, "---------> onMessageReceived");
         if (messageEvent.getPath().equals(LEE_HOUNSHELL_WEAR_PATH)) {
-            Log.v(TAG, "=========> MESSAGE RECEIVED: "+messageEvent);
+            Log.v(TAG, "=========> AUTHOR MESSAGE RECEIVED: "+messageEvent.getData().toString());
+        }
+        else if (messageEvent.getPath().equals(SYNC_PATH)) {
+            Log.v(TAG, "=========> SYNC MESSAGE RECEIVED: "+messageEvent.getData().toString());
+            sendWeatherDataToWear();
         }
         else {
-            Log.v(TAG, "=========> UNKNOWN MESSAGE RECEIVED: "+messageEvent);
+            Log.v(TAG, "=========> UNKNOWN MESSAGE messageEvent: path="+messageEvent.getPath()+", data="+messageEvent.getData().toString());
         }
     }
 

@@ -14,12 +14,12 @@ import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageApi;
-import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 
+// data items come from the sunshine app into the watch
 // from: https://gist.github.com/gabrielemariotti/117b05aad4db251f7534
 public class ListenerService
         extends
@@ -80,7 +80,7 @@ public class ListenerService
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
-        Log.v(TAG, "onDataChanged");
+        Log.v(TAG, "---------> onDataChanged");
         super.onDataChanged(dataEvents);
         for (DataEvent event : dataEvents) {
             if (event.getType() == DataEvent.TYPE_CHANGED) {
@@ -116,21 +116,6 @@ public class ListenerService
             }
         }
     }
-
-    /*
-    // receive the message from wear
-    @Override
-    public void onMessageReceived(MessageEvent messageEvent) {
-        Log.v(TAG, "onMessageReceived");
-        Log.v(TAG, "messageEvent: path="+messageEvent.getPath()+", data="+messageEvent.getData());
-        if (messageEvent.getPath().equals(LEE_HOUNSHELL_WEAR_PATH)) {
-            Log.v(TAG, "=========> MESSAGE RECEIVED: "+messageEvent);
-        }
-        else {
-            Log.v(TAG, "=========> UNKNOWN MESSAGE RECEIVED: "+messageEvent);
-        }
-    }
-    */
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
