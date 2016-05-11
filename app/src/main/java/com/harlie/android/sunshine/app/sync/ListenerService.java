@@ -40,9 +40,6 @@ public class ListenerService
     public static final String SYNC_PATH = "/sunshine/sync";
     public static final String WEATHER_INFO_PATH = "/sunshine/weather";
     public static final String LEE_HOUNSHELL_WEAR_PATH = "/sunshine/lee-hounshell";
-    public static final String WEATHER_INFO_KEY = "weather_info";
-    public static final String KEY_HIGH_TEMP = "high_temp";
-    public static final String KEY_LOW_TEMP = "low_temp";
 
     private static class ConnectionHandler
             implements

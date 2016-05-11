@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.google.android.gms.wearable.DataMap;
+
 import me.denley.preferencebinder.BindPref;
 import me.denley.preferencebinder.PreferenceDefault;
 
@@ -466,6 +468,35 @@ public class WatchFaceDesignHolder implements Parcelable {
             contactLeeOldValue = contactLee;
         }
         return contactLee;
+    }
+
+    public void fromDataMap(DataMap dmap) {
+        Log.v(TAG, "fromDataMap");
+        setDaytime(dmap.getBoolean("isDaytime"));
+        setSunshine(dmap.getBoolean("isSunshine"));
+        setOvercast(dmap.getBoolean("isOvercast"));
+        setMoonPhase(dmap.getInt("moonPhase"));
+        setHighTemp(dmap.getInt("highTemp"));
+        setLowTemp(dmap.getInt("lowTemp"));
+        setMetric(dmap.getBoolean("isMetric"));
+        setLightClouds(dmap.getBoolean("isLightClouds"));
+        setModerateClouds(dmap.getBoolean("isModerateClouds"));
+        setHeavyClouds(dmap.getBoolean("isHeavyClouds"));
+        setAreCloudsDark(dmap.getBoolean("areCloudsDark"));
+        setAreCloudsLow(dmap.getBoolean("areCloudsLow"));
+        setLightRain(dmap.getBoolean("isLightRain"));
+        setModerateRain(dmap.getBoolean("isModerateRain"));
+        setHeavyRain(dmap.getBoolean("isHeavyRain"));
+        setLightSnow(dmap.getBoolean("isLightSnow"));
+        setModerateSnow(dmap.getBoolean("isModerateSnow"));
+        setHeavySnow(dmap.getBoolean("isHeavySnow"));
+        setLightWind(dmap.getBoolean("isLightWind"));
+        setModerateWind(dmap.getBoolean("isModerateWind"));
+        setHeavyWind(dmap.getBoolean("isHeavyWind"));
+        setLightStorm(dmap.getBoolean("isLightStorm"));
+        setModerateStorm(dmap.getBoolean("isModerateStorm"));
+        setHeavyStorm(dmap.getBoolean("isHeavyStorm"));
+        setDirty(true);
     }
 
 }

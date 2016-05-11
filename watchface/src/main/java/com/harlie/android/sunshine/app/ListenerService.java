@@ -12,6 +12,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
@@ -34,14 +35,11 @@ public class ListenerService
     private static WatchFaceDesignHolder sWatchFaceDesignHolder;
     private static boolean connectionRequest;
 
-    public static final String SYNC_PATH = "/sunshine/sync";
-    public static final String WEATHER_INFO_PATH = "/sunshine/weather";
     public static final String LEE_HOUNSHELL_WEAR_PATH = "/sunshine/lee-hounshell";
     public static final String LEE_HOUNSHELL_WEB_PAGE = "http://linkedin.com/pub/lee-hounshell/2/674/852";
+    public static final String WEATHER_INFO_PATH = "/sunshine/weather";
+    public static final String SYNC_PATH = "/sunshine/sync";
     public static final String SYNC = "true";
-    public static final String WEATHER_INFO_KEY = "weather_info";
-    public static final String KEY_HIGH_TEMP = "high_temp";
-    public static final String KEY_LOW_TEMP = "low_temp";
 
     private static class ConnectionHandler
             implements
@@ -128,25 +126,8 @@ public class ListenerService
                 byte[] data = event.getDataItem().getData();
                 if (ListenerService.WEATHER_INFO_PATH.equals(path)) {
                     Log.v(TAG, "---> GOT WEATHER_INFO_PATH!");
-                    Log.w(TAG, "DATA: "+data);
-                    String high = mapItem.getDataMap().getString(KEY_HIGH_TEMP);
-                    if (high != null && ! high.equals("null")) {
-                        sWatchFaceDesignHolder.setHighTemp( Integer.valueOf(high) );
-                        sWatchFaceDesignHolder.setDirty(true);
-                    }
-                    String low = mapItem.getDataMap().getString(KEY_LOW_TEMP);
-                    if (low != null && ! low.equals("null")) {
-                        sWatchFaceDesignHolder.setLowTemp( Integer.valueOf(low) );
-                        sWatchFaceDesignHolder.setDirty(true);
-                    }
-                }
-                else if (ListenerService.SYNC_PATH.equals(path)) {
-                    Log.v(TAG, "---> GOT SYNC_PATH!");
-                    Log.w(TAG, "DATA: "+data);
-                }
-                else if (ListenerService.LEE_HOUNSHELL_WEAR_PATH.equals(path)) {
-                    Log.v(TAG, "---> GOT LEE_HOUNSHELL_WEAR_PATH!");
-                    Log.w(TAG, "DATA: "+data);
+                    DataMap dmap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    sWatchFaceDesignHolder.fromDataMap(dmap);
                 }
                 else {
                     Log.w(TAG, "UNEXPECTED PATH: "+path);
