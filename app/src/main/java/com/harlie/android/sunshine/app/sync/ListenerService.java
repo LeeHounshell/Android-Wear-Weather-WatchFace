@@ -9,10 +9,14 @@ import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
@@ -118,6 +122,9 @@ public class ListenerService
 
     public static void sendWeatherDataToWear() {
         Log.v(TAG, "sendWeatherDataToWear");
+
+        final DataMap dataMap = sWatchFaceDesignHolder.toDataMap();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -125,28 +132,45 @@ public class ListenerService
                 WatchFaceDesignHolder watchFaceDesignHolder = sWatchFaceDesignHolder;
                 if (watchFaceDesignHolderOldValue == null || !watchFaceDesignHolderOldValue.equals(watchFaceDesignHolder)) {
                     Log.w(TAG, "weather has changed - need to send message - ok");
-                    watchFaceDesignHolderOldValue = new WatchFaceDesignHolder(watchFaceDesignHolder);
-                    PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(ListenerService.WEATHER_INFO_PATH);
-                    Parcel weatherParcel = Parcel.obtain();
-                    watchFaceDesignHolder.writeToParcel(weatherParcel, 0);
-                    String[] weatherData = weatherParcel.createStringArray();
-                    Log.v(TAG, "*** weatherData[]="+weatherData.toString());
-                    putDataMapRequest.getDataMap().putStringArray(ListenerService.WEATHER_INFO_KEY, weatherData);
-                    PutDataRequest request = putDataMapRequest.asPutDataRequest();
-                    request.setUrgent();
-                    Log.v(TAG, "PutDataRequest created for " + ListenerService.WEATHER_INFO_PATH);
-                    Wearable.DataApi.putDataItem(sGoogleApiClient, request)
-                            .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
-                                @Override
-                                public void onResult(DataApi.DataItemResult dataItemResult) {
-                                    Log.v(TAG, "putDataItem onResult callback");
-                                    if (!dataItemResult.getStatus().isSuccess()) {
-                                        Log.e(TAG, "FAILED to sendWeatherDataToWear - path=" + ListenerService.WEATHER_INFO_PATH);
-                                    } else {
-                                        Log.e(TAG, "SUCCESS for sendWeatherDataToWear - path=" + ListenerService.WEATHER_INFO_PATH);
+
+                    // from: http://stackoverflow.com/questions/33716767/wearlistenerservice-ondatachanged-strange-behavior
+                    //NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(googleClient);
+                    PendingResult<NodeApi.GetConnectedNodesResult> nodes = Wearable.NodeApi.getConnectedNodes(sGoogleApiClient);
+                    nodes.setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>()
+                    {
+                        @Override
+                        public void onResult(NodeApi.GetConnectedNodesResult getConnectedNodesResult)
+                        {
+                            for (Node node : getConnectedNodesResult.getNodes())
+                            {
+                                final Node node2 = node;
+
+                                // Construct a DataRequest and send over the data layer
+                                PutDataMapRequest putDMR = PutDataMapRequest.create(ListenerService.WEATHER_INFO_PATH);
+                                putDMR.getDataMap().putAll(dataMap);
+                                PutDataRequest request = putDMR.asPutDataRequest();
+                                request.setUrgent();
+
+                                Log.v(TAG, "requesting send DataMap to "+node.getDisplayName());
+                                PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi.putDataItem(sGoogleApiClient, request);
+                                pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>()
+                                {
+                                    @Override
+                                    public void onResult(DataApi.DataItemResult dataItemResult)
+                                    {
+                                        if (dataItemResult.getStatus().isSuccess())
+                                        {
+                                            Log.v(TAG, "DataMap: " + dataMap + " requested send to: " + node2.getDisplayName());
+                                        } else
+                                        {
+                                            // Log an error
+                                            Log.v(TAG, "ERROR: failed to request send DataMap");
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
+                        }
+                    });
                 } else {
                     Log.w(TAG, "no change in weather - message not sent - ok");
                 }

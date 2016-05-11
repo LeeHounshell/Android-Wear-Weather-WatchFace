@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.google.android.gms.wearable.DataMap;
+
 // NOTE: this class needs to maintain Parcelable compatibility with the wear version.
 public class WatchFaceDesignHolder implements Parcelable {
     private final String TAG = "LEE: <" + WatchFaceDesignHolder.class.getSimpleName() + ">";
@@ -46,8 +48,8 @@ public class WatchFaceDesignHolder implements Parcelable {
         this.isLightClouds = copy.isLightClouds();
         this.isModerateClouds = copy.isModerateClouds();
         this.isHeavyClouds = copy.isHeavyClouds();
-        this.areCloudsDark = copy.isAreCloudsDark();
-        this.areCloudsLow = copy.isAreCloudsLow();
+        this.areCloudsDark = copy.areCloudsDark();
+        this.areCloudsLow = copy.areCloudsLow();
         this.isLightRain = copy.isLightRain();
         this.isModerateRain = copy.isModerateRain();
         this.isHeavyRain = copy.isHeavyRain();
@@ -161,7 +163,7 @@ public class WatchFaceDesignHolder implements Parcelable {
         isHeavyClouds = heavyClouds;
     }
 
-    public boolean isAreCloudsDark() {
+    public boolean areCloudsDark() {
         return areCloudsDark;
     }
 
@@ -170,7 +172,7 @@ public class WatchFaceDesignHolder implements Parcelable {
         this.areCloudsDark = areCloudsDark;
     }
 
-    public boolean isAreCloudsLow() {
+    public boolean areCloudsLow() {
         return areCloudsLow;
     }
 
@@ -363,5 +365,34 @@ public class WatchFaceDesignHolder implements Parcelable {
             return new WatchFaceDesignHolder[size];
         }
     };
+
+    public DataMap toDataMap() {
+        DataMap dmap = new DataMap();
+        dmap.putBoolean("isDaytime", isDaytime());
+        dmap.putBoolean("isSunshine", isSunshine());
+        dmap.putBoolean("isOvercast", isOvercast());
+        dmap.putInt("moonPhase", getMoonPhase());
+        dmap.putInt("highTemp", getHighTemp());
+        dmap.putInt("lowTemp", getLowTemp());
+        dmap.putBoolean("isMetric", isMetric());
+        dmap.putBoolean("isLightClouds", isLightClouds());
+        dmap.putBoolean("isModerateClouds", isModerateClouds());
+        dmap.putBoolean("isHeavyClouds", isHeavyClouds());
+        dmap.putBoolean("areCloudsDark", areCloudsDark());
+        dmap.putBoolean("areCloudsLow", areCloudsLow());
+        dmap.putBoolean("isLightRain", isLightRain());
+        dmap.putBoolean("isModerateRain", isModerateRain());
+        dmap.putBoolean("isHeavyRain", isHeavyRain());
+        dmap.putBoolean("isLightSnow", isLightSnow());
+        dmap.putBoolean("isModerateSnow", isModerateSnow());
+        dmap.putBoolean("isHeavySnow", isHeavySnow());
+        dmap.putBoolean("isLightWind", isLightWind());
+        dmap.putBoolean("isModerateWind", isModerateWind());
+        dmap.putBoolean("isHeavyWind", isHeavyWind());
+        dmap.putBoolean("isLightStorm", isLightStorm());
+        dmap.putBoolean("isModerateStorm", isModerateStorm());
+        dmap.putBoolean("isHeavyStorm", isHeavyStorm());
+        return dmap;
+    }
 
 }
