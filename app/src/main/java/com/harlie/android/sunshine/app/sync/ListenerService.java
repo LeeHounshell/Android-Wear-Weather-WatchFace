@@ -1,6 +1,8 @@
 package com.harlie.android.sunshine.app.sync;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
@@ -180,7 +182,12 @@ public class ListenerService
     public void onMessageReceived(MessageEvent messageEvent) {
         Log.v(TAG, "---------> onMessageReceived");
         if (messageEvent.getPath().equals(LEE_HOUNSHELL_WEAR_PATH)) {
-            Log.v(TAG, "=========> AUTHOR MESSAGE RECEIVED: "+messageEvent.getData().toString());
+            String data = new String(messageEvent.getData());
+            Log.v(TAG, "=========> AUTHOR MESSAGE RECEIVED: "+data);
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+            browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            browserIntent.setData(Uri.parse(data));
+            startActivity(browserIntent);
         }
         else if (messageEvent.getPath().equals(SYNC_PATH)) {
             Log.v(TAG, "=========> SYNC MESSAGE RECEIVED: "+messageEvent.getData().toString());
