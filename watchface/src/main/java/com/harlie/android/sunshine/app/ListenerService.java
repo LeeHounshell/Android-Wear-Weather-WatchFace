@@ -25,15 +25,14 @@ public class ListenerService
         extends
             WearableListenerService
         implements
-            GoogleApiClient.ConnectionCallbacks,
-            GoogleApiClient.OnConnectionFailedListener,
             DataApi.DataListener
 {
     private static final String TAG = "LEE: <" + ListenerService.class.getSimpleName() + ">";
 
-    private static ListenerService sListenerService;
+    private static ConnectionHandler sConnectionHandler;
     private static GoogleApiClient sGoogleApiClient;
     private static WatchFaceDesignHolder sWatchFaceDesignHolder;
+    private static boolean connectionRequest;
 
     public static final String SYNC_PATH = "/sunshine/sync";
     public static final String WEATHER_INFO_PATH = "/sunshine/weather";
@@ -44,37 +43,77 @@ public class ListenerService
     public static final String KEY_HIGH_TEMP = "high_temp";
     public static final String KEY_LOW_TEMP = "low_temp";
 
-    public ListenerService() {
-        super();
-        Log.v(TAG, "constructor");
-        sListenerService = this;
-        sWatchFaceDesignHolder = new WatchFaceDesignHolder();
+    private static class ConnectionHandler
+            implements
+                GoogleApiClient.ConnectionCallbacks,
+                GoogleApiClient.OnConnectionFailedListener
+    {
+        private final String TAG = "LEE: <" + ConnectionHandler.class.getSimpleName() + ">";
+
+        public void connect(Context context) {
+            Log.v(TAG, "connect");
+            sGoogleApiClient = new GoogleApiClient.Builder(context)
+                    .addApi(Wearable.API)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+            sGoogleApiClient.connect();
+        }
+
+        public void disconnect() {
+            Log.v(TAG, "disconnect");
+            if (sGoogleApiClient != null && sGoogleApiClient.isConnected()) {
+                sGoogleApiClient.disconnect();
+                //Wearable.DataApi.removeListener(sGoogleApiClient, this);
+            }
+        }
+
+        @Override
+        public void onConnected(@Nullable Bundle bundle) {
+            Log.v(TAG, "onConnected");
+            //Wearable.DataApi.addListener(sGoogleApiClient, this);
+        }
+
+        @Override
+        public void onConnectionSuspended(int i) {
+            Log.v(TAG, "onConnectionSuspended");
+        }
+
+        @Override
+        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+            Log.v(TAG, "onConnectionFailed");
+        }
+
     }
 
-    public static ListenerService getInstance() {
-        Log.v(TAG, "getInstance");
-        if (sListenerService == null) {
-            Log.v(TAG, "create instance");
-            sListenerService = new ListenerService();
-        }
-        return sListenerService;
+    @Override
+    public void onCreate() {
+        Log.v(TAG, "onCreate");
+        super.onCreate();
+        connect(getApplicationContext());
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.v(TAG, "onDestroy");
+        super.onDestroy();
     }
 
     public static void connect(Context context) {
         Log.v(TAG, "connect");
-        sGoogleApiClient = new GoogleApiClient.Builder(context)
-                .addApi(Wearable.API)
-                .addConnectionCallbacks(getInstance())
-                .addOnConnectionFailedListener(getInstance())
-                .build();
-        sGoogleApiClient.connect();
+        if (sConnectionHandler == null) {
+            sConnectionHandler = new ConnectionHandler();
+        }
+        if (sWatchFaceDesignHolder == null) {
+            sWatchFaceDesignHolder = new WatchFaceDesignHolder();
+        }
+        sConnectionHandler.connect(context);
     }
 
     public static void disconnect() {
         Log.v(TAG, "disconnect");
-        if (sGoogleApiClient != null && sGoogleApiClient.isConnected()) {
-            sGoogleApiClient.disconnect();
-            Wearable.DataApi.removeListener(sGoogleApiClient, getInstance());
+        if (sConnectionHandler != null) {
+            sConnectionHandler.disconnect();
         }
     }
 
@@ -115,22 +154,6 @@ public class ListenerService
                 }
             }
         }
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        Log.v(TAG, "onConnected");
-        Wearable.DataApi.addListener(sGoogleApiClient, this);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.v(TAG, "onConnectionSuspended");
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.v(TAG, "onConnectionFailed");
     }
 
     public static void viewLinkedInPage() {
