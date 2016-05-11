@@ -8,7 +8,7 @@ import com.google.android.gms.wearable.DataMap;
 
 // NOTE: this class needs to maintain Parcelable compatibility with the wear version.
 public class WatchFaceDesignHolder implements Parcelable {
-    private final String TAG = "LEE: <" + WatchFaceDesignHolder.class.getSimpleName() + ">";
+    private static final String TAG = "LEE: <" + WatchFaceDesignHolder.class.getSimpleName() + ">";
 
     private boolean isDirty;
     private boolean isDaytime;
@@ -69,7 +69,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setDirty(boolean dirty) {
-        Log.v(TAG, "setDirty: "+dirty);
+        //Log.v(TAG, "setDirty: "+dirty);
         isDirty = dirty;
     }
 
@@ -395,4 +395,68 @@ public class WatchFaceDesignHolder implements Parcelable {
         return dmap;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        WatchFaceDesignHolder that = (WatchFaceDesignHolder) o;
+
+        if (isDirty() != that.isDirty()) return false;
+        if (isDaytime() != that.isDaytime()) return false;
+        if (isSunshine() != that.isSunshine()) return false;
+        if (isOvercast() != that.isOvercast()) return false;
+        if (getMoonPhase() != that.getMoonPhase()) return false;
+        if (getHighTemp() != that.getHighTemp()) return false;
+        if (getLowTemp() != that.getLowTemp()) return false;
+        if (isMetric() != that.isMetric()) return false;
+        if (isLightClouds() != that.isLightClouds()) return false;
+        if (isModerateClouds() != that.isModerateClouds()) return false;
+        if (isHeavyClouds() != that.isHeavyClouds()) return false;
+        if (areCloudsDark != that.areCloudsDark) return false;
+        if (areCloudsLow != that.areCloudsLow) return false;
+        if (isLightRain() != that.isLightRain()) return false;
+        if (isModerateRain() != that.isModerateRain()) return false;
+        if (isHeavyRain() != that.isHeavyRain()) return false;
+        if (isLightSnow() != that.isLightSnow()) return false;
+        if (isModerateSnow() != that.isModerateSnow()) return false;
+        if (isHeavySnow() != that.isHeavySnow()) return false;
+        if (isLightWind() != that.isLightWind()) return false;
+        if (isModerateWind() != that.isModerateWind()) return false;
+        if (isHeavyWind() != that.isHeavyWind()) return false;
+        if (isLightStorm() != that.isLightStorm()) return false;
+        if (isModerateStorm() != that.isModerateStorm()) return false;
+        return isHeavyStorm() == that.isHeavyStorm();
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (isDirty() ? 1 : 0);
+        result = 31 * result + (isDaytime() ? 1 : 0);
+        result = 31 * result + (isSunshine() ? 1 : 0);
+        result = 31 * result + (isOvercast() ? 1 : 0);
+        result = 31 * result + getMoonPhase();
+        result = 31 * result + getHighTemp();
+        result = 31 * result + getLowTemp();
+        result = 31 * result + (isMetric() ? 1 : 0);
+        result = 31 * result + (isLightClouds() ? 1 : 0);
+        result = 31 * result + (isModerateClouds() ? 1 : 0);
+        result = 31 * result + (isHeavyClouds() ? 1 : 0);
+        result = 31 * result + (areCloudsDark ? 1 : 0);
+        result = 31 * result + (areCloudsLow ? 1 : 0);
+        result = 31 * result + (isLightRain() ? 1 : 0);
+        result = 31 * result + (isModerateRain() ? 1 : 0);
+        result = 31 * result + (isHeavyRain() ? 1 : 0);
+        result = 31 * result + (isLightSnow() ? 1 : 0);
+        result = 31 * result + (isModerateSnow() ? 1 : 0);
+        result = 31 * result + (isHeavySnow() ? 1 : 0);
+        result = 31 * result + (isLightWind() ? 1 : 0);
+        result = 31 * result + (isModerateWind() ? 1 : 0);
+        result = 31 * result + (isHeavyWind() ? 1 : 0);
+        result = 31 * result + (isLightStorm() ? 1 : 0);
+        result = 31 * result + (isModerateStorm() ? 1 : 0);
+        result = 31 * result + (isHeavyStorm() ? 1 : 0);
+        return result;
+    }
 }

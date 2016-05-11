@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
 
 android {
     Properties props = new Properties()
@@ -42,3 +41,5 @@ dependencies {
     compile 'me.denley.preferenceinjector:PreferenceInjector:3.0.2'
     compile 'com.google.android.gms:play-services-wearable:8.3.0'
 }
+
+apply plugin: 'com.google.gms.google-services'

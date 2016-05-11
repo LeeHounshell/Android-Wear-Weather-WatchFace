@@ -32,7 +32,6 @@ public class ListenerService
 
     private static ConnectionHandler sConnectionHandler;
     private static GoogleApiClient sGoogleApiClient;
-    private static WatchFaceDesignHolder sWatchFaceDesignHolder;
     private static boolean connectionRequest;
 
     public static final String LEE_HOUNSHELL_WEAR_PATH = "/sunshine/lee-hounshell";
@@ -62,14 +61,12 @@ public class ListenerService
             Log.v(TAG, "disconnect");
             if (sGoogleApiClient != null && sGoogleApiClient.isConnected()) {
                 sGoogleApiClient.disconnect();
-                //Wearable.DataApi.removeListener(sGoogleApiClient, this);
             }
         }
 
         @Override
         public void onConnected(@Nullable Bundle bundle) {
             Log.v(TAG, "onConnected");
-            //Wearable.DataApi.addListener(sGoogleApiClient, this);
         }
 
         @Override
@@ -97,13 +94,10 @@ public class ListenerService
         super.onDestroy();
     }
 
-    public static void connect(Context context) {
+    synchronized public static void connect(Context context) {
         Log.v(TAG, "connect");
         if (sConnectionHandler == null) {
             sConnectionHandler = new ConnectionHandler();
-        }
-        if (sWatchFaceDesignHolder == null) {
-            sWatchFaceDesignHolder = new WatchFaceDesignHolder();
         }
         sConnectionHandler.connect(context);
     }
@@ -124,10 +118,11 @@ public class ListenerService
                 DataMapItem mapItem = DataMapItem.fromDataItem(event.getDataItem());
                 String path = event.getDataItem().getUri().getPath();
                 byte[] data = event.getDataItem().getData();
-                if (ListenerService.WEATHER_INFO_PATH.equals(path)) {
-                    Log.v(TAG, "---> GOT WEATHER_INFO_PATH!");
+                if (ListenerService.WEATHER_INFO_PATH.equals(path.substring(0, ListenerService.WEATHER_INFO_PATH.length()))) {
                     DataMap dmap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
-                    sWatchFaceDesignHolder.fromDataMap(dmap);
+                    Log.v(TAG, "---> GOT WEATHER_INFO_PATH="+path+", dmap="+dmap.toString());
+                    // trigger update for the watchface display
+                    WeatherWatchFace.getWatchFaceDesignHolder().fromDataMap(dmap);
                 }
                 else {
                     Log.w(TAG, "UNEXPECTED PATH: "+path);
@@ -165,7 +160,6 @@ public class ListenerService
             }
         }).start();
     }
-
 
     public static void createSyncMessage() {
         new Thread(new Runnable() {

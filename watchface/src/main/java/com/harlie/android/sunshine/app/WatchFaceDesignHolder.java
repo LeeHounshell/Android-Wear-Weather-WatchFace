@@ -11,7 +11,7 @@ import me.denley.preferencebinder.PreferenceDefault;
 
 // NOTE: this class needs to maintain Parcelable compatibility with the app version.
 public class WatchFaceDesignHolder implements Parcelable {
-    private final String TAG = "LEE: <" + WatchFaceDesignHolder.class.getSimpleName() + ">";
+    private static final String TAG = "LEE: <" + WatchFaceDesignHolder.class.getSimpleName() + ">";
 
     private boolean isDirty;
     private boolean isDaytime;
@@ -53,7 +53,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public void setDirty(boolean dirty) {
-        Log.v(TAG, "setDirty: "+dirty);
+        //Log.v(TAG, "setDirty: "+dirty);
         isDirty = dirty;
     }
 

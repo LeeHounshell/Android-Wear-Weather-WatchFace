@@ -173,7 +173,7 @@ public class MainActivity
         }
         else if (id == R.id.action_sync) {
             Toast.makeText(this, getResources().getString(R.string.action_sync), Toast.LENGTH_SHORT).show();
-            ListenerService.sendWeatherDataToWear();
+            ListenerService.sendWeatherDataToWear(true);
         }
         return super.onOptionsItemSelected(item);
     }

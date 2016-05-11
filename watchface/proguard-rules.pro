@@ -28,3 +28,5 @@
     @me.denley.preferencebinder.* <methods>;
 }
 
+-keepattributes Signature
+
