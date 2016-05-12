@@ -78,8 +78,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
     public Engine onCreateEngine() {
         Log.v(TAG, "onCreateEngine");
         mContext = this.getApplicationContext();
-        Log.v(TAG, "connect ListenerService..");
-        ListenerService.connect(getContext());
+        Log.v(TAG, "connect WearTalkService..");
+        WearTalkService.connect(getContext());
         engine = new Engine();
         return engine;
     }
@@ -267,7 +267,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mBackgroundAmbientGoldBitmapScaled = Bitmap.createScaledBitmap(mBackgroundAmbientGoldBitmap, mWidth, mHeight, true /* filter */);
 
             // sync with phone now
-            ListenerService.createSyncMessage();
+            WearTalkService.createSyncMessage();
         }
 
         private void createWatchFaceBitmaps() {
@@ -603,8 +603,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             Log.v(TAG, "onDestroy");
             mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME);
             PreferenceBinder.unbind(getContext());
-            Log.v(TAG, "disconnect ListenerService..");
-            ListenerService.disconnect();
+            Log.v(TAG, "disconnect WearTalkService..");
+            WearTalkService.disconnect();
             super.onDestroy();
         }
 
@@ -904,12 +904,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 // Update time zone in case it changed while we weren't visible.
                 mCalendar.setTimeZone(TimeZone.getDefault());
                 //Log.v(TAG, "connecting..");
-                //ListenerService.connect(getApplicationContext());
+                //WearTalkService.connect(getApplicationContext());
             }
             else {
                 unregisterReceiver();
                 //Log.v(TAG, "disconnecting..");
-                //ListenerService.disconnect();
+                //WearTalkService.disconnect();
             }
 
             // Whether the timer should be running depends on whether we're visible (as well as

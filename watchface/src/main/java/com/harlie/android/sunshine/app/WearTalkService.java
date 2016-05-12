@@ -27,13 +27,13 @@ import java.io.IOException;
 
 // data items come from the sunshine app into the watch
 // from: https://gist.github.com/gabrielemariotti/117b05aad4db251f7534
-public class ListenerService
+public class WearTalkService
         extends
             WearableListenerService
         implements
             DataApi.DataListener
 {
-    private static final String TAG = "LEE: <" + ListenerService.class.getSimpleName() + ">";
+    private static final String TAG = "LEE: <" + WearTalkService.class.getSimpleName() + ">";
 
     private static ConnectionHandler sConnectionHandler;
     private static GoogleApiClient sGoogleApiClient;
@@ -122,7 +122,7 @@ public class ListenerService
                 DataMapItem mapItem = DataMapItem.fromDataItem(event.getDataItem());
                 String path = event.getDataItem().getUri().getPath();
                 byte[] data = event.getDataItem().getData();
-                if (ListenerService.WEATHER_INFO_PATH.equals(path.substring(0, ListenerService.WEATHER_INFO_PATH.length()))) {
+                if (WearTalkService.WEATHER_INFO_PATH.equals(path.substring(0, WearTalkService.WEATHER_INFO_PATH.length()))) {
                     DataMap dmap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.v(TAG, "---> GOT WEATHER_INFO_PATH="+path+", dmap="+dmap.toString());
                     // trigger update for the watchface display
