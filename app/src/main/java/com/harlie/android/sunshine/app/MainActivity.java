@@ -41,7 +41,7 @@ import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.harlie.android.sunshine.app.sync.ListenerService;
+import com.harlie.android.sunshine.app.sync.WearTalkService;
 import com.harlie.android.sunshine.app.sync.SunshineSyncAdapter;
 
 import java.io.IOException;
@@ -132,8 +132,8 @@ public class MainActivity
             storeRegistrationId(this, null);
         }
 
-        Log.v(TAG, "connect ListenerService..");
-        ListenerService.connect(getApplicationContext());
+        Log.v(TAG, "connect WearTalkService..");
+        WearTalkService.connect(getApplicationContext());
     }
 
     @Override
@@ -173,7 +173,7 @@ public class MainActivity
         }
         else if (id == R.id.action_sync) {
             Toast.makeText(this, getResources().getString(R.string.action_sync), Toast.LENGTH_SHORT).show();
-            ListenerService.sendWeatherDataToWear(true);
+            WearTalkService.sendWeatherDataToWear(true);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -183,7 +183,7 @@ public class MainActivity
         Log.v(TAG, "onPause");
         super.onPause();
         //Log.v(TAG, "disconnecting..");
-        //ListenerService.disconnect();
+        //WearTalkService.disconnect();
     }
 
     @Override
@@ -191,7 +191,7 @@ public class MainActivity
         Log.v(TAG, "onResume");
         super.onResume();
         //Log.v(TAG, "connecting..");
-        //ListenerService.connect(getApplicationContext());
+        //WearTalkService.connect(getApplicationContext());
 
         // If Google Play Services is not available, some features, such as GCM-powered weather
         // alerts, will not be available.
@@ -391,8 +391,8 @@ public class MainActivity
     @Override
     protected void onDestroy() {
         Log.v(TAG, "onDestroy");
-        Log.v(TAG, "disconnect ListenerService..");
-        ListenerService.disconnect();
+        Log.v(TAG, "disconnect WearTalkService..");
+        WearTalkService.disconnect();
         super.onDestroy();
     }
 

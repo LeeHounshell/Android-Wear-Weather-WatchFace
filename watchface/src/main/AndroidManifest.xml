@@ -38,7 +38,7 @@
             </intent-filter>
         </service>
 
-        <service android:name=".ListenerService"
+        <service android:name=".WearTalkService"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>

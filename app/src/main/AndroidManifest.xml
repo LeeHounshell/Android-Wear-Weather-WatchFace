@@ -111,7 +111,7 @@
         </service>
 
         <!-- Android Wear communication -->
-        <service android:name=".sync.ListenerService"
+        <service android:name=".sync.WearTalkService"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>

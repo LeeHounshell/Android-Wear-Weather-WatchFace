@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -35,13 +34,13 @@ import java.io.IOException;
 
 // wear messages come from the watch into the sunshine app
 // from: https://gist.github.com/gabrielemariotti/117b05aad4db251f7534
-public class ListenerService
+public class WearTalkService
         extends
             WearableListenerService
         implements
             MessageApi.MessageListener
 {
-    private static final String TAG = "LEE: <sync." + ListenerService.class.getSimpleName() + ">";
+    private static final String TAG = "LEE: <sync." + WearTalkService.class.getSimpleName() + ">";
 
     private static ConnectionHandler sConnectionHandler;
     private static GoogleApiClient sGoogleApiClient;
@@ -92,7 +91,7 @@ public class ListenerService
         @Override
         public void onConnected(@Nullable Bundle bundle) {
             Log.v(TAG, "onConnected");
-            ListenerService.sendWeatherDataToWear(true);
+            WearTalkService.sendWeatherDataToWear(true);
         }
 
         @Override
@@ -161,7 +160,7 @@ public class ListenerService
                                 // Construct a DataRequest and send over the data layer
                                 // The system time is appended to ensure a unique path and force delivery.
                                 // Google won't deliver data items it thinks were already seen.
-                                PutDataMapRequest putDMR = PutDataMapRequest.create(ListenerService.WEATHER_INFO_PATH + "/" + System.currentTimeMillis());
+                                PutDataMapRequest putDMR = PutDataMapRequest.create(WearTalkService.WEATHER_INFO_PATH + "/" + System.currentTimeMillis());
                                 putDMR.getDataMap().putAll(dataMap);
                                 PutDataRequest request = putDMR.asPutDataRequest();
                                 request.setUrgent();

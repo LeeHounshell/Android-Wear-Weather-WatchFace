@@ -48,13 +48,13 @@ public class WatchSettingsActivity extends WearPreferenceActivity
         Log.v(TAG, "===> onSharedPreferenceChanged - key="+key);
         if (key.equals("contact_lee")) {
             int animation = ConfirmationActivity.OPEN_ON_PHONE_ANIMATION;
-            Log.v(TAG, "===> OPEN WEBPAGE ON PHONE: "+ ListenerService.LEE_HOUNSHELL_WEB_PAGE);
+            Log.v(TAG, "===> OPEN WEBPAGE ON PHONE: "+ WearTalkService.LEE_HOUNSHELL_WEB_PAGE);
 
             try {
                 Intent linkedInIntent = new Intent(Intent.ACTION_VIEW);
                 if (isAvailable(this, linkedInIntent)) {
                     // view linked-in page on watch using a local browser, if one is available
-                    linkedInIntent.setData(Uri.parse(ListenerService.LEE_HOUNSHELL_WEB_PAGE));
+                    linkedInIntent.setData(Uri.parse(WearTalkService.LEE_HOUNSHELL_WEB_PAGE));
 
                     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
                     PendingIntent linkedInPendingIntent = PendingIntent.getActivity(this, 0, linkedInIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -74,10 +74,10 @@ public class WatchSettingsActivity extends WearPreferenceActivity
                 // show "on phone" animation
                 Intent notifyIntent = new Intent(this, ConfirmationActivity.class);
                 notifyIntent.putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE, ConfirmationActivity.OPEN_ON_PHONE_ANIMATION);
-                notifyIntent.putExtra(ConfirmationActivity.EXTRA_MESSAGE, ListenerService.LEE_HOUNSHELL_WEB_PAGE);
+                notifyIntent.putExtra(ConfirmationActivity.EXTRA_MESSAGE, WearTalkService.LEE_HOUNSHELL_WEB_PAGE);
                 startActivity(notifyIntent);
 
-                ListenerService.viewLinkedInPage();
+                WearTalkService.viewLinkedInPage();
                 Log.v(TAG, "web page request sent.");
             }
             catch (Exception e) {
