@@ -472,10 +472,10 @@ public class WatchFaceDesignHolder implements Parcelable {
 
     public void fromDataMap(DataMap dmap) {
         Log.v(TAG, "fromDataMap");
-        setDaytime(dmap.getBoolean("isDaytime"));
+        //setDaytime(dmap.getBoolean("isDaytime")); // instead use the local calculation for daytime
         setSunshine(dmap.getBoolean("isSunshine"));
         setOvercast(dmap.getBoolean("isOvercast"));
-        setMoonPhase(dmap.getInt("moonPhase"));
+        //setMoonPhase(dmap.getInt("moonPhase")); // instead use the local calculation for moon phase
         setHighTemp(dmap.getInt("highTemp"));
         setLowTemp(dmap.getInt("lowTemp"));
         setMetric(dmap.getBoolean("isMetric"));
