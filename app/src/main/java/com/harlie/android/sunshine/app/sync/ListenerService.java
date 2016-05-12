@@ -9,8 +9,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -28,6 +31,8 @@ import com.harlie.android.sunshine.app.AnalyticsApplication;
 import com.harlie.android.sunshine.app.R;
 import com.harlie.android.sunshine.app.WatchFaceDesignHolder;
 
+import java.io.IOException;
+
 // wear messages come from the watch into the sunshine app
 // from: https://gist.github.com/gabrielemariotti/117b05aad4db251f7534
 public class ListenerService
@@ -41,6 +46,7 @@ public class ListenerService
     private static ConnectionHandler sConnectionHandler;
     private static GoogleApiClient sGoogleApiClient;
     private static WatchFaceDesignHolder sWatchFaceDesignHolder;
+    private static String sAdId;
 
     public static final String SYNC_PATH = "/sunshine/sync";
     public static final String WEATHER_INFO_PATH = "/sunshine/weather";
@@ -61,6 +67,19 @@ public class ListenerService
                     .addOnConnectionFailedListener(this)
                     .build();
             sGoogleApiClient.connect();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        AdvertisingIdClient.Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(AnalyticsApplication.getsInstance().getApplicationContext());
+                        if (adInfo != null) {
+                            sAdId = adInfo.getId(); // get the advertising id
+                        }
+                    } catch (IOException | GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException exception) {
+                        Log.w(TAG, "unable to get advertising id: " + exception);
+                    }
+                }
+            }).start();
         }
 
         public void disconnect() {
@@ -187,6 +206,9 @@ public class ListenerService
         }
         else if (messageEvent.getPath().equals(SYNC_PATH)) {
             String data = new String(messageEvent.getData());
+            if (sAdId != null) {
+                data = "PhoneAdvertID="+sAdId+", "+data;
+            }
             Log.v(TAG, "=========> SYNC MESSAGE RECEIVED: "+data);
             sendWeatherDataToWear(false);
             // report watch configuration to Google Analytics

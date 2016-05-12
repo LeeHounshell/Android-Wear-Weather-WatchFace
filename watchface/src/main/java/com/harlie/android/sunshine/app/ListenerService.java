@@ -173,7 +173,7 @@ public class ListenerService
                 try {
                     AdvertisingIdClient.Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(WeatherWatchFace.getContext().getApplicationContext());
                     if (adInfo != null) {
-                        dmap.putString("advertisingID", adInfo.getId()); // get the advertising id
+                        dmap.putString("WearAdvertID", adInfo.getId()); // get the advertising id
                     }
                 } catch (IOException | GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException exception) {
                     Log.w(TAG, "unable to get advertising id: "+exception);
