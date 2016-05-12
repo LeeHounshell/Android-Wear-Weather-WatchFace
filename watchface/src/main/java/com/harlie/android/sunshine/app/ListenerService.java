@@ -6,7 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.DataApi;
@@ -19,6 +22,8 @@ import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
+
+import java.io.IOException;
 
 // data items come from the sunshine app into the watch
 // from: https://gist.github.com/gabrielemariotti/117b05aad4db251f7534
@@ -149,9 +154,9 @@ public class ListenerService
                                 @Override
                                 public void onResult(@NonNull MessageApi.SendMessageResult result) {
                                     if (!result.getStatus().isSuccess()) {
-                                        Log.e(TAG, "FAILED TO SEND MESSAGE TO PHONE " + node.getDisplayName());
+                                        Log.e(TAG, "FAILED TO SEND WEB PAGE TO PHONE " + node.getDisplayName());
                                     } else {
-                                        Log.v(TAG, "SUCCESS!! SENT MESSAGE TO PHONE " + node.getDisplayName());
+                                        Log.v(TAG, "SUCCESS! REQUESTED WEB PAGE ON PHONE " + node.getDisplayName());
                                     }
                                 }
                             });
@@ -165,6 +170,14 @@ public class ListenerService
             @Override
             public void run() {
                 DataMap dmap = WeatherWatchFace.getWatchFaceDesignHolder().watchConfiguration();
+                try {
+                    AdvertisingIdClient.Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(WeatherWatchFace.getContext().getApplicationContext());
+                    if (adInfo != null) {
+                        dmap.putString("advertisingID", adInfo.getId()); // get the advertising id
+                    }
+                } catch (IOException | GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException exception) {
+                    Log.w(TAG, "unable to get advertising id: "+exception);
+                }
                 NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.
                         getConnectedNodes(sGoogleApiClient).await();
                 for (final Node node : nodes.getNodes()) {
@@ -176,9 +189,9 @@ public class ListenerService
                         @Override
                         public void onResult(@NonNull MessageApi.SendMessageResult result) {
                             if (!result.getStatus().isSuccess()) {
-                                Log.e(TAG, "UNABLE TO SYNC WITH PHONE " + node.getDisplayName());
+                                Log.e(TAG, "UNABLE TO REQUEST SYNC WITH PHONE " + node.getDisplayName());
                             } else {
-                                Log.v(TAG, "SUCCESS!! SYNC WITH PHONE " + node.getDisplayName());
+                                Log.v(TAG, "SUCCESS! REQUESTED SYNC WITH PHONE " + node.getDisplayName());
                             }
                         }
                     });

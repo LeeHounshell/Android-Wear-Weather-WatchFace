@@ -510,7 +510,6 @@ public class WatchFaceDesignHolder implements Parcelable {
         dmap.putBoolean("usePreciousStones", usePreciousStones());
         dmap.putBoolean("useContinuousOn", useContinuousOn());
         dmap.putBoolean("useHypnosis", useHypnosis());
-        dmap.putBoolean("contactLee", contactLee());
         return dmap;
     }
 
