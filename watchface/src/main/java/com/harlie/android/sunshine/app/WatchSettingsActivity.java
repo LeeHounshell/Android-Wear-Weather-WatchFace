@@ -66,7 +66,7 @@ public class WatchSettingsActivity extends WearPreferenceActivity
                             .setContentText(getString(R.string.hire_me))
                             .setContentIntent(linkedInPendingIntent)
                             .setAutoCancel(true)
-                            .addAction(R.drawable.ic_lee_hounshell, getString(R.string.common_open_on_phone), linkedInPendingIntent);
+                            .addAction(R.drawable.ic_lee_hounshell, getString(R.string.open_on_watch), linkedInPendingIntent);
 
                     notificationManager.notify(NOTIFY_ID_LEE_HOUNSHELL, notificationBuilder.build());
                 }
