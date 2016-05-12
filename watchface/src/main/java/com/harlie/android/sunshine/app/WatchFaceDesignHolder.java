@@ -499,4 +499,19 @@ public class WatchFaceDesignHolder implements Parcelable {
         setDirty(true);
     }
 
+    public DataMap watchConfiguration() {
+        Log.v(TAG, "watchConfiguration");
+        DataMap dmap = new DataMap();
+        dmap.putBoolean("useStaticBackground", useStaticBackground());
+        dmap.putBoolean("useSecondHand", useSecondHand());
+        dmap.putBoolean("useStandardFace", useStandardFace());
+        dmap.putBoolean("useRomanNumeralsFace", useRomanNumeralsFace());
+        dmap.putBoolean("useGoldInlay", useGoldInlay());
+        dmap.putBoolean("usePreciousStones", usePreciousStones());
+        dmap.putBoolean("useContinuousOn", useContinuousOn());
+        dmap.putBoolean("useHypnosis", useHypnosis());
+        dmap.putBoolean("contactLee", contactLee());
+        return dmap;
+    }
+
 }

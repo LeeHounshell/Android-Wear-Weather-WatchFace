@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -23,6 +24,8 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
+import com.harlie.android.sunshine.app.AnalyticsApplication;
+import com.harlie.android.sunshine.app.R;
 import com.harlie.android.sunshine.app.WatchFaceDesignHolder;
 
 // wear messages come from the watch into the sunshine app
@@ -116,52 +119,43 @@ public class ListenerService
 
     static WatchFaceDesignHolder watchFaceDesignHolderOldValue;
 
-    public static void sendWeatherDataToWear(final boolean force) {
+    public static boolean sendWeatherDataToWear(final boolean force) {
         Log.v(TAG, "sendWeatherDataToWear");
 
-        final DataMap dataMap = sWatchFaceDesignHolder.toDataMap();
+        final WatchFaceDesignHolder watchFaceDesignHolder = sWatchFaceDesignHolder;
+        if (force || watchFaceDesignHolderOldValue == null || ! watchFaceDesignHolderOldValue.equals(watchFaceDesignHolder)) {
+            Log.w(TAG, "weather has changed - need to send message - ok");
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                final WatchFaceDesignHolder watchFaceDesignHolder = sWatchFaceDesignHolder;
-                if (force || watchFaceDesignHolderOldValue == null || ! watchFaceDesignHolderOldValue.equals(watchFaceDesignHolder)) {
-                    Log.w(TAG, "weather has changed - need to send message - ok");
-
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
                     // from: http://stackoverflow.com/questions/33716767/wearlistenerservice-ondatachanged-strange-behavior
                     //NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(googleClient);
+                    final DataMap dataMap = watchFaceDesignHolder.toDataMap();
                     PendingResult<NodeApi.GetConnectedNodesResult> nodes = Wearable.NodeApi.getConnectedNodes(sGoogleApiClient);
-                    nodes.setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>()
-                    {
+                    nodes.setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
                         @Override
-                        public void onResult(NodeApi.GetConnectedNodesResult getConnectedNodesResult)
-                        {
-                            for (Node node : getConnectedNodesResult.getNodes())
-                            {
+                        public void onResult(NodeApi.GetConnectedNodesResult getConnectedNodesResult) {
+                            for (Node node : getConnectedNodesResult.getNodes()) {
                                 final Node node2 = node;
 
                                 // Construct a DataRequest and send over the data layer
                                 // The system time is appended to ensure a unique path and force delivery.
                                 // Google won't deliver data items it thinks were already seen.
-                                PutDataMapRequest putDMR = PutDataMapRequest.create(ListenerService.WEATHER_INFO_PATH+"/"+System.currentTimeMillis());
+                                PutDataMapRequest putDMR = PutDataMapRequest.create(ListenerService.WEATHER_INFO_PATH + "/" + System.currentTimeMillis());
                                 putDMR.getDataMap().putAll(dataMap);
                                 PutDataRequest request = putDMR.asPutDataRequest();
                                 request.setUrgent();
 
-                                Log.v(TAG, "requesting send DataMap to "+node.getDisplayName());
+                                Log.v(TAG, "requesting send DataMap to " + node.getDisplayName());
                                 PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi.putDataItem(sGoogleApiClient, request);
-                                pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>()
-                                {
+                                pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
                                     @Override
-                                    public void onResult(DataApi.DataItemResult dataItemResult)
-                                    {
-                                        if (dataItemResult.getStatus().isSuccess())
-                                        {
+                                    public void onResult(DataApi.DataItemResult dataItemResult) {
+                                        if (dataItemResult.getStatus().isSuccess()) {
                                             Log.v(TAG, "weather DataMap: " + dataMap + " requested send to: " + node2.getDisplayName());
                                             watchFaceDesignHolderOldValue = new WatchFaceDesignHolder(watchFaceDesignHolder);
-                                        } else
-                                        {
+                                        } else {
                                             Log.v(TAG, "ERROR: failed to request send weather DataMap");
                                         }
                                     }
@@ -169,11 +163,14 @@ public class ListenerService
                             }
                         }
                     });
-                } else {
-                    Log.w(TAG, "no change in weather - message not sent - ok");
                 }
-            }
-        }).start();
+            }).start();
+            return true;
+        }
+        else{
+            Log.w(TAG, "no change in weather - message not sent - ok");
+            return false;
+        }
     }
 
     // receive the message from wear
@@ -189,8 +186,19 @@ public class ListenerService
             startActivity(browserIntent);
         }
         else if (messageEvent.getPath().equals(SYNC_PATH)) {
-            Log.v(TAG, "=========> SYNC MESSAGE RECEIVED: "+messageEvent.getData().toString());
+            String data = new String(messageEvent.getData());
+            Log.v(TAG, "=========> SYNC MESSAGE RECEIVED: "+data);
             sendWeatherDataToWear(false);
+            // report watch configuration to Google Analytics
+            String categoryId = getResources().getString(R.string.category_id);
+            String labelId =  getResources().getString(R.string.label_id);
+            Log.v(TAG, "GA: category="+categoryId+", label="+labelId+", action="+data);
+            AnalyticsApplication.getDefaultTracker().send(
+                    new HitBuilders.EventBuilder()
+                            .setCategory(categoryId)
+                            .setAction(data)
+                            .setLabel(labelId)
+                            .build());
         }
         else {
             Log.v(TAG, "=========> UNKNOWN MESSAGE messageEvent: path="+messageEvent.getPath()+", data="+messageEvent.getData().toString());

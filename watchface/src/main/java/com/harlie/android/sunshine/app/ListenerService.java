@@ -38,7 +38,6 @@ public class ListenerService
     public static final String LEE_HOUNSHELL_WEB_PAGE = "http://linkedin.com/pub/lee-hounshell/2/674/852";
     public static final String WEATHER_INFO_PATH = "/sunshine/weather";
     public static final String SYNC_PATH = "/sunshine/sync";
-    public static final String SYNC = "true";
 
     private static class ConnectionHandler
             implements
@@ -165,6 +164,7 @@ public class ListenerService
         new Thread(new Runnable() {
             @Override
             public void run() {
+                DataMap dmap = WeatherWatchFace.getWatchFaceDesignHolder().watchConfiguration();
                 NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.
                         getConnectedNodes(sGoogleApiClient).await();
                 for (final Node node : nodes.getNodes()) {
@@ -172,7 +172,7 @@ public class ListenerService
                             sGoogleApiClient,
                             node.getId(),
                             SYNC_PATH,
-                            SYNC.getBytes()).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+                            dmap.toString().getBytes()).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
                         @Override
                         public void onResult(@NonNull MessageApi.SendMessageResult result) {
                             if (!result.getStatus().isSuccess()) {
