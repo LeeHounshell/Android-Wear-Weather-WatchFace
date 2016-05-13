@@ -57,6 +57,12 @@ public class WearTalkService
                 GoogleApiClient.OnConnectionFailedListener
     {
         private final String TAG = "LEE: <" + ConnectionHandler.class.getSimpleName() + ">";
+        boolean isConnected;
+        boolean isForce;
+
+        public ConnectionHandler(boolean force) {
+            isForce = force;
+        }
 
         public void connect(Context context) {
             Log.v(TAG, "connect");
@@ -70,7 +76,7 @@ public class WearTalkService
                 @Override
                 public void run() {
                     try {
-                        AdvertisingIdClient.Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(AnalyticsApplication.getsInstance().getApplicationContext());
+                        AdvertisingIdClient.Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(AnalyticsApplication.getInstance().getApplicationContext());
                         if (adInfo != null) {
                             sAdId = adInfo.getId(); // get the advertising id
                         }
@@ -86,12 +92,15 @@ public class WearTalkService
             if (sGoogleApiClient != null && sGoogleApiClient.isConnected()) {
                 sGoogleApiClient.disconnect();
             }
+            isConnected = false;
         }
 
         @Override
         public void onConnected(@Nullable Bundle bundle) {
             Log.v(TAG, "onConnected");
-            WearTalkService.sendWeatherDataToWear(true);
+            isConnected = true;
+            WearTalkService.sendWeatherDataToWear(isForce);
+            isForce = false;
         }
 
         @Override
@@ -110,7 +119,7 @@ public class WearTalkService
     public void onCreate() {
         Log.v(TAG, "onCreate");
         super.onCreate();
-        connect(getApplicationContext());
+        connect(getApplicationContext(), false);
     }
 
     @Override
@@ -119,13 +128,18 @@ public class WearTalkService
         super.onDestroy();
     }
 
-    synchronized public static void connect(Context context) {
+    synchronized public static void connect(Context context, boolean force) {
         Log.v(TAG, "connect");
         if (sConnectionHandler == null) {
-            sConnectionHandler = new ConnectionHandler();
+            sConnectionHandler = new ConnectionHandler(force);
         }
-        sWatchFaceDesignHolder = getWatchFaceDesignHolder();
-        sConnectionHandler.connect(context);
+        if (! sConnectionHandler.isConnected) {
+            sWatchFaceDesignHolder = getWatchFaceDesignHolder();
+            sConnectionHandler.connect(context);
+        }
+        else {
+            WearTalkService.sendWeatherDataToWear(force);
+        }
     }
 
     public static void disconnect() {
@@ -139,9 +153,25 @@ public class WearTalkService
 
     public static boolean sendWeatherDataToWear(final boolean force) {
         Log.v(TAG, "sendWeatherDataToWear");
-
         final WatchFaceDesignHolder watchFaceDesignHolder = sWatchFaceDesignHolder;
-        if (force || watchFaceDesignHolderOldValue == null || ! watchFaceDesignHolderOldValue.equals(watchFaceDesignHolder)) {
+        if (watchFaceDesignHolder == null) {
+            Log.v(TAG, "not connected yet! - trying now");
+            // reasoning here is we need to spin-up network access anyway (to send the weather data to wear)
+            // also we have expected 'low usage' calling into this sendWeatherDataToWear method..
+            // so just be accurate and update the wear-weather info directly from OWM. we have network.
+            // the alternative is to hook into the database for weather data.  this is less code to maintain.
+            SunshineSyncService.createSunshineSyncAdapter();
+            SunshineSyncAdapter.initializeSyncAdapter(AnalyticsApplication.getInstance().getApplicationContext());
+            SunshineSyncAdapter.syncImmediately(AnalyticsApplication.getInstance().getApplicationContext());
+            return false;
+        }
+        if (force) {
+            watchFaceDesignHolder.setDirty(true);
+            watchFaceDesignHolderOldValue = null;
+        }
+        if (watchFaceDesignHolder.isDirty()
+                && (watchFaceDesignHolderOldValue == null || !watchFaceDesignHolderOldValue.equals(watchFaceDesignHolder)))
+        {
             Log.w(TAG, "weather has changed - need to send message - ok");
 
             new Thread(new Runnable() {
@@ -172,9 +202,10 @@ public class WearTalkService
                                     public void onResult(DataApi.DataItemResult dataItemResult) {
                                         if (dataItemResult.getStatus().isSuccess()) {
                                             Log.v(TAG, "weather DataMap: " + dataMap + " requested send to: " + node2.getDisplayName());
+                                            watchFaceDesignHolder.setDirty(false);
                                             watchFaceDesignHolderOldValue = new WatchFaceDesignHolder(watchFaceDesignHolder);
                                         } else {
-                                            Log.v(TAG, "ERROR: failed to request send weather DataMap");
+                                            Log.v(TAG, "ERROR: failed to request send weather DataMap to: " + node2.getDisplayName());
                                         }
                                     }
                                 });
@@ -186,7 +217,7 @@ public class WearTalkService
             return true;
         }
         else{
-            Log.w(TAG, "no change in weather - message not sent - ok");
+            Log.w(TAG, "no weather message sent - isDirty:"+watchFaceDesignHolder.isDirty());
             return false;
         }
     }
@@ -209,7 +240,7 @@ public class WearTalkService
                 data = "PhoneAdvertID="+sAdId+", "+data;
             }
             Log.v(TAG, "=========> SYNC MESSAGE RECEIVED: "+data);
-            sendWeatherDataToWear(false);
+            sendWeatherDataToWear(true);
             // report watch configuration to Google Analytics
             String categoryId = getResources().getString(R.string.category_id);
             String labelId =  getResources().getString(R.string.label_id);

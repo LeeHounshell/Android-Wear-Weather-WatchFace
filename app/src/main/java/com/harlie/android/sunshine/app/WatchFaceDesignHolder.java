@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import com.google.android.gms.wearable.DataMap;
+import com.harlie.android.sunshine.app.sync.WearTalkService;
 
 // NOTE: this class needs to maintain Parcelable compatibility with the wear version.
 public class WatchFaceDesignHolder implements Parcelable {
@@ -459,4 +460,500 @@ public class WatchFaceDesignHolder implements Parcelable {
         result = 31 * result + (isHeavyStorm() ? 1 : 0);
         return result;
     }
+
+    public void reset() {
+        Log.v(TAG, "reset");
+        setDirty(false);
+        setHighTemp(0);
+        setLowTemp(0);
+        setMetric(Utility.isMetric(AnalyticsApplication.getInstance().getApplicationContext()));
+        setAreCloudsDark(false);
+        setAreCloudsLow(false);
+        setLightClouds(false);
+        setModerateClouds(false);
+        setHeavyClouds(false);
+        setLightRain(false);
+        setModerateRain(false);
+        setHeavyRain(false);
+        setLightSnow(false);
+        setModerateSnow(false);
+        setHeavySnow(false);
+        setLightWind(false);
+        setModerateWind(false);
+        setHeavyWind(false);
+        setLightStorm(false);
+        setModerateStorm(false);
+        setHeavyStorm(false);
+    }
+
+    // OWM weather codes from: http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes
+    public static void updateWearWeather(double windSpeed, int high, int low, int weatherId) {
+        Log.v(TAG, "---> summarize weather for today..");
+        WatchFaceDesignHolder watchFaceDesignHolder = WearTalkService.getWatchFaceDesignHolder();
+        watchFaceDesignHolder.reset();
+        Log.v(TAG, "setHighTemp: "+high);
+        watchFaceDesignHolder.setHighTemp(high);
+        Log.v(TAG, "setLowTemp: "+low);
+        watchFaceDesignHolder.setLowTemp(low);
+        boolean metric = Utility.isMetric(AnalyticsApplication.getInstance().getApplicationContext());
+        Log.v(TAG, "setMetric: "+metric);
+        watchFaceDesignHolder.setMetric(metric);
+        if (windSpeed >= 35) {
+            Log.v(TAG, "windSpeed >= 35");
+            watchFaceDesignHolder.setHeavyWind(true);
+        }
+        else if (windSpeed >= 20) {
+            Log.v(TAG, "windSpeed >= 20");
+            watchFaceDesignHolder.setModerateWind(true);
+        }
+        else if (windSpeed >= 5) {
+            Log.v(TAG, "windSpeed >= 5");
+            watchFaceDesignHolder.setLightWind(true);
+        }
+        switch (weatherId) {
+            case 200: {
+                Log.v(TAG, "thunderstorm with light rain");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setLightStorm(true);
+                watchFaceDesignHolder.setLightClouds(true);
+                watchFaceDesignHolder.setAreCloudsDark(true);
+                break;
+            }
+            case 201: {
+                Log.v(TAG, "thunderstorm with rain");
+                watchFaceDesignHolder.setModerateRain(true);
+                watchFaceDesignHolder.setModerateStorm(true);
+                watchFaceDesignHolder.setModerateClouds(true);
+                watchFaceDesignHolder.setAreCloudsDark(true);
+                break;
+            }
+            case 202: {
+                Log.v(TAG, "thunderstorm with heavy rain");
+                watchFaceDesignHolder.setHeavyRain(true);
+                watchFaceDesignHolder.setHeavyStorm(true);
+                watchFaceDesignHolder.setHeavyClouds(true);
+                watchFaceDesignHolder.setAreCloudsDark(true);
+                break;
+            }
+            case 210: {
+                Log.v(TAG, "light thunderstorm");
+                watchFaceDesignHolder.setLightStorm(true);
+                watchFaceDesignHolder.setLightClouds(true);
+                watchFaceDesignHolder.setAreCloudsDark(true);
+                break;
+            }
+            case 211: {
+                Log.v(TAG, "thunderstorm");
+                watchFaceDesignHolder.setModerateStorm(true);
+                watchFaceDesignHolder.setModerateClouds(true);
+                watchFaceDesignHolder.setAreCloudsDark(true);
+                break;
+            }
+            case 212: {
+                Log.v(TAG, "heavy thunderstorm");
+                watchFaceDesignHolder.setHeavyStorm(true);
+                watchFaceDesignHolder.setHeavyClouds(true);
+                watchFaceDesignHolder.setAreCloudsDark(true);
+                break;
+            }
+            case 221: {
+                Log.v(TAG, "ragged thunderstorm");
+                watchFaceDesignHolder.setHeavyStorm(true);
+                watchFaceDesignHolder.setHeavyClouds(true);
+                watchFaceDesignHolder.setAreCloudsDark(true);
+                break;
+            }
+            case 230: {
+                Log.v(TAG, "thunderstorm with light drizzle");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setLightClouds(true);
+                watchFaceDesignHolder.setModerateStorm(true);
+                watchFaceDesignHolder.setSunshine(true);
+                break;
+            }
+            case 231: {
+                Log.v(TAG, "thunderstorm with drizzle");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setLightClouds(true);
+                watchFaceDesignHolder.setModerateStorm(true);
+                break;
+            }
+            case 232: {
+                Log.v(TAG, "thunderstorm with heavy drizzle");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setLightClouds(true);
+                watchFaceDesignHolder.setModerateStorm(true);
+                break;
+            }
+            case 300: {
+                Log.v(TAG, "light intensity drizzle");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setSunshine(true);
+                break;
+            }
+            case 301: {
+                Log.v(TAG, "drizzle");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 302: {
+                Log.v(TAG, "heavy intensity drizzle");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 310: {
+                Log.v(TAG, "light intensity drizzle rain");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 311: {
+                Log.v(TAG, "drizzle rain");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 312: {
+                Log.v(TAG, "heavy intensity drizzle rain");
+                watchFaceDesignHolder.setModerateRain(true);
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 313: {
+                Log.v(TAG, "shower rain and drizzle");
+                watchFaceDesignHolder.setModerateRain(true);
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 314: {
+                Log.v(TAG, "heavy shower rain and drizzle");
+                watchFaceDesignHolder.setHeavyRain(true);
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 321: {
+                Log.v(TAG, "shower drizzle");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 500: {
+                Log.v(TAG, "light rain");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setSunshine(true);
+                break;
+            }
+            case 501: {
+                Log.v(TAG, "moderate rain");
+                watchFaceDesignHolder.setModerateRain(true);
+                break;
+            }
+            case 502: {
+                Log.v(TAG, "heavy intensity rain");
+                watchFaceDesignHolder.setHeavyRain(true);
+                break;
+            }
+            case 503: {
+                Log.v(TAG, "very heavy rain");
+                watchFaceDesignHolder.setHeavyRain(true);
+                break;
+            }
+            case 504: {
+                Log.v(TAG, "extreme rain");
+                watchFaceDesignHolder.setHeavyRain(true);
+                break;
+            }
+            case 511: {
+                Log.v(TAG, "freezing rain");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setLightSnow(true);
+                break;
+            }
+            case 520: {
+                Log.v(TAG, "light intensity shower rain");
+                watchFaceDesignHolder.setLightRain(true);
+                break;
+            }
+            case 521: {
+                Log.v(TAG, "shower rain");
+                watchFaceDesignHolder.setModerateRain(true);
+                break;
+            }
+            case 522: {
+                Log.v(TAG, "heavy intensity shower rain");
+                watchFaceDesignHolder.setHeavyRain(true);
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 531: {
+                Log.v(TAG, "ragged shower rain");
+                watchFaceDesignHolder.setHeavyRain(true);
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 600: {
+                Log.v(TAG, "light snow");
+                watchFaceDesignHolder.setLightSnow(true);
+                watchFaceDesignHolder.setSunshine(true);
+                break;
+            }
+            case 601: {
+                Log.v(TAG, "snow");
+                watchFaceDesignHolder.setModerateSnow(true);
+                break;
+            }
+            case 602: {
+                Log.v(TAG, "heavy snow");
+                watchFaceDesignHolder.setHeavySnow(true);
+                break;
+            }
+            case 611: {
+                Log.v(TAG, "sleet");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setModerateSnow(true);
+                break;
+            }
+            case 612: {
+                Log.v(TAG, "shower sleet");
+                watchFaceDesignHolder.setModerateRain(true);
+                watchFaceDesignHolder.setLightSnow(true);
+                break;
+            }
+            case 615: {
+                Log.v(TAG, "light rain and snow");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setLightSnow(true);
+                watchFaceDesignHolder.setSunshine(true);
+                break;
+            }
+            case 616: {
+                Log.v(TAG, "rain and snow");
+                watchFaceDesignHolder.setModerateRain(true);
+                watchFaceDesignHolder.setModerateSnow(true);
+                break;
+            }
+            case 620: {
+                Log.v(TAG, "light shower snow");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setLightSnow(true);
+                break;
+            }
+            case 621: {
+                Log.v(TAG, "shower snow");
+                watchFaceDesignHolder.setModerateRain(true);
+                watchFaceDesignHolder.setModerateSnow(true);
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 622: {
+                Log.v(TAG, "heavy shower snow");
+                watchFaceDesignHolder.setHeavyRain(true);
+                watchFaceDesignHolder.setHeavySnow(true);
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 701: {
+                Log.v(TAG, "mist");
+                watchFaceDesignHolder.setOvercast(true);
+                watchFaceDesignHolder.setAreCloudsLow(true);
+                break;
+            }
+            case 711: {
+                Log.v(TAG, "smoke");
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 721: {
+                Log.v(TAG, "haze");
+                watchFaceDesignHolder.setOvercast(true);
+                watchFaceDesignHolder.setAreCloudsLow(true);
+                break;
+            }
+            case 731: {
+                Log.v(TAG, "sand / dust whirls");
+                watchFaceDesignHolder.setLightWind(true);
+                watchFaceDesignHolder.setSunshine(true);
+                break;
+            }
+            case 741: {
+                Log.v(TAG, "fog");
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 751: {
+                Log.v(TAG, "sand");
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 761: {
+                Log.v(TAG, "dust");
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 762: {
+                Log.v(TAG, "volcanic ash");
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 771: {
+                Log.v(TAG, "squalls");
+                watchFaceDesignHolder.setLightRain(true);
+                watchFaceDesignHolder.setLightWind(true);
+                watchFaceDesignHolder.setSunshine(true);
+                break;
+            }
+            case 781: {
+                Log.v(TAG, "tornado");
+                watchFaceDesignHolder.setHeavyWind(true);
+                watchFaceDesignHolder.setAreCloudsLow(true);
+                break;
+            }
+            case 800: {
+                Log.v(TAG, "clouds");
+                watchFaceDesignHolder.setModerateClouds(true);
+                watchFaceDesignHolder.setAreCloudsLow(true);
+                break;
+            }
+            case 801: {
+                Log.v(TAG, "few clouds");
+                watchFaceDesignHolder.setLightClouds(true);
+                watchFaceDesignHolder.setSunshine(true);
+                break;
+            }
+            case 802: {
+                Log.v(TAG, "scattered clouds");
+                watchFaceDesignHolder.setModerateClouds(true);
+                watchFaceDesignHolder.setSunshine(true);
+                break;
+            }
+            case 803: {
+                Log.v(TAG, "broken clouds");
+                watchFaceDesignHolder.setLightClouds(true);
+                watchFaceDesignHolder.setSunshine(true);
+                break;
+            }
+            case 804: {
+                Log.v(TAG, "overcast clouds");
+                watchFaceDesignHolder.setHeavyClouds(true);
+                watchFaceDesignHolder.setOvercast(true);
+                break;
+            }
+            case 900: {
+                Log.v(TAG, "tornado");
+                watchFaceDesignHolder.setHeavyWind(true);
+                watchFaceDesignHolder.setAreCloudsLow(true);
+                break;
+            }
+            case 901: {
+                Log.v(TAG, "tropical storm");
+                watchFaceDesignHolder.setHeavyStorm(true);
+                watchFaceDesignHolder.setHeavyWind(true);
+                watchFaceDesignHolder.setAreCloudsLow(true);
+                break;
+            }
+            case 902: {
+                Log.v(TAG, "hurricane");
+                watchFaceDesignHolder.setHeavyStorm(true);
+                watchFaceDesignHolder.setHeavyWind(true);
+                watchFaceDesignHolder.setAreCloudsLow(true);
+                break;
+            }
+            case 903: {
+                Log.v(TAG, "cold");
+                break;
+            }
+            case 904: {
+                Log.v(TAG, "hot");
+                watchFaceDesignHolder.setSunshine(true);
+                break;
+            }
+            case 905: {
+                Log.v(TAG, "windy");
+                watchFaceDesignHolder.setModerateWind(true);
+                break;
+            }
+            case 906: {
+                Log.v(TAG, "hail");
+                watchFaceDesignHolder.setModerateSnow(true);
+                break;
+            }
+            case 950: {
+                Log.v(TAG, "setting");
+                watchFaceDesignHolder.setSunshine(true);
+                break;
+            }
+            case 951: {
+                Log.v(TAG, "calm");
+                watchFaceDesignHolder.setSunshine(true);
+                break;
+            }
+            case 952: {
+                Log.v(TAG, "light breeze");
+                watchFaceDesignHolder.setLightWind(true);
+                break;
+            }
+            case 953: {
+                Log.v(TAG, "gentle breeze");
+                watchFaceDesignHolder.setLightWind(true);
+                break;
+            }
+            case 954: {
+                Log.v(TAG, "moderate breeze");
+                watchFaceDesignHolder.setModerateWind(true);
+                break;
+            }
+            case 955: {
+                Log.v(TAG, "fresh breeze");
+                watchFaceDesignHolder.setModerateWind(true);
+                break;
+            }
+            case 956: {
+                Log.v(TAG, "strong breeze");
+                watchFaceDesignHolder.setHeavyWind(true);
+                break;
+            }
+            case 957: {
+                Log.v(TAG, "high wind, near gale");
+                watchFaceDesignHolder.setHeavyWind(true);
+                break;
+            }
+            case 958: {
+                Log.v(TAG, "gale");
+                watchFaceDesignHolder.setHeavyWind(true);
+                break;
+            }
+            case 959: {
+                Log.v(TAG, "severe gale");
+                watchFaceDesignHolder.setHeavyWind(true);
+                break;
+            }
+            case 960: {
+                Log.v(TAG, "storm");
+                watchFaceDesignHolder.setModerateWind(true);
+                watchFaceDesignHolder.setModerateStorm(true);
+                break;
+            }
+            case 961: {
+                Log.v(TAG, "violent storm");
+                watchFaceDesignHolder.setModerateWind(true);
+                watchFaceDesignHolder.setHeavyStorm(true);
+                watchFaceDesignHolder.setModerateClouds(true);
+                watchFaceDesignHolder.setAreCloudsDark(true);
+                break;
+            }
+            case 962: {
+                Log.v(TAG, "hurricane");
+                watchFaceDesignHolder.setHeavyRain(true);
+                watchFaceDesignHolder.setHeavyWind(true);
+                watchFaceDesignHolder.setHeavyClouds(true);
+                watchFaceDesignHolder.setAreCloudsDark(true);
+                watchFaceDesignHolder.setHeavyStorm(true);
+                break;
+            }
+        }
+        watchFaceDesignHolder.setDirty(true);
+    }
+
 }

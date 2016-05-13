@@ -17,7 +17,6 @@
 package com.harlie.android.sunshine.app;
 
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -47,7 +46,7 @@ public class AnalyticsApplication extends Application {
     synchronized static public Tracker getDefaultTracker() {
         Log.v(TAG, "===> getDefaultTracker <===");
         if (sTracker == null) {
-            GoogleAnalytics analytics = GoogleAnalytics.getInstance(getsInstance());
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(getInstance());
             // To enable debug logging use: adb shell setprop log.tag.GAv4 DEBUG
             sTracker = analytics.newTracker(R.xml.global_tracker);
             sTracker.enableExceptionReporting(true);
@@ -57,7 +56,7 @@ public class AnalyticsApplication extends Application {
         return sTracker;
     }
 
-    public static AnalyticsApplication getsInstance() {
+    public static AnalyticsApplication getInstance() {
         return sInstance;
     }
 

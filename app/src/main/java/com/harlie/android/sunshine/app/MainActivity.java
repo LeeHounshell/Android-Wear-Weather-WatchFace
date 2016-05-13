@@ -132,8 +132,8 @@ public class MainActivity
             storeRegistrationId(this, null);
         }
 
-        Log.v(TAG, "connect WearTalkService..");
-        WearTalkService.connect(getApplicationContext());
+        Log.v(TAG, "send weather info to WearTalkService..");
+        WearTalkService.sendWeatherDataToWear(true);
     }
 
     @Override

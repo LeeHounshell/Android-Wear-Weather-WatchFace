@@ -30,10 +30,12 @@ import android.text.format.Time;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
+import com.harlie.android.sunshine.app.AnalyticsApplication;
 import com.harlie.android.sunshine.app.BuildConfig;
 import com.harlie.android.sunshine.app.MainActivity;
 import com.harlie.android.sunshine.app.R;
 import com.harlie.android.sunshine.app.Utility;
+import com.harlie.android.sunshine.app.WatchFaceDesignHolder;
 import com.harlie.android.sunshine.app.data.WeatherContract;
 
 import org.json.JSONArray;
@@ -51,8 +53,11 @@ import java.net.URL;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
+import static java.lang.Math.*;
+
 public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
-    private final String LOG_TAG = SunshineSyncAdapter.class.getSimpleName();
+    private static final String TAG = "LEE: <" + SunshineSyncAdapter.class.getSimpleName() + ">";
+
     // Interval at which to sync with the weather, in seconds.
     // 60 seconds (1 minute) * 180 = 3 hours
     private static final int SYNC_INTERVAL = 60 * 180;
@@ -90,7 +95,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-        Log.d(LOG_TAG, "Starting sync");
+        Log.d(TAG, "Starting sync");
         String locationQuery = Utility.getPreferredLocation(getContext());
 
         // These two need to be declared outside the try/catch
@@ -157,7 +162,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             forecastJsonStr = buffer.toString();
             getWeatherDataFromJson(forecastJsonStr, locationQuery);
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
+            Log.e(TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attempting
             // to parse it.
             setLocationStatus(getContext(), LOCATION_STATUS_SERVER_DOWN);
@@ -170,7 +175,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 try {
                     reader.close();
                 } catch (final IOException e) {
-                    Log.e(LOG_TAG, "Error closing stream", e);
+                    Log.e(TAG, "Error closing stream", e);
                 }
             }
         }
@@ -322,6 +327,14 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, weatherId);
 
                 cVVector.add(weatherValues);
+
+                // check for today.. and send current weather info to wear
+                if (i == 0) {
+                    Log.v(TAG, "update wear weather info..");
+                    WatchFaceDesignHolder.updateWearWeather(windSpeed, (int) round(high), (int) round(low), weatherId);
+                    Log.v(TAG, "connect WearTalkService..");
+                    WearTalkService.connect(AnalyticsApplication.getInstance().getApplicationContext(), true);
+                }
             }
 
             // add to database
@@ -337,11 +350,11 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 notifyWeather();
             }
-            Log.d(LOG_TAG, "Sync Complete. " + cVVector.size() + " Inserted");
+            Log.d(TAG, "Sync Complete. " + cVVector.size() + " Inserted");
             setLocationStatus(getContext(), LOCATION_STATUS_OK);
 
         } catch (JSONException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
+            Log.e(TAG, e.getMessage(), e);
             e.printStackTrace();
             setLocationStatus(getContext(), LOCATION_STATUS_SERVER_INVALID);
         }
@@ -402,7 +415,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                                     .fitCenter()
                                     .into(largeIconWidth, largeIconHeight).get();
                         } catch (InterruptedException | ExecutionException e) {
-                            Log.e(LOG_TAG, "Error retrieving large icon from " + artUrl, e);
+                            Log.e(TAG, "Error retrieving large icon from " + artUrl, e);
                             largeIcon = BitmapFactory.decodeResource(resources, artResourceId);
                         }
                         String title = context.getString(R.string.app_name);

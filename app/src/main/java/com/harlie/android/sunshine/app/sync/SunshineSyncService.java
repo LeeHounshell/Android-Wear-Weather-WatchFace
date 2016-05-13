@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.harlie.android.sunshine.app.AnalyticsApplication;
+
 public class SunshineSyncService extends Service {
     private static final Object sSyncAdapterLock = new Object();
     private static SunshineSyncAdapter sSunshineSyncAdapter = null;
@@ -12,9 +14,13 @@ public class SunshineSyncService extends Service {
     @Override
     public void onCreate() {
         Log.d("SunshineSyncService", "onCreate - SunshineSyncService");
+        createSunshineSyncAdapter();
+    }
+
+    public static void createSunshineSyncAdapter() {
         synchronized (sSyncAdapterLock) {
             if (sSunshineSyncAdapter == null) {
-                sSunshineSyncAdapter = new SunshineSyncAdapter(getApplicationContext(), true);
+                sSunshineSyncAdapter = new SunshineSyncAdapter(AnalyticsApplication.getInstance().getApplicationContext(), true);
             }
         }
     }
