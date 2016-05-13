@@ -46,7 +46,6 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import java.lang.ref.WeakReference;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -166,7 +165,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
          */
         private boolean mLowBitAmbient;
 
-        final String[] mWeekdays = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+        //final String[] mWeekdays = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
         // receiver to update the time zone
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
@@ -206,7 +205,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             int day = mCalendar.get(Calendar.DAY_OF_MONTH);
             Log.v(TAG, "year="+year+", month="+month+", day="+day);
             sWatchFaceDesignHolder.setMoonPhase(moonCalculaion.moonPhase(year, month, day));
-            mDateFormat = new SimpleDateFormat("MMM dd", Locale.getDefault());
+            mDateFormat = new SimpleDateFormat("EEEE, MMM dd", Locale.getDefault());
 
             mHourHandBitmap = drawableToBitmap(getDrawable(R.drawable.hour_little_hand));
             mHourHandGlovesBitmap = drawableToBitmap(getDrawable(R.drawable.hour_little_hand_ambient));
@@ -941,7 +940,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
                 text_Y_position = 88.0f;
                 int currentDayOfWeek = mCalendar.get(Calendar.DAY_OF_WEEK);
-                String theDate = mWeekdays[currentDayOfWeek - 1] + ", " + mDateFormat.format(date);
+                //String theDate = mWeekdays[currentDayOfWeek - 1] + ", " + mDateFormat.format(date);
+                String theDate = mDateFormat.format(date);
                 canvas.drawText(theDate, centerX - mHandPaintDate.measureText(theDate)/2, text_Y_position, mHandPaintDate);
             }
 

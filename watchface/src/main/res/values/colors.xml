@@ -6,7 +6,7 @@
     <color name="analog_hands_bright">#eeeeee</color>
     <color name="analog_hands_gold">#ffd700</color>
     <color name="battery_warning">#ff69b4</color>
-    <color name="temperature_high">#dadf3e</color>
+    <color name="temperature_high">#ff0000</color>
     <color name="temperature_low">#00b4ff</color>
-    <color name="current_date">#cccccc</color>
+    <color name="current_date">#ffff00</color>
 </resources>
