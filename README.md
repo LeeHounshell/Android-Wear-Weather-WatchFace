@@ -10,7 +10,8 @@ And this is the Android Wear Watch assignment for the Ubiquitous computing cours
 This is an Android Wear WatchFace app. This is project 6 for the Udacity Android Nanodegree program.
 This project extends the Udacity "Sunshine" weather app developed previously during the "Advanced Android Development" course.
 The Sunshine app synchronizes weather information from OpenWeatherMap on Android Phones and Tablets and sends that to wear.
-This watchface is configurable.
+This watchface is configurable. The watch design is patterned after a watch I had as a child; that watch no longer works,
+but I have revived it here with this app.
 
 
 ## Features
@@ -35,7 +36,7 @@ SCREENSHOTS
 ---
 
 
-![screen](../master/screens/original_watchface_reference_image.png)
+![screen](../master/screens/original_watchface_reference_image.jpg)
 
 ![screen](../master/screens/analog_fancy_weather.gif)
 
@@ -59,6 +60,7 @@ SCREENSHOTS
 ##License
 
 Analog Fancy Weather WatchFace app Copyright 2016 Lee Hounshell.
+This watchface app was built for my private use and may not be sold.
 
 Sunshine app Copyright 2015 The Android Open Source Project, Inc.
 
