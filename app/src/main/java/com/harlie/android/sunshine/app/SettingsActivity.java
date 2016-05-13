@@ -16,6 +16,7 @@
 package com.harlie.android.sunshine.app;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -55,7 +56,8 @@ public class SettingsActivity extends PreferenceActivity
     // Registers a shared preference change listener that gets notified when preferences change
     @Override
     protected void onResume() {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        Context context = AnalyticsApplication.getInstance().getApplicationContext();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         sp.registerOnSharedPreferenceChangeListener(this);
         super.onResume();
     }
@@ -63,7 +65,8 @@ public class SettingsActivity extends PreferenceActivity
     // Unregisters a shared preference change listener
     @Override
     protected void onPause() {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        Context context = AnalyticsApplication.getInstance().getApplicationContext();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         sp.unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
     }
@@ -75,12 +78,13 @@ public class SettingsActivity extends PreferenceActivity
      */
     private void bindPreferenceSummaryToValue(Preference preference) {
         // Set the listener to watch for value changes.
+        Context context = AnalyticsApplication.getInstance().getApplicationContext();
         preference.setOnPreferenceChangeListener(this);
 
         // Set the preference summaries
         setPreferenceSummary(preference,
                 PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
+                        .getDefaultSharedPreferences(context)
                         .getString(preference.getKey(), ""));
     }
 

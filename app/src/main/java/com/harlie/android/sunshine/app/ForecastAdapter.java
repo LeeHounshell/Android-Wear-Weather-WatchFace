@@ -133,11 +133,11 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
                 defaultImage = Utility.getIconResourceForWeatherCondition(weatherId);
         }
 
-        if ( Utility.usingLocalGraphics(mContext) ) {
+        if ( Utility.usingLocalGraphics() ) {
             forecastAdapterViewHolder.mIconView.setImageResource(defaultImage);
         } else {
             Glide.with(mContext)
-                    .load(Utility.getArtUrlForWeatherCondition(mContext, weatherId))
+                    .load(Utility.getArtUrlForWeatherCondition(weatherId))
                     .error(defaultImage)
                     .crossFade()
                     .into(forecastAdapterViewHolder.mIconView);
@@ -151,7 +151,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         long dateInMillis = mCursor.getLong(ForecastFragment.COL_WEATHER_DATE);
 
         // Find TextView and set formatted date on it
-        forecastAdapterViewHolder.mDateView.setText(Utility.getFriendlyDayString(mContext, dateInMillis));
+        forecastAdapterViewHolder.mDateView.setText(Utility.getFriendlyDayString(dateInMillis));
 
         // Read weather forecast from cursor
         String description = Utility.getStringForWeatherCondition(mContext, weatherId);
@@ -166,13 +166,13 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
         // Read high temperature from cursor
         double high = mCursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
-        String highString = Utility.formatTemperature(mContext, high);
+        String highString = Utility.formatTemperature(high);
         forecastAdapterViewHolder.mHighTempView.setText(highString);
         forecastAdapterViewHolder.mHighTempView.setContentDescription(mContext.getString(R.string.a11y_high_temp, highString));
 
         // Read low temperature from cursor
         double low = mCursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
-        String lowString = Utility.formatTemperature(mContext, low);
+        String lowString = Utility.formatTemperature(low);
         forecastAdapterViewHolder.mLowTempView.setText(lowString);
         forecastAdapterViewHolder.mLowTempView.setContentDescription(mContext.getString(R.string.a11y_low_temp, lowString));
 

@@ -2,4 +2,6 @@
 <resources>
     <dimen name="analog_hand_stroke">3dp</dimen>
     <dimen name="analog_hand_stroke_bright">5dp</dimen>
+    <dimen name="temperature_stroke">5dp</dimen>
+    <dimen name="current_date_stroke">5dp</dimen>
 </resources>

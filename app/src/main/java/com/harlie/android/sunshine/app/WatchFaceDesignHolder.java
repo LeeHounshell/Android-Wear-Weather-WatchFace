@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.google.android.gms.ads.internal.request.StringParcel;
 import com.google.android.gms.wearable.DataMap;
 import com.harlie.android.sunshine.app.sync.WearTalkService;
 
@@ -18,7 +19,6 @@ public class WatchFaceDesignHolder implements Parcelable {
     private int moonPhase;
     private int highTemp;
     private int lowTemp;
-    private boolean isMetric;
     private boolean isLightClouds;
     private boolean isModerateClouds;
     private boolean isHeavyClouds;
@@ -45,7 +45,6 @@ public class WatchFaceDesignHolder implements Parcelable {
         this.moonPhase = copy.getMoonPhase();
         this.highTemp = copy.getHighTemp();
         this.lowTemp = copy.getLowTemp();
-        this.isMetric = copy.isMetric();
         this.isLightClouds = copy.isLightClouds();
         this.isModerateClouds = copy.isModerateClouds();
         this.isHeavyClouds = copy.isHeavyClouds();
@@ -129,12 +128,7 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     public boolean isMetric() {
-        return isMetric;
-    }
-
-    public void setMetric(boolean metric) {
-        Log.v(TAG, "setMetric: "+metric);
-        isMetric = metric;
+        return Utility.isMetric();
     }
 
     public boolean isLightClouds() {
@@ -304,7 +298,7 @@ public class WatchFaceDesignHolder implements Parcelable {
         dest.writeInt(this.moonPhase);
         dest.writeInt(this.highTemp);
         dest.writeInt(this.lowTemp);
-        dest.writeByte(isMetric ? (byte) 1 : (byte) 0);
+        dest.writeByte(isMetric() ? (byte) 1 : (byte) 0);
         dest.writeByte(isLightClouds ? (byte) 1 : (byte) 0);
         dest.writeByte(isModerateClouds ? (byte) 1 : (byte) 0);
         dest.writeByte(isHeavyClouds ? (byte) 1 : (byte) 0);
@@ -335,7 +329,7 @@ public class WatchFaceDesignHolder implements Parcelable {
         this.moonPhase = in.readInt();
         this.highTemp = in.readInt();
         this.lowTemp = in.readInt();
-        this.isMetric = in.readByte() != 0;
+        boolean isMetric = in.readByte() != 0;
         this.isLightClouds = in.readByte() != 0;
         this.isModerateClouds = in.readByte() != 0;
         this.isHeavyClouds = in.readByte() != 0;
@@ -466,7 +460,6 @@ public class WatchFaceDesignHolder implements Parcelable {
         setDirty(false);
         setHighTemp(0);
         setLowTemp(0);
-        setMetric(Utility.isMetric(AnalyticsApplication.getInstance().getApplicationContext()));
         setAreCloudsDark(false);
         setAreCloudsLow(false);
         setLightClouds(false);
@@ -487,27 +480,31 @@ public class WatchFaceDesignHolder implements Parcelable {
     }
 
     // OWM weather codes from: http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes
-    public static void updateWearWeather(double windSpeed, int high, int low, int weatherId) {
+    public static void updateWearWeather(double windSpeed, int high, int low, int weatherId, String description) {
         Log.v(TAG, "---> summarize weather for today..");
         WatchFaceDesignHolder watchFaceDesignHolder = WearTalkService.getWatchFaceDesignHolder();
         watchFaceDesignHolder.reset();
-        Log.v(TAG, "setHighTemp: "+high);
-        watchFaceDesignHolder.setHighTemp(high);
-        Log.v(TAG, "setLowTemp: "+low);
-        watchFaceDesignHolder.setLowTemp(low);
-        boolean metric = Utility.isMetric(AnalyticsApplication.getInstance().getApplicationContext());
-        Log.v(TAG, "setMetric: "+metric);
-        watchFaceDesignHolder.setMetric(metric);
-        if (windSpeed >= 35) {
-            Log.v(TAG, "windSpeed >= 35");
+        if (watchFaceDesignHolder.isMetric()) {
+            watchFaceDesignHolder.setHighTemp(high);
+            watchFaceDesignHolder.setLowTemp(low);
+        }
+        else {
+            // convert to Fahrenheit
+            high = (high * 9/5) + 32;
+            low = (low * 9/5) + 32;
+            watchFaceDesignHolder.setHighTemp(high);
+            watchFaceDesignHolder.setLowTemp(low);
+        }
+        if (windSpeed >= 30) {
+            Log.v(TAG, "windSpeed >= 30");
             watchFaceDesignHolder.setHeavyWind(true);
         }
         else if (windSpeed >= 20) {
             Log.v(TAG, "windSpeed >= 20");
             watchFaceDesignHolder.setModerateWind(true);
         }
-        else if (windSpeed >= 5) {
-            Log.v(TAG, "windSpeed >= 5");
+        else if (windSpeed >= 10) {
+            Log.v(TAG, "windSpeed >= 10");
             watchFaceDesignHolder.setLightWind(true);
         }
         switch (weatherId) {
@@ -952,6 +949,14 @@ public class WatchFaceDesignHolder implements Parcelable {
                 watchFaceDesignHolder.setHeavyStorm(true);
                 break;
             }
+        }
+        description = new String(description.toLowerCase());
+        Log.v(TAG, "description="+description);
+        if (description.contains("clear")) {
+            watchFaceDesignHolder.setSunshine(true);
+        }
+        if (description.contains("overcast")) {
+            watchFaceDesignHolder.setOvercast(true);
         }
         watchFaceDesignHolder.setDirty(true);
     }

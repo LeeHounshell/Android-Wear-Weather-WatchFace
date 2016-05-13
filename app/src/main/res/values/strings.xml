@@ -50,7 +50,7 @@
     <string name="pref_location_status_key" translatable="false">loc-status</string>
 
     <!-- Default postal code for location preference [CHAR LIMIT=NONE] -->
-    <string name="pref_location_default" translatable="false">94043</string>
+    <string name="pref_location_default" translatable="false">94111</string>
 
     <string name="pref_location_server_down">server down (<xliff:g id="location_setting">%1$s</xliff:g>)</string>
     <string name="pref_location_server_invalid">invalid server (<xliff:g id="location_setting">%1$s</xliff:g>)</string>

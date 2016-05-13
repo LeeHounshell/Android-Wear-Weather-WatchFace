@@ -96,7 +96,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         Log.d(TAG, "Starting sync");
-        String locationQuery = Utility.getPreferredLocation(getContext());
+        String locationQuery = Utility.getPreferredLocation();
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
@@ -156,7 +156,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
             if (buffer.length() == 0) {
                 // Stream was empty.  No point in parsing.
-                setLocationStatus(getContext(), LOCATION_STATUS_SERVER_DOWN);
+                setLocationStatus(LOCATION_STATUS_SERVER_DOWN);
                 return;
             }
             forecastJsonStr = buffer.toString();
@@ -165,7 +165,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             Log.e(TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attempting
             // to parse it.
-            setLocationStatus(getContext(), LOCATION_STATUS_SERVER_DOWN);
+            setLocationStatus(LOCATION_STATUS_SERVER_DOWN);
         }
         finally {
             if (urlConnection != null) {
@@ -236,10 +236,10 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                     case HttpURLConnection.HTTP_OK:
                         break;
                     case HttpURLConnection.HTTP_NOT_FOUND:
-                        setLocationStatus(getContext(), LOCATION_STATUS_INVALID);
+                        setLocationStatus(LOCATION_STATUS_INVALID);
                         return;
                     default:
-                        setLocationStatus(getContext(), LOCATION_STATUS_SERVER_DOWN);
+                        setLocationStatus(LOCATION_STATUS_SERVER_DOWN);
                         return;
                 }
             }
@@ -331,7 +331,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 // check for today.. and send current weather info to wear
                 if (i == 0) {
                     Log.v(TAG, "update wear weather info..");
-                    WatchFaceDesignHolder.updateWearWeather(windSpeed, (int) round(high), (int) round(low), weatherId);
+                    WatchFaceDesignHolder.updateWearWeather(windSpeed, (int) round(high), (int) round(low), weatherId, description);
                     Log.v(TAG, "connect WearTalkService..");
                     WearTalkService.connect(AnalyticsApplication.getInstance().getApplicationContext(), true);
                 }
@@ -351,18 +351,18 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 notifyWeather();
             }
             Log.d(TAG, "Sync Complete. " + cVVector.size() + " Inserted");
-            setLocationStatus(getContext(), LOCATION_STATUS_OK);
+            setLocationStatus(LOCATION_STATUS_OK);
 
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage(), e);
             e.printStackTrace();
-            setLocationStatus(getContext(), LOCATION_STATUS_SERVER_INVALID);
+            setLocationStatus(LOCATION_STATUS_SERVER_INVALID);
         }
     }
 
     private void notifyWeather() {
-        Context context = getContext();
         //checking the last update and notify if it' the first of the day
+        Context context = AnalyticsApplication.getInstance().getApplicationContext();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String displayNotificationsKey = context.getString(R.string.pref_enable_notifications_key);
         boolean displayNotifications = prefs.getBoolean(displayNotificationsKey,
@@ -375,7 +375,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
             if (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS) {
                 // Last sync was more than 1 day ago, let's send a notification with the weather.
-                String locationQuery = Utility.getPreferredLocation(context);
+                String locationQuery = Utility.getPreferredLocation();
 
                 Uri weatherUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locationQuery, System.currentTimeMillis());
 
@@ -392,7 +392,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                         int iconId = Utility.getIconResourceForWeatherCondition(weatherId);
                         Resources resources = context.getResources();
                         int artResourceId = Utility.getArtResourceForWeatherCondition(weatherId);
-                        String artUrl = Utility.getArtUrlForWeatherCondition(context, weatherId);
+                        String artUrl = Utility.getArtUrlForWeatherCondition(weatherId);
 
                         // On Honeycomb and higher devices, we can retrieve the size of the large icon
                         // Prior to that, we use a fixed size
@@ -423,8 +423,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                         // Define the text of the forecast.
                         String contentText = String.format(context.getString(R.string.format_notification),
                                 desc,
-                                Utility.formatTemperature(context, high),
-                                Utility.formatTemperature(context, low));
+                                Utility.formatTemperature(high),
+                                Utility.formatTemperature(low));
 
                         // NotificationCompatBuilder is a very convenient way to build backward-compatible
                         // notifications.  Just throw in some data.
@@ -618,10 +618,11 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
      * @param c Context to get the PreferenceManager from.
      * @param locationStatus The IntDef value to set
      */
-    static private void setLocationStatus(Context c, @LocationStatus int locationStatus){
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
+    static private void setLocationStatus(@LocationStatus int locationStatus){
+        Context context = AnalyticsApplication.getInstance().getApplicationContext();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor spe = sp.edit();
-        spe.putInt(c.getString(R.string.pref_location_status_key), locationStatus);
+        spe.putInt(context.getString(R.string.pref_location_status_key), locationStatus);
         spe.apply();
     }
 }

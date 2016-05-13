@@ -74,7 +74,7 @@ public class MainActivity
     protected void onCreate(Bundle savedInstanceState) {
         Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        mLocation = Utility.getPreferredLocation(this);
+        mLocation = Utility.getPreferredLocation();
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
@@ -206,7 +206,7 @@ public class MainActivity
             storeRegistrationId(this, null);
         }
 
-        String location = Utility.getPreferredLocation(this);
+        String location = Utility.getPreferredLocation();
         // update the location in our second pane using the fragment manager
         if (location != null && !location.equals(mLocation)) {
             ForecastFragment ff = (ForecastFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);

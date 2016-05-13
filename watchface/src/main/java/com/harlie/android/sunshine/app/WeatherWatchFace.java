@@ -27,6 +27,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.BatteryManager;
@@ -45,8 +46,11 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import java.lang.ref.WeakReference;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -118,6 +122,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         private final float CENTER_GAP_AND_CIRCLE_RADIUS = 4f;
         private boolean mRegisteredTimeZoneReceiver = false;
+        private SimpleDateFormat mDateFormat;
         private Bitmap mBackgroundBitmap;
         private Bitmap mBackgroundAmbientBitmap;
         private Bitmap mBackgroundAmbientGoldBitmap;
@@ -141,6 +146,9 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         private Paint mHandPaintBright;
         private Paint mHandPaintGold;
         private Paint mHandPaintJoint;
+        private Paint mHandPaintTempHigh;
+        private Paint mHandPaintTempLow;
+        private Paint mHandPaintDate;
         private boolean mAmbient;
         private boolean mDaylightChanged;
         private boolean mIsRound;
@@ -157,6 +165,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
          * disable anti-aliasing in ambient mode.
          */
         private boolean mLowBitAmbient;
+
+        final String[] mWeekdays = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
         // receiver to update the time zone
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
@@ -196,6 +206,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             int day = mCalendar.get(Calendar.DAY_OF_MONTH);
             Log.v(TAG, "year="+year+", month="+month+", day="+day);
             sWatchFaceDesignHolder.setMoonPhase(moonCalculaion.moonPhase(year, month, day));
+            mDateFormat = new SimpleDateFormat("MMM dd", Locale.getDefault());
 
             mHourHandBitmap = drawableToBitmap(getDrawable(R.drawable.hour_little_hand));
             mHourHandGlovesBitmap = drawableToBitmap(getDrawable(R.drawable.hour_little_hand_ambient));
@@ -203,8 +214,33 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mMinuteHandGlovesBitmap = drawableToBitmap(getDrawable(R.drawable.minute_big_hand_ambient));
             mSecondHandBitmap = drawableToBitmap(getDrawable(R.drawable.hypnosis));
 
-            Resources resources = WeatherWatchFace.this.getResources();
+            createPaint();
 
+            // calculate if day or night
+            int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
+            sWatchFaceDesignHolder.setDaytime((hour >= 6 && hour < 18));
+
+            WindowManager wm = (WindowManager) WeatherWatchFace.getContext().getSystemService(Context.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
+            DisplayMetrics metrics = new DisplayMetrics();
+            display.getMetrics(metrics);
+            mWidth = metrics.widthPixels;
+            mHeight = metrics.heightPixels;
+
+            createWatchFaceBitmaps();
+
+            mBackgroundAmbientBitmap = drawableToBitmap(getDrawable(R.drawable.clock_face_ambient));
+            mBackgroundAmbientBitmapScaled = Bitmap.createScaledBitmap(mBackgroundAmbientBitmap, mWidth, mHeight, true /* filter */);
+            mBackgroundAmbientGoldBitmap = drawableToBitmap(getDrawable(R.drawable.clock_face_ambient_gold));
+            mBackgroundAmbientGoldBitmapScaled = Bitmap.createScaledBitmap(mBackgroundAmbientGoldBitmap, mWidth, mHeight, true /* filter */);
+
+            // sync with phone now
+            WearTalkService.createSyncMessage();
+        }
+
+        public void createPaint() {
+            Log.v(TAG, "createPaint");
+            Resources resources = WeatherWatchFace.this.getResources();
             mBackgroundPaint = new Paint();
             mBackgroundPaint.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.background));
 
@@ -248,26 +284,29 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mHandPaintJoint.setAntiAlias(true);
             mHandPaintJoint.setStrokeCap((mIsRound) ? Paint.Cap.ROUND : Paint.Cap.SQUARE);
 
-            // calculate if day or night
-            int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
-            sWatchFaceDesignHolder.setDaytime((hour >= 6 && hour < 18));
+            mHandPaintTempHigh = new Paint();
+            mHandPaintTempHigh.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.temperature_high));
+            mHandPaintTempHigh.setStrokeWidth(resources.getDimension(R.dimen.temperature_stroke));
+            mHandPaintTempHigh.setAntiAlias(true);
+            mHandPaintTempHigh.setTypeface(Typeface.DEFAULT);
+            mHandPaintTempHigh.setTextSize(getResources().getInteger(R.integer.temperature_text_size));
+            mHandPaintTempHigh.setStyle(Paint.Style.FILL);
 
-            WindowManager wm = (WindowManager) WeatherWatchFace.getContext().getSystemService(Context.WINDOW_SERVICE);
-            Display display = wm.getDefaultDisplay();
-            DisplayMetrics metrics = new DisplayMetrics();
-            display.getMetrics(metrics);
-            mWidth = metrics.widthPixels;
-            mHeight = metrics.heightPixels;
+            mHandPaintTempLow = new Paint();
+            mHandPaintTempLow.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.temperature_low));
+            mHandPaintTempLow.setStrokeWidth(resources.getDimension(R.dimen.temperature_stroke));
+            mHandPaintTempLow.setAntiAlias(true);
+            mHandPaintTempLow.setTypeface(Typeface.DEFAULT);
+            mHandPaintTempLow.setTextSize(getResources().getInteger(R.integer.temperature_text_size));
+            mHandPaintTempLow.setStyle(Paint.Style.FILL);
 
-            createWatchFaceBitmaps();
-
-            mBackgroundAmbientBitmap = drawableToBitmap(getDrawable(R.drawable.clock_face_ambient));
-            mBackgroundAmbientBitmapScaled = Bitmap.createScaledBitmap(mBackgroundAmbientBitmap, mWidth, mHeight, true /* filter */);
-            mBackgroundAmbientGoldBitmap = drawableToBitmap(getDrawable(R.drawable.clock_face_ambient_gold));
-            mBackgroundAmbientGoldBitmapScaled = Bitmap.createScaledBitmap(mBackgroundAmbientGoldBitmap, mWidth, mHeight, true /* filter */);
-
-            // sync with phone now
-            WearTalkService.createSyncMessage();
+            mHandPaintDate = new Paint();
+            mHandPaintDate.setColor(ContextCompat.getColor(WeatherWatchFace.getContext(), R.color.current_date));
+            mHandPaintDate.setStrokeWidth(resources.getDimension(R.dimen.current_date_stroke));
+            mHandPaintDate.setAntiAlias(true);
+            mHandPaintDate.setTypeface(Typeface.DEFAULT);
+            mHandPaintDate.setTextSize(getResources().getInteger(R.integer.temperature_text_size));
+            mHandPaintDate.setStyle(Paint.Style.FILL);
         }
 
         private void createWatchFaceBitmaps() {
@@ -714,6 +753,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             invalidate();
         }
 
+        private String formatTemperature(int temp) {
+            //char scale = (getWatchFaceDesignHolder().isMetric()) ? 'c' : 'f';
+            char degree = '\u00B0';
+            return String.format(Locale.getDefault(), "%02d%c", temp, degree);
+        }
+
         @Override
         public void onDraw(Canvas canvas, Rect bounds) {
             Date date = new Date();
@@ -846,8 +891,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 float seconds;
                 if ((holder.usePreciousStones() && holder.useGoldInlay()) || holder.useHypnosis()) {
                     seconds = (mCalendar.get(Calendar.SECOND) + mCalendar.get(Calendar.MILLISECOND) / 1000f); // calculate for sweeping second hand
-                }
-                else {
+                } else {
                     seconds = mCalendar.get(Calendar.SECOND); // calculate for ticking second hand
                 }
                 secRot = seconds / 30f * (float) Math.PI;
@@ -856,8 +900,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     Matrix matrix = new Matrix();
                     matrix.setRotate(secRot / (float) Math.PI * 180, mSecondHandBitmapScaled.getWidth() / 2, mSecondHandBitmapScaled.getHeight() / 2);
                     canvas.drawBitmap(mSecondHandBitmapScaled, matrix, mHandPaint);
-                }
-                else if (useSecondHand) {
+                } else if (useSecondHand) {
                     // second hand
                     float fullSecLength = minLength + (hrLength / 6);
                     // now shorten the length based on battery percentage remaining
@@ -884,6 +927,22 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                             CENTER_GAP_AND_CIRCLE_RADIUS,
                             mHandPaintJoint);
                 }
+
+                float text_Y_position = 55.0f;
+                String padding = "        ";
+                if (bounds.width() < 480) {
+                    text_Y_position = 65.0f;
+                    padding = "  ";
+                }
+                String high = formatTemperature(holder.getHighTemp());
+                String low = formatTemperature(holder.getLowTemp());
+                canvas.drawText(high, centerX - mHandPaintTempHigh.measureText(high + padding), text_Y_position, mHandPaintTempHigh);
+                canvas.drawText(low, centerX + mHandPaintTempLow.measureText(padding), text_Y_position, mHandPaintTempLow);
+
+                text_Y_position = 88.0f;
+                int currentDayOfWeek = mCalendar.get(Calendar.DAY_OF_WEEK);
+                String theDate = mWeekdays[currentDayOfWeek - 1] + ", " + mDateFormat.format(date);
+                canvas.drawText(theDate, centerX - mHandPaintDate.measureText(theDate)/2, text_Y_position, mHandPaintDate);
             }
 
             if ((holder.usePreciousStones() && holder.useGoldInlay()) || holder.useHypnosis()) {
@@ -892,7 +951,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     invalidate(); // sweep the second hand
                 }
             }
-
         }
 
         @Override

@@ -205,12 +205,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 // Read weather condition ID from cursor
                 int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);
 
-                if (Utility.usingLocalGraphics(getActivity())) {
+                if (Utility.usingLocalGraphics()) {
                     mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
                 } else {
                     // Use weather art image
                     Glide.with(this)
-                            .load(Utility.getArtUrlForWeatherCondition(getActivity(), weatherId))
+                            .load(Utility.getArtUrlForWeatherCondition(weatherId))
                             .error(Utility.getArtResourceForWeatherCondition(weatherId))
                             .crossFade()
                             .into(mIconView);
@@ -218,7 +218,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
                 // Read date from cursor and update views for day of week and date
                 long date = data.getLong(COL_WEATHER_DATE);
-                String dateText = Utility.getFullFriendlyDayString(getActivity(), date);
+                String dateText = Utility.getFullFriendlyDayString(date);
                 mDateView.setText(dateText);
 
                 // Get description from weather condition ID
@@ -233,16 +233,16 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 mIconView.setContentDescription(getString(R.string.a11y_forecast_icon, description));
 
                 // Read high temperature from cursor and update view
-                @SuppressWarnings("UnusedAssignment") boolean isMetric = Utility.isMetric(getActivity());
+                @SuppressWarnings("UnusedAssignment") boolean isMetric = Utility.isMetric();
 
                 double high = data.getDouble(COL_WEATHER_MAX_TEMP);
-                String highString = Utility.formatTemperature(getActivity(), high);
+                String highString = Utility.formatTemperature(high);
                 mHighTempView.setText(highString);
                 mHighTempView.setContentDescription(getString(R.string.a11y_high_temp, highString));
 
                 // Read low temperature from cursor and update view
                 double low = data.getDouble(COL_WEATHER_MIN_TEMP);
-                String lowString = Utility.formatTemperature(getActivity(), low);
+                String lowString = Utility.formatTemperature(low);
                 mLowTempView.setText(lowString);
                 mLowTempView.setContentDescription(getString(R.string.a11y_low_temp, lowString));
 

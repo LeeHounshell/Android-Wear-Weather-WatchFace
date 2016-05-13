@@ -19,6 +19,5 @@
     <string name="summary_off">Off</string>
     <string name="summary_show">Show</string>
     <string name="summary_hide">Hide</string>
-
     <string name="open_on_watch">Open on Watch</string>
 </resources>

@@ -30,27 +30,30 @@ import java.util.Date;
 import java.util.Locale;
 
 public class Utility {
-    public static String getPreferredLocation(Context context) {
+    public static String getPreferredLocation() {
+        Context context = AnalyticsApplication.getInstance().getApplicationContext();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString(context.getString(R.string.pref_location_key),
                 context.getString(R.string.pref_location_default));
     }
 
-    public static boolean isMetric(Context context) {
+    public static boolean isMetric() {
+        Context context = AnalyticsApplication.getInstance().getApplicationContext();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString(context.getString(R.string.pref_units_key),
                 context.getString(R.string.pref_units_metric))
                 .equals(context.getString(R.string.pref_units_metric));
     }
 
-    public static String formatTemperature(Context context, double temperature) {
+    public static String formatTemperature(double temperature) {
         // Data stored in Celsius by default.  If user prefers to see in Fahrenheit, convert
         // the values here.
-        if (!isMetric(context)) {
+        if (!isMetric()) {
             temperature = (temperature * 1.8) + 32;
         }
 
         // For presentation, assume the user doesn't care about tenths of a degree.
+        Context context = AnalyticsApplication.getInstance().getApplicationContext();
         return String.format(context.getString(R.string.format_temperature), temperature);
     }
 
@@ -72,12 +75,13 @@ public class Utility {
      * @param dateInMillis The date in milliseconds
      * @return a user-friendly representation of the date.
      */
-    public static String getFriendlyDayString(Context context, long dateInMillis) {
+    public static String getFriendlyDayString(long dateInMillis) {
         // The day string for forecast uses the following logic:
         // For today: "Today, June 8"
         // For tomorrow:  "Tomorrow"
         // For the next 5 days: "Wednesday" (just the day name)
         // For all days after that: "Mon Jun 8"
+        Context context = AnalyticsApplication.getInstance().getApplicationContext();
 
         Time time = new Time();
         time.setToNow();
@@ -96,7 +100,7 @@ public class Utility {
                     getFormattedMonthDay(context, dateInMillis));
         } else if ( julianDay < currentJulianDay + 7 ) {
             // If the input date is less than a week in the future, just return the day name.
-            return getDayName(context, dateInMillis);
+            return getDayName(dateInMillis);
         } else {
             // Otherwise, use the form "Mon Jun 3"
             SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("EEE MMM dd", Locale.getDefault());
@@ -112,9 +116,10 @@ public class Utility {
      * @param dateInMillis The date in milliseconds
      * @return a user-friendly representation of the date.
      */
-    public static String getFullFriendlyDayString(Context context, long dateInMillis) {
+    public static String getFullFriendlyDayString(long dateInMillis) {
 
-        String day = getDayName(context, dateInMillis);
+        Context context = AnalyticsApplication.getInstance().getApplicationContext();
+        String day = getDayName(dateInMillis);
         int formatId = R.string.format_full_friendly_date;
         return context.getString(
                 formatId,
@@ -130,10 +135,11 @@ public class Utility {
      * @param dateInMillis The date in milliseconds
      * @return formatted day name
      */
-    private static String getDayName(Context context, long dateInMillis) {
+    private static String getDayName(long dateInMillis) {
         // If the date is today, return the localized version of "Today" instead of the actual
         // day name.
 
+        Context context = AnalyticsApplication.getInstance().getApplicationContext();
         Time t = new Time();
         t.setToNow();
         int julianDay = Time.getJulianDay(dateInMillis, t.gmtoff);
@@ -167,7 +173,7 @@ public class Utility {
 
     public static String getFormattedWind(Context context, float windSpeed, float degrees) {
         int windFormat;
-        if (Utility.isMetric(context)) {
+        if (Utility.isMetric()) {
             windFormat = R.string.format_wind_kmh;
         } else {
             windFormat = R.string.format_wind_mph;
@@ -239,7 +245,8 @@ public class Utility {
      * @param context Context to use for retrieving the preference
      * @return true if Sunshine is using local graphics, false otherwise.
      */
-    public static boolean usingLocalGraphics(Context context) {
+    public static boolean usingLocalGraphics() {
+        Context context = AnalyticsApplication.getInstance().getApplicationContext();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String sunshineArtPack = context.getString(R.string.pref_art_pack_sunshine);
         return prefs.getString(context.getString(R.string.pref_art_pack_key),
@@ -254,7 +261,8 @@ public class Utility {
      * @param weatherId from OpenWeatherMap API response
      * @return url for the corresponding weather artwork. null if no relation is found.
      */
-    public static String getArtUrlForWeatherCondition(Context context, int weatherId) {
+    public static String getArtUrlForWeatherCondition(int weatherId) {
+        Context context = AnalyticsApplication.getInstance().getApplicationContext();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String formatArtUrl = prefs.getString(context.getString(R.string.pref_art_pack_key),
                 context.getString(R.string.pref_art_pack_sunshine));
