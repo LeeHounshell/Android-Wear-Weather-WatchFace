@@ -165,8 +165,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
          */
         private boolean mLowBitAmbient;
 
-        //final String[] mWeekdays = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-
         // receiver to update the time zone
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
             @Override
@@ -927,22 +925,23 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                             mHandPaintJoint);
                 }
 
-                float text_Y_position = 55.0f;
-                String padding = "        ";
-                if (bounds.width() < 480) {
-                    text_Y_position = 65.0f;
-                    padding = "  ";
+                if (! holder.useStaticBackground()) {
+                    float temp_Y_position = 55.0f;
+                    String padding = "        ";
+                    if (bounds.width() < 480) {
+                        temp_Y_position = 65.0f;
+                        padding = "  ";
+                    }
+                    String high = formatTemperature(holder.getHighTemp());
+                    String low = formatTemperature(holder.getLowTemp());
+                    canvas.drawText(high, centerX - mHandPaintTempHigh.measureText(high + padding), temp_Y_position, mHandPaintTempHigh);
+                    canvas.drawText(low, centerX + mHandPaintTempLow.measureText(padding), temp_Y_position, mHandPaintTempLow);
                 }
-                String high = formatTemperature(holder.getHighTemp());
-                String low = formatTemperature(holder.getLowTemp());
-                canvas.drawText(high, centerX - mHandPaintTempHigh.measureText(high + padding), text_Y_position, mHandPaintTempHigh);
-                canvas.drawText(low, centerX + mHandPaintTempLow.measureText(padding), text_Y_position, mHandPaintTempLow);
 
-                text_Y_position = 88.0f;
+                float date_Y_position = 88.0f;
                 int currentDayOfWeek = mCalendar.get(Calendar.DAY_OF_WEEK);
-                //String theDate = mWeekdays[currentDayOfWeek - 1] + ", " + mDateFormat.format(date);
                 String theDate = mDateFormat.format(date);
-                canvas.drawText(theDate, centerX - mHandPaintDate.measureText(theDate)/2, text_Y_position, mHandPaintDate);
+                canvas.drawText(theDate, centerX - mHandPaintDate.measureText(theDate)/2, date_Y_position, mHandPaintDate);
             }
 
             if ((holder.usePreciousStones() && holder.useGoldInlay()) || holder.useHypnosis()) {

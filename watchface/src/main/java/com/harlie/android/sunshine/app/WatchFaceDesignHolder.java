@@ -476,9 +476,18 @@ public class WatchFaceDesignHolder implements Parcelable {
         setSunshine(dmap.getBoolean("isSunshine"));
         setOvercast(dmap.getBoolean("isOvercast"));
         //setMoonPhase(dmap.getInt("moonPhase")); // instead use the local calculation for moon phase
-        setHighTemp(dmap.getInt("highTemp"));
-        setLowTemp(dmap.getInt("lowTemp"));
         setMetric(dmap.getBoolean("isMetric"));
+        if (isMetric()) {
+            setHighTemp(dmap.getInt("highTemp"));
+            setLowTemp(dmap.getInt("lowTemp"));
+        }
+        else {
+            // convert to Fahrenheit
+            int high = (dmap.getInt("highTemp") * 9/5) + 32;
+            int low = (dmap.getInt("lowTemp") * 9/5) + 32;
+            setHighTemp(high);
+            setLowTemp(low);
+        }
         setLightClouds(dmap.getBoolean("isLightClouds"));
         setModerateClouds(dmap.getBoolean("isModerateClouds"));
         setHeavyClouds(dmap.getBoolean("isHeavyClouds"));

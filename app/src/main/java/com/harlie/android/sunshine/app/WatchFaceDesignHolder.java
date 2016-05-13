@@ -484,17 +484,8 @@ public class WatchFaceDesignHolder implements Parcelable {
         Log.v(TAG, "---> summarize weather for today..");
         WatchFaceDesignHolder watchFaceDesignHolder = WearTalkService.getWatchFaceDesignHolder();
         watchFaceDesignHolder.reset();
-        if (watchFaceDesignHolder.isMetric()) {
-            watchFaceDesignHolder.setHighTemp(high);
-            watchFaceDesignHolder.setLowTemp(low);
-        }
-        else {
-            // convert to Fahrenheit
-            high = (high * 9/5) + 32;
-            low = (low * 9/5) + 32;
-            watchFaceDesignHolder.setHighTemp(high);
-            watchFaceDesignHolder.setLowTemp(low);
-        }
+        watchFaceDesignHolder.setHighTemp(high);
+        watchFaceDesignHolder.setLowTemp(low);
         if (windSpeed >= 30) {
             Log.v(TAG, "windSpeed >= 30");
             watchFaceDesignHolder.setHeavyWind(true);

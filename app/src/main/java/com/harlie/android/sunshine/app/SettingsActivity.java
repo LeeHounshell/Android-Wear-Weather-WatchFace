@@ -28,6 +28,7 @@ import android.preference.PreferenceManager;
 
 import com.harlie.android.sunshine.app.data.WeatherContract;
 import com.harlie.android.sunshine.app.sync.SunshineSyncAdapter;
+import com.harlie.android.sunshine.app.sync.WearTalkService;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings.
@@ -157,6 +158,8 @@ public class SettingsActivity extends PreferenceActivity
             // art pack have changed. update lists of weather entries accordingly
             getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
         }
+        // update the watchface - metric may have changed here
+        WearTalkService.sendWeatherDataToWear(true);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
