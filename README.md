@@ -17,6 +17,7 @@ but I have revived it here with this app.
 ## Features
  * Weather background from Sunshine app shows weather conditions, temperature high/low, and day
  * Configurable watchface with numerous display settings
+ * Day and Night background colors including phase of the moon at night
  * Second hand shows battery level, and will sweep if 'Gold Inlay' and 'Precious Stones' are both set
  * Always on setting
  * Hypnosis tool
