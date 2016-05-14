@@ -36,9 +36,9 @@ SCREENSHOTS
 ---
 
 
-![screen](../master/screens/original_watchface_reference_image.jpg)
-
 ![screen](../master/screens/analog_fancy_weather.gif)
+
+![screen](../master/screens/original_watchface_reference_image.jpg)
 
 ![screen](../master/screens/watch_face_01.png)
 
