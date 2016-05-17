@@ -800,7 +800,7 @@ public class WatchFaceDesignHolder implements Parcelable {
             }
             case 800: {
                 Log.v(TAG, "clouds");
-                watchFaceDesignHolder.setModerateClouds(true);
+                watchFaceDesignHolder.setLightClouds(true);
                 watchFaceDesignHolder.setAreCloudsLow(true);
                 break;
             }
@@ -943,10 +943,19 @@ public class WatchFaceDesignHolder implements Parcelable {
         }
         description = new String(description.toLowerCase());
         Log.v(TAG, "description="+description);
-        if (description.contains("clear")) {
+        if (description.equals("clear")) {
+            watchFaceDesignHolder.setSunshine(true);
+            watchFaceDesignHolder.setHeavyClouds(false);
+            watchFaceDesignHolder.setModerateClouds(false);
+            watchFaceDesignHolder.setLightClouds(false);
+            watchFaceDesignHolder.setAreCloudsDark(false);
+            watchFaceDesignHolder.setAreCloudsLow(false);
+            watchFaceDesignHolder.setOvercast(false);
+        }
+        else if (description.contains("clear")) {
             watchFaceDesignHolder.setSunshine(true);
         }
-        if (description.contains("overcast")) {
+        else if (description.contains("overcast")) {
             watchFaceDesignHolder.setOvercast(true);
         }
         watchFaceDesignHolder.setDirty(true);
